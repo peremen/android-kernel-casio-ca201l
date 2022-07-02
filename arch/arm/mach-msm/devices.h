@@ -13,6 +13,10 @@
  * GNU General Public License for more details.
  *
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #ifndef __ARCH_ARM_MACH_MSM_DEVICES_H
 #define __ARCH_ARM_MACH_MSM_DEVICES_H
@@ -54,9 +58,16 @@ extern struct platform_device msm8960_device_uart_gsbi5;
 extern struct platform_device msm8960_device_ssbi_pmic;
 extern struct platform_device msm8960_device_qup_i2c_gsbi3;
 extern struct platform_device msm8960_device_qup_i2c_gsbi4;
+#ifdef CONFIG_DVE068_AUDIO
+extern struct platform_device msm8960_device_qup_i2c_gsbi8;
+#endif 
 extern struct platform_device msm8960_device_qup_i2c_gsbi10;
 extern struct platform_device msm8960_device_qup_i2c_gsbi12;
+#ifndef CONFIG_ST21NFCA
 extern struct platform_device msm8960_device_qup_spi_gsbi1;
+#else
+extern struct platform_device msm8960_device_qup_i2c_gsbi1;
+#endif
 extern struct platform_device msm8960_gemini_device;
 extern struct platform_device msm8960_device_csiphy0;
 extern struct platform_device msm8960_device_csiphy1;

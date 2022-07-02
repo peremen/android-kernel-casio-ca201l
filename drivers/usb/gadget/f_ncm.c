@@ -23,6 +23,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -143,7 +147,11 @@ static struct usb_cdc_ncm_ntb_parameters ntb_parameters = {
 #define LOG2_STATUS_INTERVAL_MSEC	5	/* 1 << 5 == 32 msec */
 #define NCM_STATUS_BYTECOUNT		16	/* 8 byte header + data */
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_interface_assoc_descriptor ncm_iad_desc = {
+#else
 static struct usb_interface_assoc_descriptor ncm_iad_desc __initdata = {
+#endif  
 	.bLength =		sizeof ncm_iad_desc,
 	.bDescriptorType =	USB_DT_INTERFACE_ASSOCIATION,
 
@@ -157,7 +165,11 @@ static struct usb_interface_assoc_descriptor ncm_iad_desc __initdata = {
 
 /* interface descriptor: */
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_interface_descriptor ncm_control_intf = {
+#else
 static struct usb_interface_descriptor ncm_control_intf __initdata = {
+#endif  
 	.bLength =		sizeof ncm_control_intf,
 	.bDescriptorType =	USB_DT_INTERFACE,
 
@@ -169,7 +181,11 @@ static struct usb_interface_descriptor ncm_control_intf __initdata = {
 	/* .iInterface = DYNAMIC */
 };
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_cdc_header_desc ncm_header_desc = {
+#else
 static struct usb_cdc_header_desc ncm_header_desc __initdata = {
+#endif  
 	.bLength =		sizeof ncm_header_desc,
 	.bDescriptorType =	USB_DT_CS_INTERFACE,
 	.bDescriptorSubType =	USB_CDC_HEADER_TYPE,
@@ -177,7 +193,11 @@ static struct usb_cdc_header_desc ncm_header_desc __initdata = {
 	.bcdCDC =		cpu_to_le16(0x0110),
 };
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_cdc_union_desc ncm_union_desc = {
+#else
 static struct usb_cdc_union_desc ncm_union_desc __initdata = {
+#endif  
 	.bLength =		sizeof(ncm_union_desc),
 	.bDescriptorType =	USB_DT_CS_INTERFACE,
 	.bDescriptorSubType =	USB_CDC_UNION_TYPE,
@@ -185,7 +205,11 @@ static struct usb_cdc_union_desc ncm_union_desc __initdata = {
 	/* .bSlaveInterface0 =	DYNAMIC */
 };
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_cdc_ether_desc ecm_desc = {
+#else
 static struct usb_cdc_ether_desc ecm_desc __initdata = {
+#endif  
 	.bLength =		sizeof ecm_desc,
 	.bDescriptorType =	USB_DT_CS_INTERFACE,
 	.bDescriptorSubType =	USB_CDC_ETHERNET_TYPE,
@@ -193,14 +217,23 @@ static struct usb_cdc_ether_desc ecm_desc __initdata = {
 	/* this descriptor actually adds value, surprise! */
 	/* .iMACAddress = DYNAMIC */
 	.bmEthernetStatistics =	cpu_to_le32(0), /* no statistics */
+#ifdef CONFIG_NCMN_USB 
+	.wMaxSegmentSize =	cpu_to_le16(0xEA00),
+	.wNumberMCFilters = cpu_to_le16(0x5),
+#else
 	.wMaxSegmentSize =	cpu_to_le16(ETH_FRAME_LEN),
 	.wNumberMCFilters =	cpu_to_le16(0),
+#endif  
 	.bNumberPowerFilters =	0,
 };
 
 #define NCAPS	(USB_CDC_NCM_NCAP_ETH_FILTER | USB_CDC_NCM_NCAP_CRC_MODE)
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_cdc_ncm_desc ncm_desc = {
+#else
 static struct usb_cdc_ncm_desc ncm_desc __initdata = {
+#endif  
 	.bLength =		sizeof ncm_desc,
 	.bDescriptorType =	USB_DT_CS_INTERFACE,
 	.bDescriptorSubType =	USB_CDC_NCM_TYPE,
@@ -212,7 +245,11 @@ static struct usb_cdc_ncm_desc ncm_desc __initdata = {
 
 /* the default data interface has no endpoints ... */
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_interface_descriptor ncm_data_nop_intf = {
+#else
 static struct usb_interface_descriptor ncm_data_nop_intf __initdata = {
+#endif  
 	.bLength =		sizeof ncm_data_nop_intf,
 	.bDescriptorType =	USB_DT_INTERFACE,
 
@@ -227,12 +264,20 @@ static struct usb_interface_descriptor ncm_data_nop_intf __initdata = {
 
 /* ... but the "real" data interface has two bulk endpoints */
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_interface_descriptor ncm_data_intf = {
+#else
 static struct usb_interface_descriptor ncm_data_intf __initdata = {
+#endif  
 	.bLength =		sizeof ncm_data_intf,
 	.bDescriptorType =	USB_DT_INTERFACE,
 
 	.bInterfaceNumber =	1,
+#ifdef CONFIG_DVE021_USB_
+	.bAlternateSetting =	0,
+#else
 	.bAlternateSetting =	1,
+#endif	
 	.bNumEndpoints =	2,
 	.bInterfaceClass =	USB_CLASS_CDC_DATA,
 	.bInterfaceSubClass =	0,
@@ -242,17 +287,30 @@ static struct usb_interface_descriptor ncm_data_intf __initdata = {
 
 /* full speed support: */
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_endpoint_descriptor fs_ncm_notify_desc = {
+#else
 static struct usb_endpoint_descriptor fs_ncm_notify_desc __initdata = {
+#endif  
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
 	.bEndpointAddress =	USB_DIR_IN,
 	.bmAttributes =		USB_ENDPOINT_XFER_INT,
+#ifdef CONFIG_DVE021_USB_
+	.wMaxPacketSize =	cpu_to_le16(0x10),
+	.bInterval =		9,
+#else
 	.wMaxPacketSize =	cpu_to_le16(NCM_STATUS_BYTECOUNT),
 	.bInterval =		1 << LOG2_STATUS_INTERVAL_MSEC,
+#endif	
 };
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_endpoint_descriptor fs_ncm_in_desc = {
+#else
 static struct usb_endpoint_descriptor fs_ncm_in_desc __initdata = {
+#endif  
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
@@ -260,7 +318,11 @@ static struct usb_endpoint_descriptor fs_ncm_in_desc __initdata = {
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
 };
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_endpoint_descriptor fs_ncm_out_desc = {
+#else
 static struct usb_endpoint_descriptor fs_ncm_out_desc __initdata = {
+#endif  
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
@@ -268,7 +330,11 @@ static struct usb_endpoint_descriptor fs_ncm_out_desc __initdata = {
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
 };
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_descriptor_header *ncm_fs_function[] = {
+#else
 static struct usb_descriptor_header *ncm_fs_function[] __initdata = {
+#endif  
 	(struct usb_descriptor_header *) &ncm_iad_desc,
 	/* CDC NCM control descriptors */
 	(struct usb_descriptor_header *) &ncm_control_intf,
@@ -287,7 +353,11 @@ static struct usb_descriptor_header *ncm_fs_function[] __initdata = {
 
 /* high speed support: */
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_endpoint_descriptor hs_ncm_notify_desc = {
+#else
 static struct usb_endpoint_descriptor hs_ncm_notify_desc __initdata = {
+#endif  
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
@@ -296,7 +366,12 @@ static struct usb_endpoint_descriptor hs_ncm_notify_desc __initdata = {
 	.wMaxPacketSize =	cpu_to_le16(NCM_STATUS_BYTECOUNT),
 	.bInterval =		LOG2_STATUS_INTERVAL_MSEC + 4,
 };
+
+#ifdef CONFIG_DVE021_USB 
+static struct usb_endpoint_descriptor hs_ncm_in_desc = {
+#else
 static struct usb_endpoint_descriptor hs_ncm_in_desc __initdata = {
+#endif  
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
@@ -305,7 +380,11 @@ static struct usb_endpoint_descriptor hs_ncm_in_desc __initdata = {
 	.wMaxPacketSize =	cpu_to_le16(512),
 };
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_endpoint_descriptor hs_ncm_out_desc = {
+#else
 static struct usb_endpoint_descriptor hs_ncm_out_desc __initdata = {
+#endif  
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
@@ -314,7 +393,11 @@ static struct usb_endpoint_descriptor hs_ncm_out_desc __initdata = {
 	.wMaxPacketSize =	cpu_to_le16(512),
 };
 
+#ifdef CONFIG_DVE021_USB 
+static struct usb_descriptor_header *ncm_hs_function[] = {
+#else
 static struct usb_descriptor_header *ncm_hs_function[] __initdata = {
+#endif  
 	(struct usb_descriptor_header *) &ncm_iad_desc,
 	/* CDC NCM control descriptors */
 	(struct usb_descriptor_header *) &ncm_control_intf,
@@ -1163,7 +1246,11 @@ static void ncm_close(struct gether *geth)
 
 /* ethernet function driver setup/binding */
 
+#ifdef CONFIG_DVE021_USB 
+static int
+#else
 static int __init
+#endif  
 ncm_bind(struct usb_configuration *c, struct usb_function *f)
 {
 	struct usb_composite_dev *cdev = c->cdev;
@@ -1328,7 +1415,11 @@ ncm_unbind(struct usb_configuration *c, struct usb_function *f)
  * Caller must have called @gether_setup().  Caller is also responsible
  * for calling @gether_cleanup() before module unload.
  */
+#ifdef CONFIG_DVE021_USB 
+int ncm_bind_config(struct usb_configuration *c, u8 ethaddr[ETH_ALEN])
+#else
 int __init ncm_bind_config(struct usb_configuration *c, u8 ethaddr[ETH_ALEN])
+#endif  
 {
 	struct f_ncm	*ncm;
 	int		status;
@@ -1385,7 +1476,11 @@ int __init ncm_bind_config(struct usb_configuration *c, u8 ethaddr[ETH_ALEN])
 	ncm_reset_values(ncm);
 	ncm->port.is_fixed = true;
 
+#ifdef CONFIG_DVE021_USB 
+	ncm->port.func.name = "ncm";
+#else	
 	ncm->port.func.name = "cdc_network";
+#endif  
 	ncm->port.func.strings = ncm_strings;
 	/* descriptors are per-instance copies */
 	ncm->port.func.bind = ncm_bind;

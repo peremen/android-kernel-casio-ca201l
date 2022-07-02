@@ -10,6 +10,10 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
 */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <linux/module.h>
 #include <linux/rtc.h>
@@ -66,7 +70,10 @@ static int rtc_suspend(struct device *dev, pm_message_t mesg)
 	 */
 	delta = timespec_sub(old_system, old_rtc);
 	delta_delta = timespec_sub(delta, old_delta);
-	if (abs(delta_delta.tv_sec)  >= 2) {
+	
+	
+	if (delta_delta.tv_sec < -2 || delta_delta.tv_sec >= 2) {
+	
 		/*
 		 * if delta_delta is too large, assume time correction
 		 * has occured and set old_delta to the current delta.
@@ -100,8 +107,12 @@ static int rtc_resume(struct device *dev)
 	rtc_tm_to_time(&tm, &new_rtc.tv_sec);
 	new_rtc.tv_nsec = 0;
 
-	if (new_rtc.tv_sec <= old_rtc.tv_sec) {
-		if (new_rtc.tv_sec < old_rtc.tv_sec)
+	
+	
+
+
+	if (new_rtc.tv_sec < old_rtc.tv_sec) {
+	
 			pr_debug("%s:  time travel!\n", dev_name(&rtc->dev));
 		return 0;
 	}
@@ -119,7 +130,10 @@ static int rtc_resume(struct device *dev)
 	sleep_time = timespec_sub(sleep_time,
 			timespec_sub(new_system, old_system));
 
+	
+	if (sleep_time.tv_sec >= 0)
 	timekeeping_inject_sleeptime(&sleep_time);
+	
 	return 0;
 }
 

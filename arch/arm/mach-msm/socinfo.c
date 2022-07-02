@@ -14,6 +14,10 @@
  * SOC Info Routines
  *
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <linux/types.h>
 #include <linux/sysdev.h>
@@ -607,8 +611,10 @@ arch_initcall(socinfo_init_sysdev);
 
 void *setup_dummy_socinfo(void)
 {
+
 	if (machine_is_msm8960_rumi3() || machine_is_msm8960_sim() ||
-	    machine_is_msm8960_cdp())
+	    machine_is_msm8960_cdp() || machine_is_msm8960_gg3())
+
 		dummy_socinfo.id = 87;
 	else if (machine_is_apq8064_rumi3() || machine_is_apq8064_sim())
 		dummy_socinfo.id = 109;

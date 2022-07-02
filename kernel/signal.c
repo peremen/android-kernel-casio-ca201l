@@ -9,6 +9,10 @@
  *		Changes to use preallocated sigqueue structures
  *		to allow signals to be sent reliably.
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -1049,6 +1053,18 @@ static int send_signal(int sig, struct siginfo *info, struct task_struct *t,
 	from_ancestor_ns = si_fromuser(info) &&
 			   !task_pid_nr_ns(current, task_active_pid_ns(t));
 #endif
+
+	
+	if(sig == SIGABRT){
+		if (strcmp(t->comm, "system_server") == 0){
+			printk("kill %d: to %d(%s)[%lx] from %d(%s)[%lx]\n",
+				sig, (int)t->pid, t->comm, (unsigned long)t,
+				(int)current->pid, current->comm,(unsigned long)current );
+
+			BUG();
+		}
+	}
+	
 
 	return __send_signal(sig, info, t, group, from_ancestor_ns);
 }

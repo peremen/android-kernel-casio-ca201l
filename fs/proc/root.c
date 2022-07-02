@@ -5,6 +5,10 @@
  *
  *  proc root directory handling functions
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <asm/uaccess.h>
 
@@ -124,6 +128,9 @@ void __init proc_root_init(void)
 	proc_device_tree_init();
 #endif
 	proc_mkdir("bus", NULL);
+#ifdef CONFIG_DVE033_NORMAL_RELEASE
+		proc_mkdir(NEC_PROC_DIR, NULL);
+#endif
 	proc_sys_init();
 }
 

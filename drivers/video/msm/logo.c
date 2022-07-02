@@ -14,6 +14,10 @@
  * GNU General Public License for more details.
  *
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/fb.h>
@@ -101,3 +105,87 @@ err_logo_close_file:
 	return err;
 }
 EXPORT_SYMBOL(load_565rle_image);
+
+
+#ifdef CONFIG_SPLASH_USING_565RLE
+static void memset4byte(void *_ptr, unsigned int val, unsigned count)
+{
+	unsigned int *ptr = _ptr;
+	count >>= 1;
+	while (count--) {
+		*ptr++ = val;
+	}
+}
+
+int load_565rle_image_to_rgba8888(char *filename, struct fb_info *info)
+{
+
+	int fd, err = 0;
+	unsigned count, max;
+	unsigned short *data, *ptr;
+	unsigned int rgba8888;
+	unsigned int *bits;
+
+	printk("SEVENCORE load_565rle_image\n");
+	if (!info) {
+		printk("%s: Can not access framebuffer\n",
+			__func__);
+		return -ENODEV;
+	}
+
+	fd = sys_open(filename, O_RDONLY, 0);
+	if (fd < 0) {
+		printk("%s: Can not open %s\n",
+			__func__, filename);
+		return -ENOENT;
+	}
+	count = (unsigned)sys_lseek(fd, (off_t)0, 2);
+	if (count == 0) {
+		sys_close(fd);
+		err = -EIO;
+		goto err_logo_close_file;
+	}
+	sys_lseek(fd, (off_t)0, 0);
+	data = kmalloc(count, GFP_KERNEL);
+	if (!data) {
+		printk("%s: Can not alloc data\n", __func__);
+		err = -ENOMEM;
+		goto err_logo_close_file;
+	}
+	if ((unsigned)sys_read(fd, (char *)data, count) != count) {
+		err = -EIO;
+		goto err_logo_free_data;
+	}
+
+	max = fb_width(info) * fb_height(info);
+	ptr = data;
+	bits = (unsigned int *)(info->screen_base);
+
+	while (count > 3) {
+		unsigned n = ptr[0];
+		if (n > max)
+			break;
+
+		rgba8888 = 0; 
+		rgba8888 |= ((ptr[1] & 0xf800) >> 11) << 3; 
+		rgba8888 |= ((ptr[1] & 0x07e0) >> 5) << 10; 
+		rgba8888 |= ((ptr[1] & 0x001f)) << 19; 
+
+		
+		memset4byte(bits, rgba8888, n << 1);
+		bits += n;
+		max -= n;
+		ptr += 2;
+		count -= 4;
+	}
+
+err_logo_free_data:
+	kfree(data);
+err_logo_close_file:
+	sys_close(fd);
+	return err;
+}
+EXPORT_SYMBOL(load_565rle_image_to_rgba8888);
+#endif 
+
+

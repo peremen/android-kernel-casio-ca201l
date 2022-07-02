@@ -15,6 +15,10 @@
  * Rewrote bits to get rid of console_lock
  *	01Mar01 Andrew Morton
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -43,6 +47,12 @@
 #include <linux/rculist.h>
 #include <mach/msm_rtb.h>
 #include <asm/uaccess.h>
+
+#define REMOVE_LOG
+
+#ifdef REMOVE_LOG
+extern int remove_log_flag;
+#endif
 
 /*
  * Architectures can override it:
@@ -672,6 +682,14 @@ static void call_console_drivers(unsigned start, unsigned end)
 	unsigned cur_index, start_print;
 	static int msg_level = -1;
 
+#ifdef REMOVE_LOG
+	if(1 == remove_log_flag)
+	{
+		if(msg_level == -1) return;
+		if(msg_level != -1) return;
+	}
+#endif
+
 	BUG_ON(((int)(start - end)) > 0);
 
 	cur_index = start;
@@ -784,9 +802,24 @@ asmlinkage int printk(const char *fmt, ...)
 {
 	va_list args;
 	int r;
+
+#ifdef REMOVE_LOG
+	int i = 0;
+#endif
+
 #ifdef CONFIG_MSM_RTB
 	void *caller = __builtin_return_address(0);
+#endif
 
+#ifdef REMOVE_LOG
+	if(1 == remove_log_flag)
+	{
+		if(i == 0) return 0;
+		if(i != 0) return 0;
+	}
+#endif
+
+#ifdef CONFIG_MSM_RTB
 	uncached_logk_pc(LOGK_LOGBUF, caller, (void *)log_end);
 #endif
 
@@ -885,6 +918,14 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	size_t plen;
 	char special;
 
+#ifdef REMOVE_LOG
+	if(1 == remove_log_flag)
+	{
+		if(printed_len == 0) return 0;
+		if(printed_len != 0) return 0;
+	}
+#endif
+
 	boot_delay_msec();
 	printk_delay();
 
@@ -926,6 +967,10 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 
 
 	p = printk_buf;
+
+#ifdef CONFIG_FATAL_INFO_HANDLE
+	save_kernel_panic_log(p);
+#endif
 
 	/* Read log level and handle special printk prefix */
 	plen = log_prefix(p, &current_log_level, &special);

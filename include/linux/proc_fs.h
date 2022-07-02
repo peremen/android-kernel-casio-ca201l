@@ -1,3 +1,8 @@
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
+
 #ifndef _LINUX_PROC_FS_H
 #define _LINUX_PROC_FS_H
 
@@ -14,6 +19,9 @@ struct mm_struct;
 /*
  * The proc filesystem constants/structures
  */
+#ifdef CONFIG_DVE033_NORMAL_RELEASE
+#define NEC_PROC_DIR "nec"
+#endif
 
 /*
  * Offset of the first process in the /proc root directory..

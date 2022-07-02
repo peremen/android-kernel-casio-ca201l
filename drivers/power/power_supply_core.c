@@ -9,6 +9,10 @@
  *
  *  You may use this code as per GPL version 2
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -24,6 +28,11 @@ struct class *power_supply_class;
 EXPORT_SYMBOL_GPL(power_supply_class);
 
 static struct device_type power_supply_dev_type;
+
+
+static bool power_supply_detect_on = false;
+struct delayed_work power_supply_detect_on_work;
+
 
 /**
  * power_supply_set_current_limit - set current limit
@@ -98,6 +107,7 @@ int power_supply_set_charge_type(struct power_supply *psy, int charge_type)
 }
 EXPORT_SYMBOL_GPL(power_supply_set_charge_type);
 
+
 static int __power_supply_changed_work(struct device *dev, void *data)
 {
 	struct power_supply *psy = (struct power_supply *)data;
@@ -108,7 +118,12 @@ static int __power_supply_changed_work(struct device *dev, void *data)
 		if (!strcmp(psy->supplied_to[i], pst->name)) {
 			if (pst->external_power_changed)
 				pst->external_power_changed(pst);
+
+
+
+
 		}
+
 	return 0;
 }
 
@@ -138,11 +153,53 @@ static void power_supply_changed_work(struct work_struct *work)
 	spin_unlock_irqrestore(&psy->changed_lock, flags);
 }
 
+
+#define DETECT_ON_DELAY_TIME_MS		(5*1000)
+static void power_supply_detect_on_worker(struct work_struct *work)
+{
+	pr_debug("%s: power_supply_detect_on change %d to 0\n",
+		__func__, power_supply_detect_on);
+
+	
+
+
+
+	power_supply_detect_on = false;
+}
+
+void power_supply_usb_detection(bool on)
+{
+	power_supply_detect_on = on;
+
+	pr_debug("%s: power_supply_detect_on=%d\n",
+		__func__, power_supply_detect_on);
+
+	
+	if (power_supply_class) {
+		if(delayed_work_pending(&power_supply_detect_on_work)) {
+			pr_debug("%s: cancel work\n", __func__);
+			cancel_delayed_work_sync(&power_supply_detect_on_work);
+		}
+		schedule_delayed_work(&power_supply_detect_on_work,
+			round_jiffies_relative(msecs_to_jiffies
+				(DETECT_ON_DELAY_TIME_MS)));
+	}
+}
+EXPORT_SYMBOL_GPL(power_supply_usb_detection);
+
+
 void power_supply_changed(struct power_supply *psy)
 {
 	unsigned long flags;
 
 	dev_dbg(psy->dev, "%s\n", __func__);
+
+	
+	if(power_supply_detect_on == true)
+	{
+		return;
+	}
+	
 
 	spin_lock_irqsave(&psy->changed_lock, flags);
 	psy->changed = true;
@@ -311,6 +368,12 @@ static int __init power_supply_class_init(void)
 
 	power_supply_class->dev_uevent = power_supply_uevent;
 	power_supply_init_attrs(&power_supply_dev_type);
+
+	
+	INIT_DELAYED_WORK(&power_supply_detect_on_work,
+		power_supply_detect_on_worker);
+	pr_debug("%s\n", __func__);
+	
 
 	return 0;
 }

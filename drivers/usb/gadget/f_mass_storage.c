@@ -36,6 +36,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 /*
  * The Mass Storage Function acts as a USB Mass Storage device,
@@ -295,6 +299,11 @@
 #include <linux/usb/gadget.h>
 #include <linux/usb/composite.h>
 
+
+#ifdef CONFIG_DVE021_USB
+#include <linux/switch.h>
+#endif
+
 #include "gadget_chips.h"
 
 
@@ -310,6 +319,12 @@ static const char fsg_string_interface[] = "Mass Storage";
 #define FSG_NO_OTG               1
 #define FSG_NO_INTR_EP           1
 
+
+#ifdef CONFIG_DVE021_USB
+#define SC_CDROM_MODE_CHANGE                0xf1
+#define SC_CDROM_TIMER_CANCEL               0xf2
+#define SC_CDROM_MODE_CHANGE_BS             0xf3
+#endif
 #include "storage_common.c"
 
 #ifdef CONFIG_USB_CSW_HACK
@@ -320,6 +335,23 @@ static int csw_hack_sent;
 
 struct fsg_dev;
 struct fsg_common;
+
+
+#ifdef CONFIG_DVE021_USB
+static char *cdrom_mode_change[2]     = { "USB_CDROM=MODE_CHANGE", NULL };
+static char *cdrom_timer_cancel[2]    = { "USB_CDROM=TIMER_CANCEL", NULL };
+
+static const struct file_operations usb_cdrom_fops = {
+	.owner = THIS_MODULE,
+};
+
+static struct miscdevice usb_cdrom_device = {
+	.minor = MISC_DYNAMIC_MINOR,
+	.name = "usb_cdrom",
+	.fops = &usb_cdrom_fops,
+};
+
+#endif
 
 /* FSF callback functions */
 struct fsg_operations {
@@ -2251,6 +2283,33 @@ static int do_scsi_command(struct fsg_common *common)
 			reply = do_write(common);
 		break;
 
+
+#ifdef CONFIG_DVE021_USB
+    case SC_CDROM_MODE_CHANGE:
+	case SC_CDROM_MODE_CHANGE_BS:
+        
+    
+        
+		
+
+
+
+
+
+
+
+		printk("%s SC_CDROM_MODE_CHANGE Called \n",__func__);
+		kobject_uevent_env(&usb_cdrom_device.this_device->kobj,
+				KOBJ_CHANGE, cdrom_mode_change);				
+        break;
+		
+	case SC_CDROM_TIMER_CANCEL:
+		printk("%s SC_CDROM_TIMER_CANCEL Called \n",__func__);
+		kobject_uevent_env(&usb_cdrom_device.this_device->kobj,
+				KOBJ_CHANGE, cdrom_timer_cancel);
+		break;		
+#endif
+
 	/*
 	 * Some mandatory commands that we recognize but don't implement.
 	 * They don't mean much in this setting.  It's left as an exercise
@@ -3012,6 +3071,18 @@ buffhds_first_it:
 	}
 	kfree(pathbuf);
 
+
+#ifdef CONFIG_DVE021_USB
+	curlun = common->luns;
+	if (curlun->cdrom) {
+		rc = misc_register(&usb_cdrom_device);
+		if (rc) {
+			printk(KERN_ERR "Initial USB cdrom mode driver  failed \n");
+			goto error_release;
+		}
+	}
+#endif
+
 	DBG(common, "I/O thread pid: %d\n", task_pid_nr(common->thread_task));
 
 	wake_up_process(common->thread_task);
@@ -3187,6 +3258,43 @@ static int fsg_bind_config(struct usb_composite_dev *cdev,
 		fsg_common_get(fsg->common);
 	return rc;
 }
+#ifdef CONFIG_DVE021_USB 
+static int usb_cdrom_bind_config(struct usb_composite_dev *cdev,
+			   struct usb_configuration *c,
+			   struct fsg_common *common)
+{
+	struct fsg_dev *csg;
+	int rc;
+
+	csg = kzalloc(sizeof *csg, GFP_KERNEL);
+	if (unlikely(!csg))
+		return -ENOMEM;
+
+	csg->function.name        = "usb_cdrom";
+	csg->function.strings     = fsg_strings_array;
+	csg->function.bind        = fsg_bind;
+	csg->function.unbind      = fsg_unbind;
+	csg->function.setup       = fsg_setup;
+	csg->function.set_alt     = fsg_set_alt;
+	csg->function.disable     = fsg_disable;
+
+	csg->common               = common;
+	
+
+
+
+
+
+
+
+	rc = usb_add_function(c, &csg->function);
+	if (unlikely(rc))
+		kfree(csg);
+	else
+		fsg_common_get(csg->common);
+	return rc;
+}
+#endif  
 
 static inline int __deprecated __maybe_unused
 fsg_add(struct usb_composite_dev *cdev, struct usb_configuration *c,

@@ -10,6 +10,11 @@
  * GNU General Public License for more details.
  *
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
+
 
 #include <linux/workqueue.h>
 #include <linux/delay.h>
@@ -634,6 +639,11 @@ static int msm_mctl_open(struct msm_cam_media_controller *p_mctl,
 			goto sensor_sdev_failed;
 		}
 
+        
+
+
+        
+
 		if (sync->actctrl.a_power_up)
 			rc = sync->actctrl.a_power_up(
 				sync->sdata->actuator_info);
@@ -709,6 +719,40 @@ static int msm_mctl_open(struct msm_cam_media_controller *p_mctl,
 	mutex_unlock(&sync->lock);
 	return rc;
 
+#if 1 
+ispif_init_failed:
+	if (p_mctl->isp_sdev && p_mctl->isp_sdev->isp_release){
+		p_mctl->isp_sdev->isp_release(&p_mctl->sync,
+				p_mctl->gemini_sdev);
+	}
+isp_open_failed:
+	if (camdev->is_csic) {
+		v4l2_subdev_call(p_mctl->csic_sdev, core, ioctl,
+			VIDIOC_MSM_CSIC_RELEASE, NULL);
+	}
+csic_init_failed:
+	if (camdev->is_csid) {
+		v4l2_subdev_call(p_mctl->csid_sdev, core, ioctl,
+			VIDIOC_MSM_CSID_RELEASE, NULL);
+	}
+csid_init_failed:
+	if (camdev->is_csiphy) {
+		v4l2_subdev_call(p_mctl->csiphy_sdev, core, ioctl,
+			VIDIOC_MSM_CSIPHY_RELEASE, NULL);
+	}
+csiphy_init_failed:
+	if ((sync->actctrl.a_power_up) && (sync->actctrl.a_power_down)){
+		sync->actctrl.a_power_down(
+			sync->sdata->actuator_info);
+	}
+act_power_up_failed:
+    
+
+
+    
+sensor_sdev_failed:
+	v4l2_subdev_call(p_mctl->sensor_sdev, core, s_power, 0);
+#else 
 ispif_init_failed:
 	if (p_mctl->isp_sdev && p_mctl->isp_sdev->isp_release)
 		p_mctl->isp_sdev->isp_release(&p_mctl->sync,
@@ -735,6 +779,7 @@ csiphy_init_failed:
 act_power_up_failed:
 	v4l2_subdev_call(p_mctl->sensor_sdev, core, s_power, 0);
 sensor_sdev_failed:
+#endif 
 register_sdev_failed:
 	wake_unlock(&p_mctl->sync.wake_lock);
 	mutex_unlock(&sync->lock);
@@ -786,6 +831,11 @@ static int msm_mctl_release(struct msm_cam_media_controller *p_mctl)
 			p_mctl->sync.sdata->actuator_info);
 
 	v4l2_subdev_call(p_mctl->sensor_sdev, core, s_power, 0);
+
+
+    
+
+    
 
 	wake_unlock(&p_mctl->sync.wake_lock);
 	return rc;

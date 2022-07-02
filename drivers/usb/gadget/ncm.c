@@ -24,6 +24,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 /* #define DEBUG */
 /* #define VERBOSE_DEBUG */
@@ -73,7 +77,11 @@ static struct usb_device_descriptor device_desc = {
 
 	.bcdUSB =		cpu_to_le16 (0x0200),
 
+#ifdef CONFIG_DVE021_USB 
+	.bDeviceClass = 	0,
+#else
 	.bDeviceClass =		USB_CLASS_COMM,
+#endif  
 	.bDeviceSubClass =	0,
 	.bDeviceProtocol =	0,
 	/* .bMaxPacketSize0 = f(hardware) */
@@ -82,8 +90,13 @@ static struct usb_device_descriptor device_desc = {
 	 * we support.  (As does bNumConfigurations.)  These values can
 	 * also be overridden by module parameters.
 	 */
+#ifdef CONFIG_DVE021_USB 
+	.idVendor = 	cpu_to_le16 (0x0409),
+	.idProduct =		cpu_to_le16 (0x0328),
+#else
 	.idVendor =		cpu_to_le16 (CDC_VENDOR_NUM),
 	.idProduct =		cpu_to_le16 (CDC_PRODUCT_NUM),
+#endif  
 	/* .bcdDevice = f(hardware) */
 	/* .iManufacturer = DYNAMIC */
 	/* .iProduct = DYNAMIC */

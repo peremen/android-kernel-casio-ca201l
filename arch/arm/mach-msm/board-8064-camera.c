@@ -10,6 +10,11 @@
  * GNU General Public License for more details.
  *
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
+
 
 #include <asm/mach-types.h>
 #include <linux/i2c.h>
@@ -124,6 +129,7 @@ static struct msm_gpiomux_config apq8064_cam_common_configs[] = {
 	},
 };
 
+#ifdef CONFIG_IMX074
 static struct msm_gpiomux_config apq8064_cam_2d_configs[] = {
 	{
 		.gpio = 10,
@@ -154,9 +160,10 @@ static struct msm_gpiomux_config apq8064_cam_2d_configs[] = {
 		},
 	},
 };
+#endif
 
 #ifdef CONFIG_MSM_CAMERA
-
+#ifdef CONFIG_IMX074
 static struct msm_bus_vectors cam_init_vectors[] = {
 	{
 		.src = MSM_BUS_MASTER_VFE,
@@ -343,6 +350,7 @@ static struct msm_camera_gpio_conf apq8064_back_cam_gpio_conf = {
 	.cam_gpio_set_tbl = apq8064_back_cam_gpio_set_tbl,
 	.cam_gpio_set_tbl_size = ARRAY_SIZE(apq8064_back_cam_gpio_set_tbl),
 };
+#endif
 
 #ifdef CONFIG_IMX074
 static struct msm_camera_sensor_flash_data flash_imx074 = {

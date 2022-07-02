@@ -1,3 +1,8 @@
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
+
 #ifndef _LINUX_KERNEL_H
 #define _LINUX_KERNEL_H
 
@@ -338,6 +343,17 @@ extern unsigned long get_taint(void);
 extern int root_mountflags;
 
 extern bool early_boot_irqs_disabled;
+
+
+#ifdef CONFIG_FATAL_INFO_HANDLE
+
+extern void set_kernel_panic_log(int enable);
+extern void set_kernel_panic_magic_num(void);
+extern void save_kernel_panic_log(char* p);
+
+#endif
+
+
 
 /* Values used for system_state */
 extern enum system_states {

@@ -1,3 +1,8 @@
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
+
 #ifndef _LINUX_SCHED_H
 #define _LINUX_SCHED_H
 
@@ -289,6 +294,12 @@ static inline void show_state(void)
 }
 
 extern void show_regs(struct pt_regs *);
+
+
+#ifdef CONFIG_FATAL_INFO_HANDLE
+extern void show_regs_fatal(struct pt_regs *);
+#endif
+
 
 /*
  * TASK is a pointer to the task whose backtrace we want to see (or NULL for current

@@ -10,6 +10,10 @@
  * GNU General Public License for more details.
  *
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -23,6 +27,12 @@
 #include <mach/irqs-8960.h>
 #include <mach/dma.h>
 #include <linux/dma-mapping.h>
+
+#if defined (CONFIG_FATAL_INFO_HANDLE )|| defined (CONFIG_ANDROID_RAM_CONSOLE)
+#include <asm/setup.h>
+#include <mach/board_gg3.h>
+#endif
+
 #include <mach/board.h>
 #include <mach/msm_iomap.h>
 #include <mach/msm_hsusb.h>
@@ -1033,11 +1043,20 @@ struct platform_device msm_device_bam_dmux = {
 	.id		= -1,
 };
 
+
+/*
 static struct msm_watchdog_pdata msm_watchdog_pdata = {
 	.pet_time = 10000,
 	.bark_time = 11000,
 	.has_secure = true,
 };
+*/
+static struct msm_watchdog_pdata msm_watchdog_pdata = {
+	.pet_time = 10000,
+	.bark_time = 30000,
+	.has_secure = true,
+};
+
 
 struct platform_device msm8960_device_watchdog = {
 	.name = "msm_watchdog",
@@ -1094,6 +1113,36 @@ int __init msm_add_sdcc(unsigned int controller, struct mmc_platform_data *plat)
 	return platform_device_register(pdev);
 }
 
+#ifdef CONFIG_ST21NFCA 
+static struct resource resources_qup_i2c_gsbi1[] = {
+	{
+		.name	= "gsbi_qup_i2c_addr",
+		.start	= MSM_GSBI1_PHYS,
+		.end	= MSM_GSBI1_PHYS + 4 - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{
+		.name	= "qup_phys_addr",
+		.start	= MSM_GSBI1_QUP_PHYS,
+		.end	= MSM_GSBI1_QUP_PHYS + MSM_QUP_SIZE - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{
+		.name	= "qup_err_intr",
+		.start	= MSM8960_GSBI1_QUP_IRQ,
+		.end	= MSM8960_GSBI1_QUP_IRQ,
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+struct platform_device msm8960_device_qup_i2c_gsbi1 = { 
+	.name		= "qup_i2c",
+	.id		= 1,
+	.num_resources	= ARRAY_SIZE(resources_qup_i2c_gsbi1),
+	.resource	= resources_qup_i2c_gsbi1,
+};
+#endif
+
 static struct resource resources_qup_i2c_gsbi4[] = {
 	{
 		.name	= "gsbi_qup_i2c_addr",
@@ -1141,6 +1190,20 @@ static struct resource resources_qup_i2c_gsbi3[] = {
 		.end	= GSBI3_QUP_IRQ,
 		.flags	= IORESOURCE_IRQ,
 	},
+
+	{
+		.name	= "i2c_clk",
+		.start	= 96,
+		.end	= 96,
+		.flags	= IORESOURCE_IO,
+	},
+	{
+		.name	= "i2c_sda",
+		.start	= 95,
+		.end	= 95,
+		.flags	= IORESOURCE_IO,
+	},
+
 };
 
 struct platform_device msm8960_device_qup_i2c_gsbi3 = {
@@ -1149,6 +1212,37 @@ struct platform_device msm8960_device_qup_i2c_gsbi3 = {
 	.num_resources	= ARRAY_SIZE(resources_qup_i2c_gsbi3),
 	.resource	= resources_qup_i2c_gsbi3,
 };
+
+
+#ifdef CONFIG_DVE068_AUDIO
+static struct resource resources_qup_i2c_gsbi8[] = {
+	{
+		.name	= "gsbi_qup_i2c_addr",
+		.start	= MSM_GSBI8_PHYS,
+		.end	= MSM_GSBI8_PHYS + 4 - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{
+		.name	= "qup_phys_addr",
+		.start	= MSM_GSBI8_QUP_PHYS,
+		.end	= MSM_GSBI8_QUP_PHYS + MSM_QUP_SIZE - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{
+		.name	= "qup_err_intr",
+		.start	= GSBI8_QUP_IRQ,
+		.end	= GSBI8_QUP_IRQ,
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+struct platform_device msm8960_device_qup_i2c_gsbi8 = {
+	.name		= "qup_i2c",
+	.id		= 8,
+	.num_resources	= ARRAY_SIZE(resources_qup_i2c_gsbi8),
+	.resource	= resources_qup_i2c_gsbi8,
+};
+#endif 
 
 static struct resource resources_qup_i2c_gsbi10[] = {
 	{
@@ -1548,6 +1642,7 @@ struct platform_device msm8960_device_ssbi_pmic = {
 	.num_resources  = ARRAY_SIZE(resources_ssbi_pmic),
 };
 
+#ifndef CONFIG_ST21NFCA 
 static struct resource resources_qup_spi_gsbi1[] = {
 	{
 		.name   = "spi_base",
@@ -1605,6 +1700,69 @@ struct platform_device msm8960_device_qup_spi_gsbi1 = {
 	.num_resources	= ARRAY_SIZE(resources_qup_spi_gsbi1),
 	.resource	= resources_qup_spi_gsbi1,
 };
+#endif
+
+
+#ifdef CONFIG_ANDROID_RAM_CONSOLE
+static struct resource ram_console_resource[] = {
+	{
+		.name = "ram_console",
+		.flags = IORESOURCE_MEM,
+	}
+};
+static struct platform_device ram_console_device = {
+	.name = "ram_console",
+	.id = -1,
+	.num_resources = ARRAY_SIZE(ram_console_resource),
+	.resource = ram_console_resource,
+};
+
+void __init add_ramconsole_devices(void)
+{
+	struct resource* res = ram_console_resource;
+	struct membank* bank = &meminfo.bank[0];
+
+	res->start = PHYS_OFFSET + bank->size;
+	res->end = res->start + ANROID_RAM_CONSOLE_SIZE -1;
+	printk("ram console start addr : 0x%x\n", res->start);
+	printk("ram console end addr   : 0x%x\n", res->end);
+
+	platform_device_register(&ram_console_device);
+}
+#endif
+
+
+#ifdef CONFIG_FATAL_INFO_HANDLE
+static struct resource fatal_info_resource[] = {
+	{
+		.name = "fatal_info",
+		.flags = IORESOURCE_MEM,
+	}
+};
+
+static struct platform_device fatal_info_handler_device = {
+	.name = "fatal-info-handler",
+	.num_resources = ARRAY_SIZE(fatal_info_resource),
+	.resource = fatal_info_resource,
+	.dev = {
+		.platform_data = NULL,
+	}
+};
+
+void __init add_fatal_info_handler_devices(void)
+{
+	struct resource* res = fatal_info_resource;
+	struct membank* bank = &meminfo.bank[0];
+
+	res->start = bank->start + bank->size + ANROID_RAM_CONSOLE_SIZE;
+	res->end = res->start + CRASH_LOG_SIZE - 1;
+
+	printk(KERN_INFO "fatal info handler start addr : %x\n", res->start);
+	printk(KERN_INFO "fatal info handler end addr  : %x\n", res->end);
+
+	platform_device_register(&fatal_info_handler_device);
+}
+#endif
 
 struct platform_device msm_pcm = {
 	.name	= "msm-pcm-dsp",
@@ -2070,7 +2228,11 @@ static struct clk_lookup msm_clocks_8960_dummy[] = {
 	CLK_DUMMY("core_clk",	GSBI10_UART_CLK,	NULL, OFF),
 	CLK_DUMMY("core_clk",	GSBI11_UART_CLK,	NULL, OFF),
 	CLK_DUMMY("core_clk",	GSBI12_UART_CLK,	NULL, OFF),
+#ifndef CONFIG_ST21NFCA
 	CLK_DUMMY("core_clk",	GSBI1_QUP_CLK,		"spi_qsd.0", OFF),
+#else
+	CLK_DUMMY("core_clk",	GSBI1_QUP_CLK,		"qup_i2c.1", OFF),
+#endif
 	CLK_DUMMY("core_clk",	GSBI2_QUP_CLK,		NULL, OFF),
 	CLK_DUMMY("core_clk",	GSBI3_QUP_CLK,		NULL, OFF),
 	CLK_DUMMY("core_clk",	GSBI4_QUP_CLK,		"qup_i2c.4", OFF),
@@ -2102,7 +2264,11 @@ static struct clk_lookup msm_clocks_8960_dummy[] = {
 	CLK_DUMMY("sys_clk",		USB_FS2_SYS_CLK,	NULL, OFF),
 	CLK_DUMMY("iface_clk",		CE2_CLK,	     "qce.0", OFF),
 	CLK_DUMMY("core_clk",		CE1_CORE_CLK,	     "qce.0", OFF),
+#ifndef CONFIG_ST21NFCA
 	CLK_DUMMY("iface_clk",		GSBI1_P_CLK, "spi_qsd.0", OFF),
+#else
+	CLK_DUMMY("iface_clk",		GSBI1_P_CLK, "qup_i2c.1", OFF),
+#endif
 	CLK_DUMMY("iface_clk",		GSBI2_P_CLK,
 						  "msm_serial_hsl.0", OFF),
 	CLK_DUMMY("iface_clk",		GSBI3_P_CLK,		NULL, OFF),

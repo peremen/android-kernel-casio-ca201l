@@ -9,6 +9,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <linux/slab.h>
 #include <linux/init.h>
@@ -678,7 +682,10 @@ static int diagchar_write(struct file *file, const char __user *buf,
 {
 	int err, ret = 0, pkt_type;
 #ifdef DIAG_DEBUG
-	int length = 0, i;
+
+
+	int i;
+
 #endif
 	struct diag_send_desc_type send = { NULL, NULL, DIAG_STATE_START, 0 };
 	struct diag_hdlc_dest_type enc = { NULL, NULL, 0 };
@@ -759,6 +766,8 @@ static int diagchar_write(struct file *file, const char __user *buf,
 	send.pkt = buf_copy;
 	send.last = (void *)(buf_copy + payload_size - 1);
 	send.terminate = 1;
+
+#if 0	
 #ifdef DIAG_DEBUG
 	pr_debug("diag: Already used bytes in buffer %d, and"
 	" incoming payload size is %d\n", driver->used, payload_size);
@@ -769,6 +778,8 @@ static int diagchar_write(struct file *file, const char __user *buf,
 			length++;
 	}
 #endif
+#endif
+
 	mutex_lock(&driver->diagchar_mutex);
 	if (!buf_hdlc)
 		buf_hdlc = diagmem_alloc(driver, HDLC_OUT_BUF_SIZE,

@@ -9,6 +9,10 @@
  *
  *  You may use this code as per GPL version 2
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #ifndef __LINUX_POWER_SUPPLY_H__
 #define __LINUX_POWER_SUPPLY_H__
@@ -124,7 +128,15 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_TIME_TO_FULL_AVG,
 	POWER_SUPPLY_PROP_TYPE, /* use power_supply.type instead */
 	POWER_SUPPLY_PROP_SCOPE,
+	
+	POWER_SUPPLY_PROP_INVALID,
+	
+	POWER_SUPPLY_PROP_VIN_CHECK, 
+	
 	/* Properties of type `const char *' */
+	POWER_SUPPLY_PROP_CRADLE,
+	POWER_SUPPLY_PROP_WIRELESS,
+	POWER_SUPPLY_PROP_CHG_DONE_CHECK,
 	POWER_SUPPLY_PROP_MODEL_NAME,
 	POWER_SUPPLY_PROP_MANUFACTURER,
 	POWER_SUPPLY_PROP_SERIAL_NUMBER,
@@ -216,6 +228,8 @@ extern int power_supply_set_current_limit(struct power_supply *psy, int limit);
 extern int power_supply_set_online(struct power_supply *psy, bool enable);
 extern int power_supply_set_scope(struct power_supply *psy, int scope);
 extern int power_supply_set_charge_type(struct power_supply *psy, int type);
+
+extern void power_supply_usb_detection(bool on);
 
 #if defined(CONFIG_POWER_SUPPLY) || defined(CONFIG_POWER_SUPPLY_MODULE)
 extern int power_supply_is_system_supplied(void);

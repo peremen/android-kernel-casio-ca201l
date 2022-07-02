@@ -10,6 +10,10 @@
  * GNU General Public License for more details.
  *
  */
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
 
 #include <linux/uaccess.h>
 #include <linux/interrupt.h>
@@ -688,11 +692,12 @@ void msm_vpe_subdev_release(struct platform_device *pdev)
 		pr_err("%s: no VPE object to release", __func__);
 		return;
 	}
-
-	vpe_reset();
+	if (vpe_ctrl->vpebase != NULL) {
+		vpe_reset();
+		iounmap(vpe_ctrl->vpebase);
+		vpe_ctrl->vpebase = NULL;
+	}
 	vpe_disable();
-	iounmap(vpe_ctrl->vpebase);
-	vpe_ctrl->vpebase = NULL;
 	atomic_set(&vpe_init_done, 0);
 }
 EXPORT_SYMBOL(msm_vpe_subdev_release);

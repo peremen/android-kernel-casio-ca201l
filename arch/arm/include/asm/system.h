@@ -1,3 +1,8 @@
+/***********************************************************************/
+/* Modified by                                                         */
+/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+/***********************************************************************/
+
 #ifndef __ASM_ARM_SYSTEM_H
 #define __ASM_ARM_SYSTEM_H
 
@@ -98,6 +103,10 @@ extern asmlinkage void c_backtrace(unsigned long fp, int pmode);
 struct mm_struct;
 extern void show_pte(struct mm_struct *mm, unsigned long addr);
 extern void __show_regs(struct pt_regs *);
+
+
+extern void __show_regs_fatal(struct pt_regs * regs);
+
 
 extern int cpu_architecture(void);
 extern void cpu_init(void);
