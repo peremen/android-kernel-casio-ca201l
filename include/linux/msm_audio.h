@@ -361,19 +361,15 @@ struct msm_acdb_cmd_device {
 	uint32_t     *phys_buf;           /* Physical Address of data */
 };
 
+#define WCD9310_IOCTL_MAGIC	'w'
+#define WCD9310_GET_ID		_IOW(WCD9310_IOCTL_MAGIC, 1, unsigned)
 
-#define	WCD9310_IOCTL_MAGIC	'w'
-#define	WCD9310_GET_ID  _IOW(WCD9310_IOCTL_MAGIC, 1, unsigned)
+#define YDA160_IOCTL_MAGIC	'y'
+#define YDA160_GET_ID		_IOW(YDA160_IOCTL_MAGIC, 1, unsigned)
 
-#define	YDA160_IOCTL_MAGIC	'y'
-#define	YDA160_GET_ID       _IOW(YDA160_IOCTL_MAGIC, 1, unsigned)
-
-#define	ES310_IOCTL_MAGIC	'e'
-#define	ES310_GET_ID            _IOW(ES310_IOCTL_MAGIC, 1, unsigned)
-#define	ES310_MIC_BIAS_IOCTL    _IOW(ES310_IOCTL_MAGIC, 2, unsigned)
-#define	ES310_MIC_SETPATH    	_IOW(ES310_IOCTL_MAGIC, 3, unsigned) 
-
-
-
+#define ES310_IOCTL_MAGIC	'e'
+#define ES310_GET_ID		_IOW(ES310_IOCTL_MAGIC, 1, unsigned)
+#define ES310_MIC_BIAS_IOCTL	_IOW(ES310_IOCTL_MAGIC, 2, unsigned)
+#define ES310_MIC_SETPATH	_IOW(ES310_IOCTL_MAGIC, 3, unsigned)
 
 #endif

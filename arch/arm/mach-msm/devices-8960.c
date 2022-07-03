@@ -27,12 +27,10 @@
 #include <mach/irqs-8960.h>
 #include <mach/dma.h>
 #include <linux/dma-mapping.h>
-
-#if defined (CONFIG_FATAL_INFO_HANDLE )|| defined (CONFIG_ANDROID_RAM_CONSOLE)
+#if defined(CONFIG_FATAL_INFO_HANDLE) || defined(CONFIG_ANDROID_RAM_CONSOLE)
 #include <asm/setup.h>
 #include <mach/board_gg3.h>
 #endif
-
 #include <mach/board.h>
 #include <mach/msm_iomap.h>
 #include <mach/msm_hsusb.h>
@@ -1043,20 +1041,11 @@ struct platform_device msm_device_bam_dmux = {
 	.id		= -1,
 };
 
-
-/*
-static struct msm_watchdog_pdata msm_watchdog_pdata = {
-	.pet_time = 10000,
-	.bark_time = 11000,
-	.has_secure = true,
-};
-*/
 static struct msm_watchdog_pdata msm_watchdog_pdata = {
 	.pet_time = 10000,
 	.bark_time = 30000,
 	.has_secure = true,
 };
-
 
 struct platform_device msm8960_device_watchdog = {
 	.name = "msm_watchdog",
@@ -1190,7 +1179,6 @@ static struct resource resources_qup_i2c_gsbi3[] = {
 		.end	= GSBI3_QUP_IRQ,
 		.flags	= IORESOURCE_IRQ,
 	},
-
 	{
 		.name	= "i2c_clk",
 		.start	= 96,
@@ -1203,7 +1191,6 @@ static struct resource resources_qup_i2c_gsbi3[] = {
 		.end	= 95,
 		.flags	= IORESOURCE_IO,
 	},
-
 };
 
 struct platform_device msm8960_device_qup_i2c_gsbi3 = {
@@ -1212,7 +1199,6 @@ struct platform_device msm8960_device_qup_i2c_gsbi3 = {
 	.num_resources	= ARRAY_SIZE(resources_qup_i2c_gsbi3),
 	.resource	= resources_qup_i2c_gsbi3,
 };
-
 
 #ifdef CONFIG_DVE068_AUDIO
 static struct resource resources_qup_i2c_gsbi8[] = {
@@ -1730,7 +1716,6 @@ void __init add_ramconsole_devices(void)
 	platform_device_register(&ram_console_device);
 }
 #endif
-
 
 #ifdef CONFIG_FATAL_INFO_HANDLE
 static struct resource fatal_info_resource[] = {

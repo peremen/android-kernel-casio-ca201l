@@ -34,11 +34,11 @@
 #include "../codecs/wcd9310.h"
 
 #ifdef CONFIG_DVE068_AUDIO
-#include "../codecs/es310.h" 
+#include "../codecs/es310.h"
 #include <../codecs/yda160.h>
 #endif
 
-#include <mach/board_gg3.h> 
+#include <mach/board_gg3.h>
 
 
 /* 8960 machine driver */
@@ -73,7 +73,7 @@
 
 #define JACK_DETECT_GPIO 38
 #define JACK_DETECT_INT PM8921_GPIO_IRQ(PM8921_IRQ_BASE, JACK_DETECT_GPIO)
-#define GPIO_DETECT_USED true	
+#define GPIO_DETECT_USED true
 
 static u32 top_spk_pamp_gpio  = PM8921_GPIO_PM_TO_SYS(18);
 static u32 bottom_spk_pamp_gpio = PM8921_GPIO_PM_TO_SYS(19);
@@ -118,26 +118,12 @@ static struct tabla_mbhc_config mbhc_cfg = {
 	.mclk_rate = TABLA_EXT_CLK_RATE,
 	.gpio = 0,
 	.gpio_irq = 0,
-	.gpio_level_insert = 0,	
+	.gpio_level_insert = 0,
 };
 
 static struct mutex cdc_mclk_mutex;
 
-#if 0 
-#define ES310_JACK_DETECT_GPIO PM8921_GPIO_PM_TO_SYS(38)
-static struct snd_soc_jack_gpio hs_jack_gpios[] = {
-	{
-		.gpio = ES310_JACK_DETECT_GPIO,
-		.name = "es310-headset-detect-gpio",
-		.report = SND_JACK_HEADSET,
-		.invert = 1,
-		.debounce_time = 200,
-	},
-};
-#endif
-
-
-#ifndef CONFIG_DVE068_AUDIO 
+#ifndef CONFIG_DVE068_AUDIO
 static void msm8960_enable_ext_spk_amp_gpio(u32 spk_amp_gpio)
 {
 	int ret = 0;
@@ -326,7 +312,7 @@ static int msm8960_set_spk(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-#ifndef CONFIG_DVE068_AUDIO 
+#ifndef CONFIG_DVE068_AUDIO
 static int msm8960_spkramp_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *k, int event)
 {
@@ -428,13 +414,13 @@ static const struct snd_soc_dapm_widget msm8960_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("MCLK",  SND_SOC_NOPM, 0, 0,
 	msm8960_mclk_event, SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 
-    #ifndef CONFIG_DVE068_AUDIO 
+#ifndef CONFIG_DVE068_AUDIO
 	SND_SOC_DAPM_SPK("Ext Spk Bottom Pos", msm8960_spkramp_event),
 	SND_SOC_DAPM_SPK("Ext Spk Bottom Neg", msm8960_spkramp_event),
 
 	SND_SOC_DAPM_SPK("Ext Spk Top Pos", msm8960_spkramp_event),
 	SND_SOC_DAPM_SPK("Ext Spk Top Neg", msm8960_spkramp_event),
-	#endif
+#endif
 
 	SND_SOC_DAPM_MIC("Handset Mic", NULL),
 	SND_SOC_DAPM_MIC("Headset Mic", NULL),
@@ -456,14 +442,14 @@ static const struct snd_soc_dapm_route common_audio_map[] = {
 	{"RX_BIAS", NULL, "MCLK"},
 	{"LDO_H", NULL, "MCLK"},
 
-    #ifndef CONFIG_DVE068_AUDIO 
+#ifndef CONFIG_DVE068_AUDIO
 	/* Speaker path */
 	{"Ext Spk Bottom Pos", NULL, "LINEOUT1"},
 	{"Ext Spk Bottom Neg", NULL, "LINEOUT3"},
 
 	{"Ext Spk Top Pos", NULL, "LINEOUT2"},
 	{"Ext Spk Top Neg", NULL, "LINEOUT4"},
-	#endif
+#endif
 
 	/* Microphone path */
 	{"AMIC1", NULL, "MIC BIAS1 Internal1"},
@@ -675,7 +661,7 @@ static void *def_tabla_mbhc_cal(void)
 #undef S
 #define S(X, Y) ((TABLA_MBHC_CAL_PLUG_TYPE_PTR(tabla_cal)->X) = (Y))
 	S(v_no_mic, 30);
-	S(v_hs_max, 2700);	
+	S(v_hs_max, 2700);
 #undef S
 #define S(X, Y) ((TABLA_MBHC_CAL_BTN_DET_PTR(tabla_cal)->X) = (Y))
 	S(c[0], 62);
@@ -685,38 +671,15 @@ static void *def_tabla_mbhc_cal(void)
 	S(mbhc_nsc, 11);
 	S(n_btn_meas, 1);
 	S(n_btn_con, 2);
-#if 0	
-	S(num_btn, TABLA_MBHC_DEF_BUTTONS);
-#else
 	S(num_btn, 1);
-#endif	
 	S(v_btn_press_delta_sta, 100);
 	S(v_btn_press_delta_cic, 50);
 #undef S
 	btn_cfg = TABLA_MBHC_CAL_BTN_DET_PTR(tabla_cal);
 	btn_low = tabla_mbhc_cal_btn_det_mp(btn_cfg, TABLA_BTN_DET_V_BTN_LOW);
 	btn_high = tabla_mbhc_cal_btn_det_mp(btn_cfg, TABLA_BTN_DET_V_BTN_HIGH);
-#if 0	
-	btn_low[0] = -50;
-	btn_high[0] = 20;
-	btn_low[1] = 21;
-	btn_high[1] = 62;
-	btn_low[2] = 63;
-	btn_high[2] = 104;
-	btn_low[3] = 105;
-	btn_high[3] = 143;
-	btn_low[4] = 144;
-	btn_high[4] = 181;
-	btn_low[5] = 182;
-	btn_high[5] = 218;
-	btn_low[6] = 219;
-	btn_high[6] = 254;
-	btn_low[7] = 255;
-	btn_high[7] = 330;
-#else
 	btn_low[0] = -50;
 	btn_high[0] = 330;
-#endif	
 	n_ready = tabla_mbhc_cal_btn_det_mp(btn_cfg, TABLA_BTN_DET_N_READY);
 	n_ready[0] = 80;
 	n_ready[1] = 68;
@@ -735,12 +698,10 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 	int err;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
-        int hw_rev=0; 
+        int hw_rev=0;
 	struct pm_gpio jack_gpio_cfg = {
 		.direction = PM_GPIO_DIR_IN,
-		
 		.pull = PM_GPIO_PULL_UP_31P5,
-		
 		.function = PM_GPIO_FUNC_NORMAL,
 		.vin_sel = 2,
 		.inv_int_pol = 0,
@@ -774,18 +735,15 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 
 	snd_soc_dapm_sync(dapm);
 #endif
-
-#ifdef CONFIG_DVE068_AUDIO 
-    err = es310_add_controls(codec); 
-    if (err < 0)
-	{
-      pr_debug("es310_add_controls register fail \n");
+#ifdef CONFIG_DVE068_AUDIO
+	err = es310_add_controls(codec);
+	if (err < 0) {
+		pr_debug("es310_add_controls register fail \n");
 	}
-    err = yda160_add_controls(codec); 
-    if (err < 0)
-	{
-      pr_debug("es310_add_controls register fail \n");
-	}	
+	err = yda160_add_controls(codec);
+	if (err < 0) {
+		pr_debug("es310_add_controls register fail \n");
+	}
 #endif
 
 	err = snd_soc_jack_new(codec, "Headset Jack",
@@ -804,26 +762,13 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 		return err;
 	}
 
-#if 0 
-     err = snd_soc_jack_add_gpios(&hs_jack,
-                     ARRAY_SIZE(hs_jack_gpios),
-				     hs_jack_gpios);
-	if (err) {
-		pr_err("failed to add jack deteck gpio\n");
-		return err;
-	}	
-
-#endif
-
-    
-    hw_rev = get_m7system_board_revision();
-    pr_debug("%s() hw_rev %d\n", __func__,hw_rev);
-    if(hw_rev <= M7SYSTEM_REV_V4A) 
-    {
+	hw_rev = get_m7system_board_revision();
+	pr_debug("%s() hw_rev %d\n", __func__, hw_rev);
+	if (hw_rev <= M7SYSTEM_REV_V4A) {
 		mbhc_cfg.micbias = TABLA_MICBIAS1;
 	}
-	
-	if (GPIO_DETECT_USED) {	
+
+	if (GPIO_DETECT_USED) {
 		mbhc_cfg.gpio = PM8921_GPIO_PM_TO_SYS(JACK_DETECT_GPIO);
 		mbhc_cfg.gpio_irq = JACK_DETECT_INT;
 	}
@@ -868,16 +813,6 @@ static struct snd_soc_dsp_link bidir_hl_media = {
 	},
 };
 
-#if 0 
-static struct snd_soc_dsp_link hdmi_rx_hl = {
-	.playback = true,
-	.trigger = {
-		SND_SOC_DSP_TRIGGER_POST,
-		SND_SOC_DSP_TRIGGER_POST
-	},
-};
-#endif
-
 static int msm8960_slim_0_rx_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 			struct snd_pcm_hw_params *params)
 {
@@ -921,25 +856,6 @@ static int msm8960_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 
 	return 0;
 }
-
-#if 0 
-static int msm8960_hdmi_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
-					struct snd_pcm_hw_params *params)
-{
-	struct snd_interval *rate = hw_param_interval(params,
-					SNDRV_PCM_HW_PARAM_RATE);
-
-	struct snd_interval *channels = hw_param_interval(params,
-					SNDRV_PCM_HW_PARAM_CHANNELS);
-
-	pr_debug("%s channels->min %u channels->max %u ()\n", __func__,
-			channels->min, channels->max);
-
-	rate->min = rate->max = 48000;
-
-	return 0;
-}
-#endif
 
 static int msm8960_btsco_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 					struct snd_pcm_hw_params *params)
@@ -1178,21 +1094,6 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
 		.ignore_suspend = 1,
 	},
-	
-	#if 0 
-	/* HDMI Hostless */
-	{
-		.name = "HDMI_RX_HOSTLESS",
-		.stream_name = "HDMI_RX_HOSTLESS",
-		.cpu_dai_name = "HDMI_HOSTLESS",
-		.platform_name = "msm-pcm-hostless",
-		.dynamic = 1,
-		.dsp_link = &hdmi_rx_hl,
-		.no_host_mode = SND_SOC_DAI_LINK_NO_HOST,
-		.no_codec = 1,
-		.ignore_suspend = 1,
-	},
-	#endif
 	/* Backend BT/FM DAI Links */
 	{
 		.name = LPASS_BE_INT_BT_SCO_RX,
@@ -1239,23 +1140,6 @@ static struct snd_soc_dai_link msm8960_dai_common[] = {
 		.be_id = MSM_BACKEND_DAI_INT_FM_TX,
 		.be_hw_params_fixup = msm8960_be_hw_params_fixup,
 	},
-	
-	#if 0
-	/* HDMI BACK END DAI Link */
-	{
-		.name = LPASS_BE_HDMI,
-		.stream_name = "HDMI Playback",
-		.cpu_dai_name = "msm-dai-q6-hdmi.8",
-		.platform_name = "msm-pcm-routing",
-		.codec_name     = "msm-stub-codec.1",
-		.codec_dai_name = "msm-stub-rx",
-		.no_pcm = 1,
-		.no_codec = 1,
-		.be_id = MSM_BACKEND_DAI_HDMI_RX,
-		.be_hw_params_fixup = msm8960_hdmi_be_hw_params_fixup,
-	},
-	#endif
-	
 	/* Backend AFE DAI Links */
 	{
 		.name = LPASS_BE_AFE_PCM_RX,

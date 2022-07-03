@@ -3,7 +3,6 @@
 #/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 #/***********************************************************************/
 
-
 config MSM_CAMERA_V4L2
         bool "MSM Camera V4L2 Interface"
         depends on MSM_CAMERA

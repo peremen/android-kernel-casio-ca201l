@@ -639,11 +639,6 @@ static int msm_mctl_open(struct msm_cam_media_controller *p_mctl,
 			goto sensor_sdev_failed;
 		}
 
-        
-
-
-        
-
 		if (sync->actctrl.a_power_up)
 			rc = sync->actctrl.a_power_up(
 				sync->sdata->actuator_info);
@@ -831,11 +826,6 @@ static int msm_mctl_release(struct msm_cam_media_controller *p_mctl)
 			p_mctl->sync.sdata->actuator_info);
 
 	v4l2_subdev_call(p_mctl->sensor_sdev, core, s_power, 0);
-
-
-    
-
-    
 
 	wake_unlock(&p_mctl->sync.wake_lock);
 	return rc;

@@ -14,7 +14,6 @@
 /* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 /***********************************************************************/
 
-
 #ifndef __ARCH_ARM_MACH_MSM_BOARD_MSM8960_H
 #define __ARCH_ARM_MACH_MSM_BOARD_MSM8960_H
 
@@ -79,12 +78,9 @@ enum {
 extern struct sx150x_platform_data msm8960_sx150x_data[];
 extern struct msm_camera_board_info msm8960_camera_board_info;
 extern unsigned char hdmi_is_primary;
-
 #ifdef CONFIG_MT9M113
 extern struct msm_camera_board_info msm8960_camera_board_info_sub;
 #endif 
-
-
 
 int get_m7system_board_revision(void);
 void msm8960_init_cam(void);

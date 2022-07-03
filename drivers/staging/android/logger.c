@@ -37,8 +37,8 @@
 
 #ifdef REMOVE_LOG
 enum {
-    DEBUG_DISABLE_LOGGING = 1U << 0,
-    DEBUG_DETAIL = 1U << 2,
+	DEBUG_DISABLE_LOGGING = 1U << 0,
+	DEBUG_DETAIL = 1U << 2,
 };
 static int debug_mask = 0;
 int remove_log_flag = 0;
@@ -348,19 +348,17 @@ ssize_t logger_aio_write(struct kiocb *iocb, const struct iovec *iov,
 	ssize_t ret = 0;
 
 #ifdef REMOVE_LOG
-	if(debug_mask & DEBUG_DISABLE_LOGGING)
-	{
+	if (debug_mask & DEBUG_DISABLE_LOGGING) {
 		remove_log_flag = 1;
-	}
-	else
-	{
+	} else {
 		remove_log_flag = 0;
 	}
 
-	if(1 == remove_log_flag)
-	{
-		if(ret == 0) return 0;
-		if(ret != 0) return 0;
+	if (1 == remove_log_flag) {
+		if (ret == 0)
+			return 0;
+		if (ret != 0)
+			return 0;
 	}
 #endif
 

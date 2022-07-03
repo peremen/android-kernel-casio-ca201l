@@ -2,7 +2,6 @@
 #/* Modified by                                                         */
 #/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 #/***********************************************************************/
-
 # Backlight & LCD drivers
 
 obj-$(CONFIG_LCD_CLASS_DEVICE)     += lcd.o

@@ -1,13 +1,12 @@
-#/***********************************************************************/
-#/* Modified by                                                         */
-#/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
-#/***********************************************************************/
-
 #
 # USB OTG infrastructure may be needed for peripheral-only, host-only,
 # or OTG-capable configurations when OTG transceivers or controllers
 # are used.
 #
+#/***********************************************************************/
+#/* Modified by                                                         */
+#/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
+#/***********************************************************************/
 
 comment "OTG and related infrastructure"
 

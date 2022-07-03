@@ -2,7 +2,6 @@
 #/* Modified by                                                         */
 #/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 #/***********************************************************************/
-
 # MSM CPU/CODEC DAI Support
 snd-soc-msm-dai-objs := msm-dai.o
 obj-$(CONFIG_SND_MSM_DAI_SOC) += snd-soc-msm-dai.o

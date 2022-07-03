@@ -193,10 +193,7 @@ static int msm_voip_volume_put(struct snd_kcontrol *kcontrol,
 	int volume = ucontrol->value.integer.value[0];
 
 	pr_debug("%s: volume: %d\n", __func__, volume);
-
-	 voip_info.cache_vol = volume;
-	 
-
+	voip_info.cache_vol = volume;
 	voc_set_rx_vol_index(voc_get_session_id(VOIP_SESSION_NAME),
 			     RX_PATH,
 			     volume);
@@ -768,7 +765,6 @@ static int msm_pcm_prepare(struct snd_pcm_substream *substream)
 		voc_set_rx_vol_index(voc_get_session_id(VOIP_SESSION_NAME),
 			RX_PATH,
 			voip_info.cache_vol);
-		
 
 		prtd->state = VOIP_STARTED;
 	}

@@ -656,8 +656,7 @@ int efi_partition(struct parsed_partitions *state)
 	proc_emmc = create_proc_entry("emmc", 0444, NULL);
 	if (proc_emmc == NULL) {
 		pr_debug("/proc/emmc cannot create.\n");
-	}
-	else {
+	} else {
 		proc_emmc->read_proc = proc_emmc_read;
 		proc_emmc->write_proc = NULL;
 		pr_debug("/proc/emmc created.\n");
@@ -709,8 +708,8 @@ int efi_partition(struct parsed_partitions *state)
 			for (tmp_count = 1; state->pp_buf[tmp_count] != ':'; tmp_count++)
 				dev_name[tmp_count - 1] = state->pp_buf[tmp_count];
 			dev_name[tmp_count - 1] = '\0';
-			sprintf(tmp, "%s%s%d: %llx %x \"%s\"\n", 
-				dev_name, state->name, i + 1, 
+			sprintf(tmp, "%s%s%d: %llx %x \"%s\"\n",
+				dev_name, state->name, i + 1,
 				size * 512, state->bdev->bd_block_size, info->volname);
 			strcat(emmc_partition_info, tmp);
 		}

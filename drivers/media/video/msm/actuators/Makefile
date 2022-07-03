@@ -3,7 +3,6 @@
 #/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 #/***********************************************************************/
 
-
 GCC_VERSION      := $(shell $(CONFIG_SHELL) $(PWD)/scripts/gcc-version.sh $(CROSS_COMPILE)gcc)
 EXTRA_CFLAGS += -Idrivers/media/video/msm
 EXTRA_CFLAGS += -Idrivers/media/video/msm/io

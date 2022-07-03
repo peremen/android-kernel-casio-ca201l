@@ -33,8 +33,6 @@
 
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 
-
-
 #ifdef CONFIG_MACH_MSM8960_DVE068
 #define MSM_FB_PRIM_BUF_SIZE 	(roundup((800 * 480 * 4), 4096) * 3) 
 #else
@@ -350,28 +348,15 @@ static struct regulator *reg_l2, *reg_l29;
 
 static int mipi_dsi_cdp_panel_power(int on)
 {
-
-
-#if 0
-	static struct regulator *reg_l8, *reg_l23, *reg_l2;
-	
-	
-	static struct regulator *reg_l29;
-	
-#else
 	static struct regulator *reg_l8, *reg_l23;
-#endif
-
-	
-	
-	static int gpio24, gpio43; 
-	int rc,board_revision;
+	static int gpio24, gpio43;
+	int rc, board_revision;
 
 	gpio24 = PM8921_GPIO_PM_TO_SYS(24);
 	gpio43 = PM8921_GPIO_PM_TO_SYS(43);
 
 	board_revision = get_m7system_board_revision();
-	
+
 	pr_debug("%s: state : %d\n", __func__, on);
 
 	if (!dsi_power_on) {
@@ -397,27 +382,18 @@ static int mipi_dsi_cdp_panel_power(int on)
 				PTR_ERR(reg_l2));
 			return -ENODEV;
 		}
-		
-		reg_l29 = regulator_get(NULL,"8921_l29");
-		if (IS_ERR(reg_l29)) 
-		{
-   			pr_err("could not get 8921_l29, rc = %ld\n",
-            PTR_ERR(reg_l29));
-	        return -ENODEV;
-		 }
+		reg_l29 = regulator_get(NULL, "8921_l29");
+		if (IS_ERR(reg_l29)) {
+			pr_err("could not get 8921_l29, rc = %ld\n",
+				PTR_ERR(reg_l29));
+			return -ENODEV;
+		}
 		rc = regulator_set_voltage(reg_l29, 1800000, 1800000);
-	    if (rc) {
-    	    pr_err("set_voltage 8921_l29 failed, rc=%d\n", rc);
-        	return -EINVAL;
-	    }
-		
-        
-		#if 1
-        rc = regulator_set_voltage(reg_l8, 2800000, 2800000);
-		#else
-		rc = regulator_set_voltage(reg_l8, 2800000, 3000000);
-		#endif
-		
+		if (rc) {
+			pr_err("set_voltage 8921_l29 failed, rc=%d\n", rc);
+			return -EINVAL;
+		}
+		rc = regulator_set_voltage(reg_l8, 2800000, 2800000);
 		if (rc) {
 			pr_err("set_voltage l8 failed, rc=%d\n", rc);
 			return -EINVAL;
@@ -438,22 +414,17 @@ static int mipi_dsi_cdp_panel_power(int on)
 			return -ENODEV;
 		}
 
-		if((board_revision != 3) && (board_revision != 8) && (board_revision != 9)) 
-		{
-			
+		if ((board_revision != 3) && (board_revision != 8) && (board_revision != 9)) {
 			gpio24 = PM8921_GPIO_PM_TO_SYS(24);
 			rc = gpio_request(gpio24, "bl_enable");
 			if (rc) {
 				pr_err("request gpio 24 failed, rc=%d\n", rc);
 				return -ENODEV;
-			}	
-
+			}
 		}
-
 		dsi_power_on = true;
 	}
 	if (on) {
-
 		int gpio17 = PM8921_GPIO_PM_TO_SYS(17);
 
 		gpio_set_value_cansleep(gpio17, 1);
@@ -489,24 +460,12 @@ static int mipi_dsi_cdp_panel_power(int on)
 			pr_err("enable l2 failed, rc=%d\n", rc);
 			return -ENODEV;
 		}
-		
-			rc = regulator_enable(reg_l29);
-            if (rc) {
-                pr_err("enable I29 failed, rc=%d\n", rc);
-                return -ENODEV;
-			}
-			
-		
+		rc = regulator_enable(reg_l29);
+		if (rc) {
+			pr_err("enable I29 failed, rc=%d\n", rc);
+			return -ENODEV;
+		}
 
-	
-
-#if 0
-		mdelay(5);
-		gpio_set_value_cansleep(gpio43, 0);
-		mdelay(5);
-		gpio_set_value_cansleep(gpio43, 1);
-		mdelay(1);
-#else
 		mdelay(10);
 		gpio_set_value_cansleep(gpio43, 0);
 		mdelay(5);
@@ -516,38 +475,23 @@ static int mipi_dsi_cdp_panel_power(int on)
 		mdelay(5);
 		gpio_set_value_cansleep(gpio43, 1);
 		mdelay(10);
-#endif
-
-
-	
-	
-
-		
-			gpio_set_value_cansleep(gpio24, 1);
-			mdelay(10);
-			ts_lcd_flag = 1;
-			printk("%s: gpio_set_value_cansleep ts_lcd_flag[%d]\n", __func__, ts_lcd_flag);
-
-
+		gpio_set_value_cansleep(gpio24, 1);
+		mdelay(10);
+		ts_lcd_flag = 1;
+		printk("%s: gpio_set_value_cansleep ts_lcd_flag[%d]\n", __func__, ts_lcd_flag);
 	} else {
-		
 		extern int lcd_status;
-
-		if(lcd_status)
-		{
+		if (lcd_status) {
 			printk("%s: gpio_set_value_cansleep lcd_status[%d]\n", __func__, lcd_status);
 			mdelay(100);
 		}
-		
-		ts_lcd_flag = 0;		
-		
+		ts_lcd_flag = 0;
 		rc = regulator_disable(reg_l2);
 		if (rc) {
 			pr_err("disable reg_l2 failed, rc=%d\n", rc);
 			return -ENODEV;
 		}
-
-		if(board_revision != 7){
+		if (board_revision != 7) {
 			rc = regulator_disable(reg_l8);
 			if (rc) {
 				pr_err("disable reg_l8 failed, rc=%d\n", rc);
@@ -560,15 +504,13 @@ static int mipi_dsi_cdp_panel_power(int on)
 			pr_err("disable reg_l23 failed, rc=%d\n", rc);
 			return -ENODEV;
 		}
-
-		if(board_revision != 7){
+		if (board_revision != 7) {
 			rc = regulator_set_optimum_mode(reg_l8, 100);
 			if (rc < 0) {
 				pr_err("set_optimum_mode l8 failed, rc=%d\n", rc);
 				return -EINVAL;
 			}
 		}
-
 		rc = regulator_set_optimum_mode(reg_l23, 100);
 		if (rc < 0) {
 			pr_err("set_optimum_mode l23 failed, rc=%d\n", rc);
@@ -580,41 +522,30 @@ static int mipi_dsi_cdp_panel_power(int on)
 			return -EINVAL;
 		}
 		gpio_set_value_cansleep(gpio43, 0);
-		
-		
-
-		
-			gpio_set_value_cansleep(gpio24, 0);   
-
-		
+		gpio_set_value_cansleep(gpio24, 0);
 		rc = regulator_disable(reg_l29);
-       if (rc) {
-       	pr_err("enable I29 failed, rc=%d\n", rc);
-		return -EINVAL;
+		if (rc) {
+			pr_err("enable I29 failed, rc=%d\n", rc);
+			return -EINVAL;
 		}
-	   
-
 		mdelay(120);
 		printk("%s: gpio_set_value_cansleep\n", __func__);
-		
 	}
 	return 0;
 }
 
-
 int mipi_dsi_cdp_panel_power_dstb(int on)
 {
 	static int gpio24, gpio43;
-	int rc,board_revision;
+	int rc, board_revision;
 
 	gpio24 = PM8921_GPIO_PM_TO_SYS(24);
 	gpio43 = PM8921_GPIO_PM_TO_SYS(43);
 
 	board_revision = get_m7system_board_revision();
 	pr_debug("%s: state : %d\n", __func__, on);
-	printk("[DVE068_LCD]mipi_dsi_cdp_panel_power_dstb start %d!!\n",on);
+	printk("[DVE068_LCD]mipi_dsi_cdp_panel_power_dstb start %d!!\n", on);
 	if (on) {
-
 		int gpio17 = PM8921_GPIO_PM_TO_SYS(17);
 
 		gpio_set_value_cansleep(gpio17, 1);
@@ -631,9 +562,9 @@ int mipi_dsi_cdp_panel_power_dstb(int on)
 			return -ENODEV;
 		}
 		rc = regulator_enable(reg_l29);
-        if (rc) {
-            pr_err("enable I29 failed, rc=%d\n", rc);
-            return -ENODEV;
+		if (rc) {
+			pr_err("enable I29 failed, rc=%d\n", rc);
+			return -ENODEV;
 		}
 		mdelay(10);
 		gpio_set_value_cansleep(gpio43, 0);
@@ -649,44 +580,35 @@ int mipi_dsi_cdp_panel_power_dstb(int on)
 		mdelay(10);
 		ts_lcd_flag = 1;
 		printk("%s: gpio_set_value_cansleep ts_lcd_flag[%d]\n", __func__, ts_lcd_flag);
-
 	} else {
-		
 		extern int lcd_status;
-
-		if(lcd_status)
-		{
+		if (lcd_status) {
 			printk("%s: gpio_set_value_cansleep lcd_status[%d]\n", __func__, lcd_status);
 			mdelay(100);
 		}
-		
-		ts_lcd_flag = 0;		
-		
+
+		ts_lcd_flag = 0;
 		rc = regulator_disable(reg_l2);
 		if (rc) {
 			pr_err("disable reg_l2 failed, rc=%d\n", rc);
 			return -ENODEV;
 		}
-
 		rc = regulator_set_optimum_mode(reg_l2, 100);
 		if (rc < 0) {
 			pr_err("set_optimum_mode l2 failed, rc=%d\n", rc);
 			return -EINVAL;
 		}
 		gpio_set_value_cansleep(gpio43, 0);
-
 		gpio_set_value_cansleep(gpio24, 0);
-		
 		rc = regulator_disable(reg_l29);
-        if (rc) {
-      	 	pr_err("enable I29 failed, rc=%d\n", rc);
+		if (rc) {
+			pr_err("enable I29 failed, rc=%d\n", rc);
 			return -EINVAL;
 		}
-
 		mdelay(120);
 		printk("%s: gpio_set_value_cansleep\n", __func__);
 	}
-	printk("[DVE068_LCD]mipi_dsi_cdp_panel_power_dstb end %d!!\n",on);
+	printk("[DVE068_LCD]mipi_dsi_cdp_panel_power_dstb end %d!!\n", on);
 	return 0;
 }
 
@@ -710,14 +632,15 @@ static int mipi_dsi_panel_power(int on)
 	return ret;
 }
 
-
-void mipi_dsi_panel_power_wrap( int on ){
+void mipi_dsi_panel_power_wrap(int on)
+{
 	int ret;
 	ret = mipi_dsi_panel_power(on);
 	printk("[DVE068_LCD] %s end %d!!  ret : %d\n", __func__, on, ret);
 }
 
-void mipi_dsi_panel_power_wrap_dstb(int on){
+void mipi_dsi_panel_power_wrap_dstb(int on)
+{
 	int ret;
 
 	pr_debug("%s: on=%d\n", __func__, on);
@@ -1166,11 +1089,9 @@ static struct msm_bus_scale_pdata dtv_bus_scale_pdata = {
 
 static struct lcdc_platform_data dtv_pdata = {
 	.bus_scale_table = &dtv_bus_scale_pdata,
-
-	#ifdef CONFIG_FB_MSM_HDMI_MSM_PANEL
+#ifdef CONFIG_FB_MSM_HDMI_MSM_PANEL
 	.lcdc_power_save = hdmi_panel_power,
-	#endif
-
+#endif
 };
 
 #ifdef CONFIG_FB_MSM_HDMI_MSM_PANEL
@@ -1182,7 +1103,6 @@ static int hdmi_panel_power(int on)
 	rc = hdmi_core_power(on, 1);
 	if (rc)
 		rc = hdmi_cec_power(on);
-
 	pr_debug("%s: HDMI Core: %s Success\n", __func__, (on ? "ON" : "OFF"));
 	return rc;
 }

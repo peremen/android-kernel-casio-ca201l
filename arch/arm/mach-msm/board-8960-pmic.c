@@ -99,33 +99,26 @@ static struct pm8xxx_gpio_init pm8921_gpios[] __initdata = {
 #ifndef CONFIG_ST21NFCA 
 	PM8XXX_GPIO_DISABLE(7),				 /* Disable NFC */
 #else
-	PM8XXX_GPIO_OUTPUT(7,	    1),			 
+	PM8XXX_GPIO_OUTPUT(7,	    1),	
 #endif
 #ifdef CONFIG_DVE068_AUDIO	
-    PM8XXX_GPIO_OUTPUT(16,	    0),		 	
-    PM8XXX_GPIO_OUTPUT(18,	    0),		 	
-    PM8XXX_GPIO_OUTPUT(19,	    0),		 
-    
-    PM8XXX_GPIO_INPUT(38,	    PM_GPIO_PULL_UP_31P5), 
-    
-    #else
+	PM8XXX_GPIO_OUTPUT(16,	    0),
+	PM8XXX_GPIO_OUTPUT(18,	    0),
+	PM8XXX_GPIO_OUTPUT(19,	    0),
+	PM8XXX_GPIO_INPUT(38,	    PM_GPIO_PULL_UP_31P5), 
+#else
 	PM8XXX_GPIO_INPUT(16,	    PM_GPIO_PULL_UP_30), /* SD_CARD_WP */
-    #endif
+#endif
     /* External regulator shared by display and touchscreen on LiQUID */
 	PM8XXX_GPIO_OUTPUT(17,	    0),			 /* DISP 3.3 V Boost */
-	PM8XXX_GPIO_OUTPUT_VIN(21, 1, PM_GPIO_VIN_VPH),	 
+	PM8XXX_GPIO_OUTPUT_VIN(21, 1, PM_GPIO_VIN_VPH),
 	PM8XXX_GPIO_DISABLE(22),			 /* Disable NFC */
-
-
-	PM8XXX_GPIO_OUTPUT(24,	    1),			 
+	PM8XXX_GPIO_OUTPUT(24,	    1),
 	PM8XXX_GPIO_INPUT(26,	    PM_GPIO_PULL_UP_30), /* SD_CARD_DET_N */
-	
-    PM8XXX_GPIO_OUTPUT(36,			1), 
-	
+	PM8XXX_GPIO_OUTPUT(36,			1),
 	PM8XXX_GPIO_OUTPUT(43, 1),                       /* DISP_RESET_N */
 	PM8XXX_GPIO_OUTPUT(42, 0),                      /* USB 5V reg enable */
-    
-    PM8XXX_GPIO_OUTPUT(14, 0),                      
+	PM8XXX_GPIO_OUTPUT(14, 0),
 };
 
 /* Initial PM8921 MPP configurations */
@@ -192,7 +185,6 @@ static struct pm8xxx_adc_amux pm8xxx_adc_channels_data[] = {
 		ADC_DECIMATION_TYPE2, ADC_SCALE_XOTHERM},
 	{"pa_therm0", ADC_MPP_1_AMUX3, CHAN_PATH_SCALING1, AMUX_RSV1,
 		ADC_DECIMATION_TYPE2, ADC_SCALE_PA_THERM},
-
 #ifdef CONFIG_DVE068_SENSORS
 	{"mpp_adc", ADC_MPP_1_AMUX6, CHAN_PATH_SCALING1, AMUX_RSV1,
 		ADC_DECIMATION_TYPE2, ADC_SCALE_DEFAULT},
@@ -266,10 +258,7 @@ static struct pm8xxx_keypad_platform_data keypad_data_liquid = {
 	.keymap_data            = &keymap_data_liquid,
 };
 
-
 #define DVE068_KEYPAD 1
-
-
 #if DVE068_KEYPAD
 static const unsigned int keymap[] = {
 	KEY(0, 0, KEY_TACTILE),
@@ -277,8 +266,6 @@ static const unsigned int keymap[] = {
 	KEY(0, 2, KEY_VOLUMEDOWN),
 };
 #else
-
-
 static const unsigned int keymap[] = {
 	KEY(0, 0, KEY_VOLUMEUP),
 	KEY(0, 1, KEY_VOLUMEDOWN),
@@ -286,7 +273,6 @@ static const unsigned int keymap[] = {
 	KEY(0, 3, KEY_CAMERA_FOCUS),
 };
 #endif
-
 
 static struct matrix_keymap_data keymap_data = {
 	.keymap_size    = ARRAY_SIZE(keymap),
@@ -447,7 +433,6 @@ static int pm8921_therm_mitigation[] = {
 	325,
 };
 
-
 #define C811_STD_ID_MIN		361
 #define C811_STD_ID_MAX		535
 #define C811_EXT_ID_MIN		627
@@ -461,7 +446,6 @@ static struct pm8921_charger_platform_data pm8921_chg_pdata __devinitdata = {
 	.max_voltage		= MAX_VOLTAGE_MV,
 	.min_voltage		= 3300,
 	.resume_voltage_delta	= 100,
-	
 	.term_current		= CHG_TERM_MA,
 	.cool_temp		= 5,
 	.warm_temp		= 45,
@@ -474,18 +458,10 @@ static struct pm8921_charger_platform_data pm8921_chg_pdata __devinitdata = {
 	.thermal_mitigation	= pm8921_therm_mitigation,
 	.thermal_levels		= ARRAY_SIZE(pm8921_therm_mitigation),
 	.rconn_mohm		= 18,
-    
-
-
-
-
-
 	.batt_id_min		= C811_STD_ID_MIN,
 	.batt_id_max		= C811_STD_ID_MAX,
 	.batt_id_min_ext	= C811_EXT_ID_MIN,
 	.batt_id_max_ext	= C811_EXT_ID_MAX,
-
-	
 	.weak_voltage = 3500,
 	.trkl_voltage = 2800,
 	.weak_current = 525,
@@ -507,22 +483,18 @@ static struct pm8921_bms_platform_data pm8921_bms_pdata __devinitdata = {
 	.shutdown_soc_valid_limit = 21,
 	.adjust_soc_low_threshold = 25,
 	.chg_term_ua		= CHG_TERM_MA * 1000,
-
 	.batt_id_min		= C811_STD_ID_MIN,
 	.batt_id_max		= C811_STD_ID_MAX,
 	.batt_id_min_ext	= C811_EXT_ID_MIN,
 	.batt_id_max_ext	= C811_EXT_ID_MAX,
-
 };
 
-
-#define	PM8921_LC_LED_BUTTON_MAX_CURRENT	510	
+#define	PM8921_LC_LED_BUTTON_MAX_CURRENT	510
 #define	PM8921_LC_LED_MAX_CURRENT	10
-#define	PM8921_LC_LED_MAX_CURRENT_FLASH	40	 
+#define	PM8921_LC_LED_MAX_CURRENT_FLASH	40
 #define	PM8921_LC_LED_LOW_CURRENT	1	/* I = 1mA */
 #define PM8XXX_LED_PWM_PERIOD		1000
- 
-#define PM8XXX_LED_PWM_DUTY_MS		120 
+#define PM8XXX_LED_PWM_DUTY_MS		120
 /**
  * PM8XXX_PWM_CHANNEL_NONE shall be used when LED shall not be
  * driven using PWM feature.
@@ -542,7 +514,6 @@ static struct led_info pm8921_led_info_liquid[] = {
 		.name		= "led:blue",
 		.flags		= PM8XXX_ID_LED_2,
 	},
-	
 	{
 		.name		= "led:flash",
 		.flags		= PM8XXX_ID_LED_KB_LIGHT,
@@ -565,7 +536,6 @@ static struct pm8xxx_led_config pm8921_led_configs_liquid[] = {
 		.mode = PM8XXX_LED_MODE_MANUAL,
 		.max_current = PM8921_LC_LED_MAX_CURRENT,
 	},
-	
 	[3] = {
 		.id = PM8XXX_ID_LED_KB_LIGHT,
 		.mode = PM8XXX_LED_MODE_MANUAL,
@@ -593,13 +563,10 @@ static struct led_info pm8921_led_info[] = {
 		.name			= "led:battery_full",
 		.default_trigger	= "battery-full",
 	},
-	
 	[2] = {
 		.name			= "button-backlight",
 		.default_trigger	= "button-backlight-onoff",
 	},
-	
-	
 	[3] = {
 		.name			= "flash-led",
 	},
@@ -610,39 +577,6 @@ static struct led_platform_data pm8921_led_core_pdata = {
 	.leds = pm8921_led_info,
 };
 
-
-#if 0
-static int pm8921_led0_pwm_duty_pcts[56] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100 
-};
-#endif
-
-
-#if 0
-
-static int pm8921_led0_pwm_duty_pcts[56] = {
-		1, 4, 8, 12, 16, 20, 24, 28, 32, 36,
-		40, 44, 46, 52, 56, 60, 64, 68, 72, 76,
-		80, 84, 88, 92, 96, 100, 100, 100, 98, 95,
-		92, 88, 84, 82, 78, 74, 70, 66, 62, 58,
-		58, 54, 50, 48, 42, 38, 34, 30, 26, 22,
-		14, 10, 6, 4, 1
-};
-
-static struct pm8xxx_pwm_duty_cycles pm8921_led0_pwm_duty_cycles = {
-	.duty_pcts = (int *)&pm8921_led0_pwm_duty_pcts,
-	.num_duty_pcts = ARRAY_SIZE(pm8921_led0_pwm_duty_pcts),
-	.duty_ms = PM8XXX_LED_PWM_DUTY_MS,
-	.start_idx = 0,
-};
-#endif
-
-
 static struct pm8xxx_led_config pm8921_led_configs[] = {
 	[0] = {
 		.id = PM8XXX_ID_LED_0,
@@ -650,11 +584,6 @@ static struct pm8xxx_led_config pm8921_led_configs[] = {
 		.max_current = PM8921_LC_LED_MAX_CURRENT,
 		.pwm_channel = 5,
 		.pwm_period_us = PM8XXX_LED_PWM_PERIOD,
-		
-		#if 0
-		.pwm_duty_cycles = &pm8921_led0_pwm_duty_cycles,
-		#endif
-		
 	},
 	[1] = {
 		.id = PM8XXX_ID_LED_1,
@@ -663,17 +592,13 @@ static struct pm8xxx_led_config pm8921_led_configs[] = {
 		.pwm_channel = 4,
 		.pwm_period_us = PM8XXX_LED_PWM_PERIOD,
 	},
-	
 	[2] = {
 		.id = PM8XXX_ID_LED_2,
-
 		.mode = PM8XXX_LED_MODE_MANUAL,
 		.max_current = PM8921_LC_LED_BUTTON_MAX_CURRENT,
 		.pwm_channel = 3,
 		.pwm_period_us = PM8XXX_LED_PWM_PERIOD,
 	},
-	
-	
 	[3] = {
 		.id = PM8XXX_ID_LED_KB_LIGHT,
 		.mode = PM8XXX_LED_MODE_MANUAL,
@@ -694,13 +619,11 @@ static struct pm8xxx_ccadc_platform_data pm8xxx_ccadc_pdata = {
 	.calib_delay_ms	= 600000,
 };
 
-
 static struct pm8xxx_vibrator_platform_data pm8xxx_vib_pdata = {
 	.initial_vibrate_ms  = 500,
 	.level_mV = 3000,
 	.max_timeout_ms = 15000,
 };
-
 
 /**
  * PM8XXX_PWM_DTEST_CHANNEL_NONE shall be used when no LPG
@@ -728,9 +651,7 @@ static struct pm8921_platform_data pm8921_platform_data __devinitdata = {
 	.leds_pdata		= &pm8xxx_leds_pdata,
 	.ccadc_pdata		= &pm8xxx_ccadc_pdata,
 	.pwm_pdata		= &pm8xxx_pwm_pdata,
-
 	.vibrator_pdata = &pm8xxx_vib_pdata,
-
 };
 
 static struct msm_ssbi_platform_data msm8960_ssbi_pm8921_pdata __devinitdata = {

@@ -827,18 +827,7 @@ bail:
 	}
 	return ret;
 }
-#if 0
-static const char * const pm8921_restart_reason[] = {
-	[0] = "Unknown",
-	[1] = "Triggered from CBL (external charger)",
-	[2] = "Triggered from KPD (power key press)",
-	[3] = "Triggered from CHG (usb charger insertion)",
-	[4] = "Triggered from SMPL (sudden momentary power loss)",
-	[5] = "Triggered from RTC (real time clock)",
-	[6] = "Triggered by Hard Reset",
-	[7] = "Triggered by General Purpose Trigger",
-};
-#endif
+
 static const char * const pm8921_rev_names[] = {
 	[PM8XXX_REVISION_8921_TEST]	= "test",
 	[PM8XXX_REVISION_8921_1p0]	= "1.0",
@@ -930,9 +919,6 @@ static int __devinit pm8921_probe(struct platform_device *pdev)
 		pr_err("Cannot read restart reason rc=%d\n", rc);
 		goto err_read_rev;
 	}
-	
-	
-	
 	val &= PM8XXX_RESTART_REASON_MASK;
 	pr_info("PMIC Restart Reason: %s\n", pm8xxx_restart_reason_str[val]);
 	pmic->restart_reason = val;

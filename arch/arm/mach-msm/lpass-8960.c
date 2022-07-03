@@ -80,7 +80,7 @@ static void lpass_fatal_fn(struct work_struct *work)
 		__func__);
 
 #ifdef CONFIG_FATAL_INFO_HANDLE
-    m7_set_magic_for_subsystem("lpass");
+	m7_set_magic_for_subsystem("lpass");
 	msm_set_restart_mode(0x29A93003);
 #endif
 
@@ -100,8 +100,8 @@ static void lpass_smsm_state_cb(void *data, uint32_t old_state,
 			new_state, old_state);
 
 #ifdef CONFIG_FATAL_INFO_HANDLE
-    m7_set_magic_for_subsystem("lpass");
-	msm_set_restart_mode(0x29A93003);
+		m7_set_magic_for_subsystem("lpass");
+		msm_set_restart_mode(0x29A93003);
 #endif	
 
 		panic(MODULE_NAME ": Resetting the SoC");

@@ -10,14 +10,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-/*
- * Qualcomm PMIC 8xxx driver header file
- *
- */
 /***********************************************************************/
 /* Modified by                                                         */
 /* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 /***********************************************************************/
+/*
+ * Qualcomm PMIC 8xxx driver header file
+ *
+ */
 
 #ifndef __MFD_PM8XXX_CORE_H
 #define __MFD_PM8XXX_CORE_H

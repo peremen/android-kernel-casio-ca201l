@@ -159,11 +159,9 @@ int mdp4_dsi_video_on(struct platform_device *pdev)
 	} else {
 		pipe = dsi_pipe;
 	}
-	
 #ifdef CONFIG_C811_LCD_ROTATION
 	pipe->mfd = mfd;
 #endif
-	
 
 	/* MDP cmd block enable */
 	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
@@ -316,11 +314,7 @@ int mdp4_dsi_video_off(struct platform_device *pdev)
 	mdp_pipe_ctrl(MDP_OVERLAY0_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
 	mdp_histogram_ctrl_all(FALSE);
 	ret = panel_next_off(pdev);
-
-	
 	mdelay(200);
-	
-	
 	/* dis-engage rgb0 from mixer0 */
 	if (dsi_pipe) {
 		mdp4_mixer_stage_down(dsi_pipe);

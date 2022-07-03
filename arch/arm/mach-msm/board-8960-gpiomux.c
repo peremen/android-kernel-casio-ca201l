@@ -24,8 +24,6 @@
 
 #define DECREASE_CURRENT_CONSUMPTION
 
-
-
 #ifdef CONFIG_ST21NFCA
 #define ST21NFCA_WAKEUP_GPIO 106
 #endif
@@ -119,6 +117,7 @@ static struct gpiomux_setting gsbi5 = {
 	.pull = GPIOMUX_PULL_NONE,
 #endif 
 };
+
 #ifdef CONFIG_DVE068_AUDIO
 static struct gpiomux_setting gsbi8 = {
 	.func = GPIOMUX_FUNC_1,
@@ -886,36 +885,32 @@ static struct msm_gpiomux_config wcnss_5wire_interface[] = {
 	},
 };
 
-
 #ifdef CONFIG_DVE068_WIRELESS_CHG
 static struct msm_gpiomux_config msm8960_wireless_chg_configs[] __initdata = {
-    {   
-        .gpio = 14,
-        .settings = {
-            [GPIOMUX_ACTIVE] = &wireless_chg_int_act_cfg,
-        },
-    },
+	{
+		.gpio = 14,
+		.settings = {
+			[GPIOMUX_ACTIVE] = &wireless_chg_int_act_cfg,
+		},
+	},
 };
 #endif 
-
 
 #ifdef CONFIG_DVE068_CRADLE_CHG
 static struct msm_gpiomux_config msm8960_cradle_chg_configs[] __initdata = {
-    {   
-        .gpio = 78,
-        .settings = {
-            [GPIOMUX_ACTIVE] = &cradle_chg_int_act_cfg,
+	{
+		.gpio = 78,
+		.settings = {
+			[GPIOMUX_ACTIVE] = &cradle_chg_int_act_cfg,
 #ifdef DECREASE_CURRENT_CONSUMPTION_STEP2
-            [GPIOMUX_SUSPENDED] = &cradle_chg_int_act_cfg_none,
-#endif 
-        },
-    },
+			[GPIOMUX_SUSPENDED] = &cradle_chg_int_act_cfg_none,
+#endif
+		},
+	},
 };
 #endif 
-
 		
 #ifndef CONFIG_TOUCHSCREEN_MXT224E
-
 static struct msm_gpiomux_config msm8960_cyts_configs[] __initdata = {
 	{	/* TS INTERRUPT */
 		.gpio = 11,
@@ -941,7 +936,6 @@ static struct msm_gpiomux_config msm8960_cyts_configs[] __initdata = {
 };
 #endif
 
-		
 #ifdef CONFIG_TOUCHSCREEN_MXT224E
 static struct msm_gpiomux_config msm8960_mxt224E_configs[] __initdata = {
 	{	
@@ -950,7 +944,6 @@ static struct msm_gpiomux_config msm8960_mxt224E_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &mxt224E_reset_act_cfg,
 		},
 	},
-
 	{	
 		.gpio = 11,
 		.settings = {
@@ -962,7 +955,6 @@ static struct msm_gpiomux_config msm8960_mxt224E_configs[] __initdata = {
 		},
 	},
 };
-
 #endif 
 
 #ifdef CONFIG_USB_EHCI_MSM_HSIC
@@ -1067,7 +1059,6 @@ static struct msm_gpiomux_config msm8960_sdcc4_configs[] __initdata = {
 	},
 };
 #endif
-
 
 static struct msm_gpiomux_config hap_lvl_shft_config[] __initdata = {
 	{
@@ -1184,25 +1175,23 @@ static struct msm_gpiomux_config msm8960_hdmi_configs[] __initdata = {
 };
 #endif
 
-
 #ifdef CONFIG_DVE068_SENSORS
 static struct gpiomux_setting sensor_rst_config = {
-    .func = GPIOMUX_FUNC_GPIO,
-    .drv = GPIOMUX_DRV_8MA,
-    .pull = GPIOMUX_PULL_NONE,
-    .dir = GPIOMUX_OUT_LOW,
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_8MA,
+	.pull = GPIOMUX_PULL_NONE,
+	.dir = GPIOMUX_OUT_LOW,
 };
 
 static struct msm_gpiomux_config msm8960_sensors_configs[1] = {
-    {
-        .gpio = 53, 
-        .settings =  {
-            [GPIOMUX_SUSPENDED] = &sensor_rst_config,
-        }
-    },
+	{
+		.gpio = 53,
+		.settings = {
+			[GPIOMUX_SUSPENDED] = &sensor_rst_config,
+		}
+	},
 };
 #endif 
-
 
 #ifdef CONFIG_MMC_MSM_SDC2_SUPPORT
 static struct gpiomux_setting sdcc2_clk_actv_cfg = {
@@ -1324,7 +1313,6 @@ int __init msm8960_init_gpiomux(void)
 	msm_gpiomux_install(msm8960_audio_codec_configs,
 			ARRAY_SIZE(msm8960_audio_codec_configs));
 
-	
 #ifdef CONFIG_DVE068_AUDIO
 	msm_gpiomux_install(msm8960_audio_amp_configs,
 			ARRAY_SIZE(msm8960_audio_amp_configs));
@@ -1337,10 +1325,9 @@ int __init msm8960_init_gpiomux(void)
 			ARRAY_SIZE(wcnss_5wire_interface));
 
 #ifdef CONFIG_DVE068_SENSORS
-    msm_gpiomux_install(msm8960_sensors_configs,
-            ARRAY_SIZE(msm8960_sensors_configs));
+	msm_gpiomux_install(msm8960_sensors_configs,
+			ARRAY_SIZE(msm8960_sensors_configs));
 #endif 
-
 
 #ifdef CONFIG_MMC_MSM_SDC4_SUPPORT
 	msm_gpiomux_install(msm8960_sdcc4_configs,

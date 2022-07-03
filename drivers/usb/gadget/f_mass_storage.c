@@ -2283,31 +2283,19 @@ static int do_scsi_command(struct fsg_common *common)
 			reply = do_write(common);
 		break;
 
-
 #ifdef CONFIG_DVE021_USB
-    case SC_CDROM_MODE_CHANGE:
+	case SC_CDROM_MODE_CHANGE:
 	case SC_CDROM_MODE_CHANGE_BS:
-        
-    
-        
-		
-
-
-
-
-
-
-
-		printk("%s SC_CDROM_MODE_CHANGE Called \n",__func__);
+		printk("%s SC_CDROM_MODE_CHANGE Called \n", __func__);
 		kobject_uevent_env(&usb_cdrom_device.this_device->kobj,
-				KOBJ_CHANGE, cdrom_mode_change);				
-        break;
-		
+				   KOBJ_CHANGE, cdrom_mode_change);
+		break;
+
 	case SC_CDROM_TIMER_CANCEL:
-		printk("%s SC_CDROM_TIMER_CANCEL Called \n",__func__);
+		printk("%s SC_CDROM_TIMER_CANCEL Called \n", __func__);
 		kobject_uevent_env(&usb_cdrom_device.this_device->kobj,
-				KOBJ_CHANGE, cdrom_timer_cancel);
-		break;		
+				   KOBJ_CHANGE, cdrom_timer_cancel);
+		break;
 #endif
 
 	/*
@@ -3258,10 +3246,10 @@ static int fsg_bind_config(struct usb_composite_dev *cdev,
 		fsg_common_get(fsg->common);
 	return rc;
 }
-#ifdef CONFIG_DVE021_USB 
+#ifdef CONFIG_DVE021_USB
 static int usb_cdrom_bind_config(struct usb_composite_dev *cdev,
-			   struct usb_configuration *c,
-			   struct fsg_common *common)
+				 struct usb_configuration *c,
+				 struct fsg_common *common)
 {
 	struct fsg_dev *csg;
 	int rc;
@@ -3270,22 +3258,15 @@ static int usb_cdrom_bind_config(struct usb_composite_dev *cdev,
 	if (unlikely(!csg))
 		return -ENOMEM;
 
-	csg->function.name        = "usb_cdrom";
-	csg->function.strings     = fsg_strings_array;
-	csg->function.bind        = fsg_bind;
-	csg->function.unbind      = fsg_unbind;
-	csg->function.setup       = fsg_setup;
-	csg->function.set_alt     = fsg_set_alt;
-	csg->function.disable     = fsg_disable;
+	csg->function.name = "usb_cdrom";
+	csg->function.strings = fsg_strings_array;
+	csg->function.bind = fsg_bind;
+	csg->function.unbind = fsg_unbind;
+	csg->function.setup = fsg_setup;
+	csg->function.set_alt = fsg_set_alt;
+	csg->function.disable = fsg_disable;
 
-	csg->common               = common;
-	
-
-
-
-
-
-
+	csg->common = common;
 
 	rc = usb_add_function(c, &csg->function);
 	if (unlikely(rc))
@@ -3294,7 +3275,7 @@ static int usb_cdrom_bind_config(struct usb_composite_dev *cdev,
 		fsg_common_get(csg->common);
 	return rc;
 }
-#endif  
+#endif
 
 static inline int __deprecated __maybe_unused
 fsg_add(struct usb_composite_dev *cdev, struct usb_configuration *c,

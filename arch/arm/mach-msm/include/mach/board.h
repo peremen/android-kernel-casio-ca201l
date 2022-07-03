@@ -19,7 +19,6 @@
 /* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 /***********************************************************************/
 
-
 #ifndef __ASM_ARCH_MSM_BOARD_H
 #define __ASM_ARCH_MSM_BOARD_H
 
@@ -221,9 +220,7 @@ struct msm_actuator_info {
 	int bus_id;
 	int vcm_pwd;
 	int vcm_enable;
-
 	void *eeprom_client;
-
 };
 
 struct msm_camera_sensor_info {

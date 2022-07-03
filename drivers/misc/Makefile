@@ -2,7 +2,6 @@
 #/* Modified by                                                         */
 #/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 #/***********************************************************************/
-
 #
 # Makefile for misc devices that really don't fit anywhere else.
 #

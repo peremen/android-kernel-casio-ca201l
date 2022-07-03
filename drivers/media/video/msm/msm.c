@@ -40,7 +40,6 @@ static dev_t msm_devno;
 static int vnode_count;
 
 #if 1 
-
 int i2c_error_flag;
 #endif 
 
@@ -1016,10 +1015,6 @@ static int msm_camera_v4l2_streamoff(struct file *f, void *pctx,
 	mutex_lock(&pcam->vid_lock);
 	mutex_lock(&pcam_inst->inst_lock);
 
-#if 0
-	pcam_inst->streamon = 0;
-#endif
-
 	if (g_server_dev.use_count > 0)
 		rc = msm_server_streamoff(pcam, pcam_inst->my_index);
 	if (rc < 0)
@@ -1642,9 +1637,9 @@ mctl_open_failed:
 msm_cam_server_open_session_failed:
 	pcam->use_count--;
 	D("%s Closing down instance %p ", __func__, pcam_inst);
-	D("%s index %d nodeid %d count %d\n", __func__, pcam_inst->my_index,pcam->vnode_id, pcam->use_count);
+	D("%s index %d nodeid %d count %d\n", __func__, pcam_inst->my_index, pcam->vnode_id, pcam->use_count);
 	pcam->dev_inst[pcam_inst->my_index] = NULL;
-	if(errflag5 == 1){
+	if (errflag5 == 1) {
 		if (pcam_inst->my_index == 0) {
 			v4l2_fh_del(&pcam_inst->eventHandle);
 			v4l2_fh_exit(&pcam_inst->eventHandle);
@@ -1652,34 +1647,29 @@ msm_cam_server_open_session_failed:
 	}
 	kfree(pcam_inst);
 	f->private_data = NULL;
-
 	if (pcam->use_count == 0) {
-		if(errflag3 ==1){
-			if(pcam->mctl.isp_sdev->sd !=NULL){
+		if (errflag3 == 1) {
+			if (pcam->mctl.isp_sdev->sd != NULL) {
 				v4l2_device_unregister_subdev(pcam->mctl.isp_sdev->sd);
 			}
 		}
-
-		if(errflag4 ==1){
-			if(pcam->mctl.isp_sdev->sd_vpe != NULL){
+		if (errflag4 == 1) {
+			if (pcam->mctl.isp_sdev->sd_vpe != NULL) {
 				v4l2_device_unregister_subdev(pcam->mctl.isp_sdev->sd_vpe);
 			}
 		}
-		
-		if(errflag1 ==1){
+		if (errflag1 == 1) {
 			ret = msm_cam_server_close_session(&g_server_dev, pcam);
 			if (ret < 0)
 				pr_err("close_session fails %d\n", ret);
 		}
-
-		if(errflag2 ==1){
+		if (errflag2 == 1) {
 			if (pcam->mctl.mctl_release) {
 				ret = pcam->mctl.mctl_release(&(pcam->mctl));
 				if (ret < 0)
 					pr_err("mctl_release fails %d\n", ret);
 			}
 		}
-
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
 		if (ion_client_created) {
 			pr_err("%s: destroy ion client", __func__);
@@ -1688,7 +1678,6 @@ msm_cam_server_open_session_failed:
 #endif
 		if (g_server_dev.use_count == 0)
 			mutex_unlock(&g_server_dev.server_lock);
-
 	}
 
 	errflag1 = 0;
@@ -1837,22 +1826,19 @@ static int msm_close(struct file *f)
 	pcam_inst->streamon = 0;
 	pcam->use_count--;
 
-    for( i = 0; i < MSM_DEV_INST_MAX; i++) {
-        if(pcam->dev_inst[i] != NULL) {
-            if( pcam->dev_inst[i]->image_mode == pcam_inst->image_mode ) {
-                image_mode_use_count++;
-                D("image_mode_use_count increment %d\n",image_mode_use_count);
-            }
-        }
-    }
+	for (i = 0; i < MSM_DEV_INST_MAX; i++) {
+		if (pcam->dev_inst[i] != NULL) {
+			if (pcam->dev_inst[i]->image_mode == pcam_inst->image_mode) {
+				image_mode_use_count++;
+				D("image_mode_use_count increment %d\n", image_mode_use_count);
+			}
+		}
+	}
 
-    if( image_mode_use_count <= 1 )
-    {
-        D("pcam->dev_inst_map[%d] set NULL\n",pcam_inst->image_mode);
-    	pcam->dev_inst_map[pcam_inst->image_mode] = NULL;
-
-    }
-
+	if (image_mode_use_count <= 1) {
+		D("pcam->dev_inst_map[%d] set NULL\n", pcam_inst->image_mode);
+		pcam->dev_inst_map[pcam_inst->image_mode] = NULL;
+	}
 
 	if (pcam_inst->vbqueue_initialized)
 		vb2_queue_release(&pcam_inst->vid_bufq);
@@ -2391,16 +2377,6 @@ static long msm_ioctl_config(struct file *fp, unsigned int cmd,
 		rc = msm_v4l2_evt_notify(config_cam->p_mctl, cmd, arg);
 		break;
 
-
-#if 0
-	case MSM_CAM_IOCTL_SET_MEM_MAP_INFO:
-		if (copy_from_user(&config_cam->mem_map, (void __user *)arg,
-				sizeof(struct msm_mem_map_info)))
-			rc = -EINVAL;
-		break;
-#endif
-
-
 	default:{
 		/* For the rest of config command, forward to media controller*/
 		struct msm_cam_media_controller *p_mctl = config_cam->p_mctl;
@@ -2416,44 +2392,6 @@ static long msm_ioctl_config(struct file *fp, unsigned int cmd,
 	} /* end of switch*/
 	return rc;
 }
-
-
-#if 0
-static int msm_mmap_config(struct file *fp, struct vm_area_struct *vma)
-{
-	struct msm_cam_config_dev *config_cam = fp->private_data;
-	int rc = 0;
-	int phyaddr;
-	int retval;
-	unsigned long size;
-
-	D("%s: phy_addr=0x%x", __func__, config_cam->mem_map.cookie);
-	phyaddr = (int)config_cam->mem_map.cookie;
-	if (!phyaddr) {
-		pr_err("%s: no physical memory to map", __func__);
-		return -EFAULT;
-	}
-	memset(&config_cam->mem_map, 0,
-		sizeof(struct msm_mem_map_info));
-	size = vma->vm_end - vma->vm_start;
-	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-	retval = remap_pfn_range(vma, vma->vm_start,
-					phyaddr >> PAGE_SHIFT,
-					size, vma->vm_page_prot);
-	if (retval) {
-		pr_err("%s: remap failed, rc = %d",
-					__func__, retval);
-		rc = -ENOMEM;
-		goto end;
-	}
-	D("%s: phy_addr=0x%x: %08lx-%08lx, pgoff %08lx\n",
-			__func__, (uint32_t)phyaddr,
-			vma->vm_start, vma->vm_end, vma->vm_pgoff);
-end:
-	return rc;
-}
-#endif
-
 
 static int msm_open_config(struct inode *inode, struct file *fp)
 {
@@ -2518,11 +2456,6 @@ static const struct file_operations msm_fops_config = {
 	.open  = msm_open_config,
 	.poll  = msm_poll_config,
 	.unlocked_ioctl = msm_ioctl_config,
-
-#if 0
-	.mmap	= msm_mmap_config,
-#endif
-
 	.release = msm_close_config,
 };
 

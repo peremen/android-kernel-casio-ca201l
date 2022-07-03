@@ -3,7 +3,6 @@
 #/* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 #/***********************************************************************/
 
-
 source "drivers/video/msm/vidc/Kconfig"
 
 config FB_MSM

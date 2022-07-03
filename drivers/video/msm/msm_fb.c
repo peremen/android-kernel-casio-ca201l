@@ -52,15 +52,9 @@
 #include "tvenc.h"
 #include "mdp.h"
 #include "mdp4.h"
-
-
 #include "mipi_lg4573b.h"
 
-
-
 #include <linux/reboot.h>
-
-
 
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_NUM	3
@@ -1117,11 +1111,9 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	var->rotate = 0,	/* angle we rotate counter clockwise */
 	mfd->op_enable = FALSE;
 
-
 	var->height = 86;	
 	var->width = 51;	
 
-	
 	switch (mfd->fb_imgType) {
 	case MDP_RGB_565:
 		fix->type = FB_TYPE_PACKED_PIXELS;
@@ -1409,9 +1401,7 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	    ("FrameBuffer[%d] %dx%d size=%d bytes is registered successfully!\n",
 	     mfd->index, fbi->var.xres, fbi->var.yres, fbi->fix.smem_len);
 
-
 #ifdef CONFIG_SPLASH_USING_HEADER
-	
 	if (mfd->panel_info.type == MIPI_VIDEO_PANEL ||
 			mfd->panel_info.type == MIPI_CMD_PANEL){
 		msm_fb_open(mfd->fbi, 0);		
@@ -1424,7 +1414,6 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 				  SPLASH_IMAGE_WIDTH * bpp);
 		}
 	}
-
 #endif	
 
 #ifdef CONFIG_SPLASH_USING_565RLE
@@ -3261,20 +3250,7 @@ static int msm_fb_ioctl(struct fb_info *info, unsigned int cmd,
 	struct mdp_page_protection fb_page_protection;
 	struct msmfb_mdp_pp mdp_pp;
 	int ret = 0;
-	
- 
-
-
-  
-
-
-
- 
-
-
-
 	struct msmfb_request_parame user_req;
-
 
 	switch (cmd) {
 #ifdef CONFIG_FB_MSM_OVERLAY
@@ -3569,184 +3545,29 @@ static int msm_fb_ioctl(struct fb_info *info, unsigned int cmd,
 		ret = msmfb_handle_pp_ioctl(&mdp_pp);
 		break;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    case MSMFB_CUSTOM_9:
-        ret = copy_from_user(&user_req, argp, sizeof(user_req));
-        if (ret)
-        {
-            printk(KERN_ERR "%s. Error - %d\n",__func__, __LINE__);
-            break;
-        }
-        
-
-        ret = copy_from_user(&mdp4_overlay_argb_enable, user_req.data, sizeof(mdp4_overlay_argb_enable));
-        if (ret)
-        {
-            printk(KERN_ERR "%s. Error - %d\n",__func__, __LINE__);
-            break;
-        }
-        
-        ret = copy_to_user(argp, &user_req, sizeof(user_req));
-        break;
-
-    case MSMFB_CUSTOM_156 :
-        mdp_mddi_dma_s_stop(1);
-        break;
-        
-    case MSMFB_CUSTOM_157 :
-        mdp_mddi_dma_s_stop(0);
-        break;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	case MSMFB_CUSTOM_9:
+		ret = copy_from_user(&user_req, argp, sizeof(user_req));
+		if (ret) {
+			printk(KERN_ERR "%s. Error - %d\n", __func__, __LINE__);
+			break;
+		}
+
+		ret = copy_from_user(&mdp4_overlay_argb_enable, user_req.data, sizeof(mdp4_overlay_argb_enable));
+		if (ret) {
+			printk(KERN_ERR "%s. Error - %d\n", __func__, __LINE__);
+			break;
+		}
+
+		ret = copy_to_user(argp, &user_req, sizeof(user_req));
+		break;
+
+	case MSMFB_CUSTOM_156:
+		mdp_mddi_dma_s_stop(1);
+		break;
+
+	case MSMFB_CUSTOM_157:
+		mdp_mddi_dma_s_stop(0);
+		break;
 
 	default:
 		MSM_FB_INFO("MDP: unknown ioctl (cmd=%x) received!\n", cmd);
@@ -3948,27 +3769,23 @@ static int msm_fb_notify_reboot(struct notifier_block *this, unsigned long code,
 	fbi = registered_fb[0];
 	mfd = (struct msm_fb_data_type *)fbi->par;
 
-	printk(KERN_INFO "[In]%s.\n",__func__);
+	printk(KERN_INFO "[In]%s.\n", __func__);
 
-	if ((code == SYS_DOWN) || (code == SYS_HALT) || (code == SYS_POWER_OFF))
-	{
-	    mipi_lg4573b_disable_display(mfd);
-		
-	    fb_blank(fbi, FB_BLANK_POWERDOWN);
-
-	    mdp_pipe_ctrl(MDP_MASTER_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
+	if ((code == SYS_DOWN) || (code == SYS_HALT) || (code == SYS_POWER_OFF)) {
+		mipi_lg4573b_disable_display(mfd);
+		fb_blank(fbi, FB_BLANK_POWERDOWN);
+		mdp_pipe_ctrl(MDP_MASTER_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
 	}
 
-	printk(KERN_INFO "[Out]%s.\n",__func__);
+	printk(KERN_INFO "[Out]%s.\n", __func__);
 	return NOTIFY_DONE;
 }
 
 static struct notifier_block msm_fb_notifier = {
-    .notifier_call  = msm_fb_notify_reboot,
-    .next           = NULL,
-    .priority       = INT_MAX,
+	.notifier_call = msm_fb_notify_reboot,
+	.next = NULL,
+	.priority = INT_MAX,
 };
-
 
 int __init msm_fb_init(void)
 {
@@ -3995,8 +3812,6 @@ int __init msm_fb_init(void)
 #endif
 
 	register_reboot_notifier(&msm_fb_notifier);
-
-	
 	return 0;
 }
 

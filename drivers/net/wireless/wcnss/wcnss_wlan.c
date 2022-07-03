@@ -222,10 +222,9 @@ static struct platform_driver wcnss_wlan_ctrl_driver = {
 	.remove	= __devexit_p(wcnss_wlan_ctrl_remove),
 };
 
-
 int get_wcnss_diag(void)
 {
-    return wcnss_diag_value;
+	return wcnss_diag_value;
 }
 EXPORT_SYMBOL(get_wcnss_diag);
 
@@ -416,9 +415,8 @@ wcnss_trigger_config(struct platform_device *pdev)
 
 	/* register sysfs entries */
 	ret = wcnss_create_sysfs(&pdev->dev);
-	if (ret)
-	{
-	        wcnss_diag_value = WCNSS_FAIL;  
+	if (ret) {
+		wcnss_diag_value = WCNSS_FAIL;
 		goto fail_sysfs;
 	}
 

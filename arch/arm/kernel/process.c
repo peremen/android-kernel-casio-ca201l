@@ -48,20 +48,12 @@
 unsigned long __stack_chk_guard __read_mostly;
 EXPORT_SYMBOL(__stack_chk_guard);
 #endif
-
-
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
-
 struct fatal_mmu_regs {
-	
 	unsigned long cp15_sctlr;
 	unsigned long cp15_ttb0;
 	unsigned long cp15_ttb1;
-	unsigned long cp15_dacr;	
-	
-	
-
+	unsigned long cp15_dacr;
 };
 
 extern void save_cpu_mmu_register_dump(struct pt_regs* regs, unsigned int sel_cpu, struct fatal_mmu_regs mmu_regs);
@@ -394,12 +386,10 @@ void __show_regs_fatal(struct pt_regs *regs)
 {
 	unsigned long flags;
 	char buf[64];
-
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 #ifdef CONFIG_CPU_CP15_MMU
 	unsigned int sel;
-struct fatal_mmu_regs mmu;
+	struct fatal_mmu_regs mmu;
 #endif
 	set_kernel_panic_log(1);
 #endif
@@ -455,8 +445,6 @@ struct fatal_mmu_regs mmu;
 			    : "=r" (transbase), "=r" (dac));
 			snprintf(buf, sizeof(buf), "  Table: %08x  DAC: %08x",
 			  	transbase, dac);
-
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 			sel = raw_smp_processor_id();
 			asm("mrc p15, 0, %0, c1, c0, 0\n"
@@ -467,12 +455,7 @@ struct fatal_mmu_regs mmu;
 			: "=r" (mmu.cp15_ttb1));
 			asm("mrc p15, 0, %0, c3, c0, 0\n"
 			: "=r" (mmu.cp15_dacr));
-			
-			
-			
-			
 #endif
-
 		}
 #endif
 		asm("mrc p15, 0, %0, c1, c0\n" : "=r" (ctrl));
@@ -482,12 +465,10 @@ struct fatal_mmu_regs mmu;
 #ifdef CONFIG_FATAL_INFO_HANDLE
 
 		save_cpu_mmu_register_dump(regs,sel,mmu);
-
 #endif
 #endif
 	}
 #endif
-
 	show_extra_register_data(regs, 128);
 }
 #endif

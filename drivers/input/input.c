@@ -54,7 +54,6 @@ struct input_event nec_key_buff;
 DEFINE_SEMAPHORE(sem_nec_key_buff);
 
 #define NEC_PROC_KEYHOOK_ENABLE_ENTRY "keyhook_enable"
-
 static int nec_keyhook_enable=0;
 DEFINE_SEMAPHORE(sem_nec_keyhook_enable);
 #define NEC_WRITEBUF_SIZE 512
@@ -62,9 +61,6 @@ DEFINE_SEMAPHORE(sem_nec_keyhook_enable);
 #define NEC_PROC_KEYHOOK_STATE_ENTRY "keyhook_state"
 static int hook_state=MON_OFF;
 DEFINE_SEMAPHORE(sem_nec_keyhook_state);
-
-
-
 DECLARE_COMPLETION(nec_keyscn_completion);
 
 #define NEC_PROC_KEYSCN_ENABLE         "keyscn_enable"
@@ -74,8 +70,6 @@ DEFINE_SEMAPHORE(sem_nec_keyscn_enable);
 #define NEC_PROC_KEYSCN_HOOK_OUT       "keyscn_hook_out"
 struct input_event nec_keyscn_buff;
 DEFINE_SEMAPHORE(sem_nec_keyscn_buff);
-
-
 #endif	
 static LIST_HEAD(input_dev_list);
 static LIST_HEAD(input_handler_list);
@@ -286,85 +280,81 @@ static void input_handle_event(struct input_dev *dev,
 		if (is_event_supported(code, dev->keybit, KEY_MAX) &&
 		    !!test_bit(code, dev->key) != value) {
 
-#ifdef CONFIG_DVE033_NORMAL_RELEASE 
-			if ( down_interruptible( &sem_nec_keyhook_enable ) ) {
-				printk( KERN_INFO "input : down_interruptible for keyhook_enable failed\n");
+#ifdef CONFIG_DVE033_NORMAL_RELEASE
+			if (down_interruptible(&sem_nec_keyhook_enable)) {
+				printk(KERN_INFO "input : down_interruptible for keyhook_enable failed\n");
 				disposition = INPUT_PASS_TO_HANDLERS;
-			}else{
-				if(nec_keyhook_enable==TRUE){
-					int pass_to_proc=0;
-					switch(code){
-						case KEY_VOLUMEUP:
-						case KEY_VOLUMEDOWN:
-							disposition = INPUT_IGNORE_EVENT;
-							pass_to_proc=TRUE;
-							break;
-						default:
-							if ( down_interruptible( &sem_nec_keyhook_state ) )
-							{
-								printk( KERN_INFO "input : down_interruptible for keyhook_enable failed\n");
+			} else {
+				if (nec_keyhook_enable == TRUE) {
+					int pass_to_proc = 0;
+					switch (code) {
+					case KEY_VOLUMEUP:
+					case KEY_VOLUMEDOWN:
+						disposition = INPUT_IGNORE_EVENT;
+						pass_to_proc = TRUE;
+						break;
+					default:
+						if (down_interruptible(&sem_nec_keyhook_state)) {
+							printk(KERN_INFO "input : down_interruptible for keyhook_enable failed\n");
+							disposition = INPUT_PASS_TO_HANDLERS;
+						} else {
+							if (hook_state == HOOK_ON) {
+								disposition = INPUT_IGNORE_EVENT;
+								pass_to_proc = TRUE;
+							} else {
 								disposition = INPUT_PASS_TO_HANDLERS;
-							}else{
-								if(hook_state==HOOK_ON) {
-									disposition = INPUT_IGNORE_EVENT;
-									pass_to_proc=TRUE;
-								}else{
-									disposition = INPUT_PASS_TO_HANDLERS;
-									pass_to_proc=FALSE;
-								}
-								up( &sem_nec_keyhook_state );
-							};
-							break;
+								pass_to_proc = FALSE;
+							}
+							up(&sem_nec_keyhook_state);
+						};
+						break;
 					}
-					if(pass_to_proc==TRUE)
-					{
-						if(value==1) {
-							if( down_interruptible(&sem_nec_key_buff) ){
-								printk( KERN_INFO "input : down_interruptible for key_buff failed\n");
-							}else{
-								nec_key_buff.type=type;
-								nec_key_buff.code=code;
-								nec_key_buff.value=value;
+					if (pass_to_proc == TRUE) {
+						if (value == 1) {
+							if (down_interruptible(&sem_nec_key_buff)) {
+								printk(KERN_INFO "input : down_interruptible for key_buff failed\n");
+							} else {
+								nec_key_buff.type = type;
+								nec_key_buff.code = code;
+								nec_key_buff.value = value;
 								up(&sem_nec_key_buff);
 								complete(&nec_content_completion);
 							}
 						}
 					}
-				}else{
+				} else {
 					disposition = INPUT_PASS_TO_HANDLERS;
-					
-					if ( down_interruptible( &sem_nec_keyscn_enable ) ) {
-						printk( KERN_INFO "input : down_interruptible for keyscn_enable failed\n");
-					}else{
+
+					if (down_interruptible(&sem_nec_keyscn_enable)) {
+						printk(KERN_INFO "input : down_interruptible for keyscn_enable failed\n");
+					} else {
 						if (nec_keyscn_enable == TRUE) {
-							switch(code){
-								case KEY_VOLUMEUP:
-									disposition = INPUT_IGNORE_EVENT;
-									if(value==1) {
-										if( down_interruptible(&sem_nec_keyscn_buff) ){
-											printk( KERN_INFO "input : down_interruptible for keyscn_buff failed\n");
-										}else{
-											nec_keyscn_buff.type=type;
-											nec_keyscn_buff.code=code;
-											nec_keyscn_buff.value=value;
-											up(&sem_nec_keyscn_buff);
-											complete(&nec_keyscn_completion);
-										}
+							switch (code) {
+							case KEY_VOLUMEUP:
+								disposition = INPUT_IGNORE_EVENT;
+								if (value == 1) {
+									if (down_interruptible(&sem_nec_keyscn_buff)) {
+										printk(KERN_INFO "input : down_interruptible for keyscn_buff failed\n");
+									} else {
+										nec_keyscn_buff.type = type;
+										nec_keyscn_buff.code = code;
+										nec_keyscn_buff.value = value;
+										up(&sem_nec_keyscn_buff);
+										complete(&nec_keyscn_completion);
 									}
-									break;
-								default:
-									disposition = INPUT_PASS_TO_HANDLERS;
-									break;
+								}
+								break;
+							default:
+								disposition = INPUT_PASS_TO_HANDLERS;
+								break;
 							}
-						}
-						else {
+						} else {
 							disposition = INPUT_PASS_TO_HANDLERS;
 						}
-						up( &sem_nec_keyscn_enable );
+						up(&sem_nec_keyscn_enable);
 					}
-					
 				}
-				up( &sem_nec_keyhook_enable );
+				up(&sem_nec_keyhook_enable);
 			}
 #endif	
 			if (value != 2) {
@@ -1322,187 +1312,156 @@ static void input_proc_exit(void)
 	remove_proc_entry("bus/input", NULL);
 }
 
-#ifdef CONFIG_DVE033_NORMAL_RELEASE 
+#ifdef CONFIG_DVE033_NORMAL_RELEASE
 static int nec_keyhook_proc_read(char *buffer, char **start, off_t offset,
-                         int count, int *peof, void *dat)
+				 int count, int *peof, void *dat)
 {
-
 	wait_for_completion_interruptible(&nec_content_completion);
 	init_completion(&nec_content_completion);
-	if( down_interruptible(&sem_nec_key_buff) ){
-		printk( KERN_INFO "input : down_interruptible for key_buff failed\n");
-	}else{
-		memcpy(buffer,(void *)(&nec_key_buff),sizeof(nec_key_buff));
+	if (down_interruptible(&sem_nec_key_buff)) {
+		printk(KERN_INFO "input : down_interruptible for key_buff failed\n");
+	} else {
+		memcpy(buffer, (void *)(&nec_key_buff), sizeof(nec_key_buff));
 		up(&sem_nec_key_buff);
 	}
-	*start= &buffer[0];
-    return sizeof(nec_key_buff);
+	*start = &buffer[0];
+	return sizeof(nec_key_buff);
 }
-static int nec_keyhook_proc_write(struct file* filp, const char* buffer, unsigned long count, void* data )
+static int nec_keyhook_proc_write(struct file *filp, const char *buffer, unsigned long count, void *data)
 {
 	int copy_len;
 	char buf[NEC_WRITEBUF_SIZE];
 
-	
-	if ( down_interruptible( &sem_nec_keyhook_enable ) ) {
-		printk( KERN_INFO "proctest : down_interruptible for write failed\n");
+	if (down_interruptible(&sem_nec_keyhook_enable)) {
+		printk(KERN_INFO "proctest : down_interruptible for write failed\n");
 		return -ERESTARTSYS;
 	}
-	
-	if ( count > NEC_WRITEBUF_SIZE )
+	if (count > NEC_WRITEBUF_SIZE)
 		copy_len = NEC_WRITEBUF_SIZE;
 	else
- 		copy_len = count;
+		copy_len = count;
+	if (copy_from_user(buf, buffer, copy_len)) {
 
-	if ( copy_from_user( buf, buffer, copy_len ) ) {
-		
-		up( &sem_nec_keyhook_enable );
- 		printk( KERN_INFO "proctest : copy_from_user failed\n");
+		up(&sem_nec_keyhook_enable);
+		printk(KERN_INFO "proctest : copy_from_user failed\n");
 		return -EFAULT;
- 	}
- 	nec_keyhook_enable = (int)(buf[0]-'0');
-	
-	up( &sem_nec_keyhook_enable );
-
+	}
+	nec_keyhook_enable = (int)(buf[0] - '0');
+	up(&sem_nec_keyhook_enable);
 	return copy_len;
 }
 static int nec_keyhook_state_proc_read(char *buffer, char **start, off_t offset,
-                         int count, int *peof, void *dat)
+				       int count, int *peof, void *dat)
 {
-	if ( down_interruptible( &sem_nec_keyhook_state ) ) {
-		printk( KERN_INFO "proctest : down_interruptible for state write failed\n");
+	if (down_interruptible(&sem_nec_keyhook_state)) {
+		printk(KERN_INFO "proctest : down_interruptible for state write failed\n");
 		return -ERESTARTSYS;
 	}
-	buffer[0]=(char)(hook_state + '0');
-	buffer[1]=(char)0;
-	*start= &buffer[0];
-
-	up( &sem_nec_keyhook_state );
-
-    return sizeof(char);
+	buffer[0] = (char)(hook_state + '0');
+	buffer[1] = (char)0;
+	*start = &buffer[0];
+	up(&sem_nec_keyhook_state);
+	return sizeof(char);
 }
-static int nec_keyhook_state_proc_write(struct file* filp, const char* buffer, unsigned long count, void* data )
+static int nec_keyhook_state_proc_write(struct file *filp, const char *buffer, unsigned long count, void *data)
 {
 	int copy_len;
 	char buf[NEC_WRITEBUF_SIZE];
 
-	
-	if ( down_interruptible( &sem_nec_keyhook_state ) ) {
-		printk( KERN_INFO "proctest : down_interruptible for state write failed\n");
+	if (down_interruptible(&sem_nec_keyhook_state)) {
+		printk(KERN_INFO "proctest : down_interruptible for state write failed\n");
 		return -ERESTARTSYS;
 	}
-	
-	if ( count > NEC_WRITEBUF_SIZE )
+	if (count > NEC_WRITEBUF_SIZE)
 		copy_len = NEC_WRITEBUF_SIZE;
 	else
- 		copy_len = count;
-
-	if ( copy_from_user( buf, buffer, copy_len ) ) {
-		
-		up( &sem_nec_keyhook_state );
- 		printk( KERN_INFO "proctest : copy_from_user failed\n");
+		copy_len = count;
+	if (copy_from_user(buf, buffer, copy_len)) {
+		up(&sem_nec_keyhook_state);
+		printk(KERN_INFO "proctest : copy_from_user failed\n");
 		return -EFAULT;
- 	}
- 	hook_state = (int)(buf[0]-'0');
-	
-	up( &sem_nec_keyhook_state );
-
+	}
+	hook_state = (int)(buf[0] - '0');
+	up(&sem_nec_keyhook_state);
 	return copy_len;
 }
 
-
-static int nec_keyscn_enable_proc_write(struct file* filp, const char* buffer, unsigned long count, void* data )
+static int nec_keyscn_enable_proc_write(struct file *filp, const char *buffer, unsigned long count, void *data)
 {
 	int copy_len = 0;
-	
-	char buf[NEC_WRITEBUF_SIZE];	
-
-	
-	if ( down_interruptible( &sem_nec_keyscn_enable ) ) {
-		printk( KERN_INFO "proctest : down_interruptible for keyscn_enable failed\n");
+	char buf[NEC_WRITEBUF_SIZE];
+	if (down_interruptible(&sem_nec_keyscn_enable)) {
+		printk(KERN_INFO "proctest : down_interruptible for keyscn_enable failed\n");
 		return -ERESTARTSYS;
 	}
-	
-	if ( count > NEC_WRITEBUF_SIZE ) {
+	if (count > NEC_WRITEBUF_SIZE)
 		copy_len = NEC_WRITEBUF_SIZE;
-	}
-	else {
- 		copy_len = count;
-	}
-
-	if ( copy_from_user( buf, buffer, copy_len ) ) {
-		
-		up( &sem_nec_keyscn_enable );
- 		printk( KERN_INFO "proctest : copy_from_user failed\n");
+	else
+		copy_len = count;
+	if (copy_from_user(buf, buffer, copy_len)) {
+		up(&sem_nec_keyscn_enable);
+		printk(KERN_INFO "proctest : copy_from_user failed\n");
 		return -EFAULT;
- 	}
- 	nec_keyscn_enable = (int)(buf[0]-'0');
- 	printk( KERN_INFO "nec_keyscn_enable(%d) \n",nec_keyscn_enable);
-	
-	up( &sem_nec_keyscn_enable );
-
+	}
+	nec_keyscn_enable = (int)(buf[0] - '0');
+	printk(KERN_INFO "nec_keyscn_enable(%d) \n", nec_keyscn_enable);
+	up(&sem_nec_keyscn_enable);
 	return copy_len;
 }
 
 static int nec_keyscn_hook_proc_read(char *buffer, char **start, off_t offset,
-                         int count, int *peof, void *dat)
+				     int count, int *peof, void *dat)
 {
 	memset((void *)&nec_keyscn_buff, 0, sizeof(nec_keyscn_buff));
 	wait_for_completion_interruptible(&nec_keyscn_completion);
 	init_completion(&nec_keyscn_completion);
-	if( down_interruptible(&sem_nec_keyscn_buff) ){
-		printk( KERN_INFO "input : down_interruptible for keyscn_buff failed\n");
-	}else{
-		memcpy(buffer,(void *)(&nec_keyscn_buff),sizeof(nec_keyscn_buff));
+	if (down_interruptible(&sem_nec_keyscn_buff)) {
+		printk(KERN_INFO "input : down_interruptible for keyscn_buff failed\n");
+	} else {
+		memcpy(buffer, (void *)(&nec_keyscn_buff), sizeof(nec_keyscn_buff));
 		up(&sem_nec_keyscn_buff);
 	}
-	*start= &buffer[0];
-    return sizeof(nec_keyscn_buff);
+	*start = &buffer[0];
+	return sizeof(nec_keyscn_buff);
 }
-
 
 static int __init nec_proc_init(void)
 {
 	struct proc_dir_entry *dirp;
 
 	dirp = (struct proc_dir_entry *)
-		create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYHOOK_ENTRY, 0444, 0);
+	    create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYHOOK_ENTRY, 0444, 0);
 	if (dirp == 0)
-		return(-EINVAL);
+		return (-EINVAL);
 
-    dirp->read_proc = (read_proc_t *) nec_keyhook_proc_read; 
+	dirp->read_proc = (read_proc_t *)nec_keyhook_proc_read;
 
 	dirp = (struct proc_dir_entry *)
-		create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYHOOK_ENABLE_ENTRY, 0222, 0);
+	    create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYHOOK_ENABLE_ENTRY, 0222, 0);
 	if (dirp == 0)
-		return(-EINVAL);
+		return (-EINVAL);
 
-	dirp->write_proc = (write_proc_t *) nec_keyhook_proc_write;
-
+	dirp->write_proc = (write_proc_t *)nec_keyhook_proc_write;
 
 	dirp = (struct proc_dir_entry *)
-		create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYHOOK_STATE_ENTRY , 0666, 0);
+	    create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYHOOK_STATE_ENTRY, 0666, 0);
 	if (dirp == 0)
-		return(-EINVAL);
+		return (-EINVAL);
 
-    dirp->read_proc = (read_proc_t *) nec_keyhook_state_proc_read; 
-	dirp->write_proc = (write_proc_t *) nec_keyhook_state_proc_write;
-
-	
-	dirp = (struct proc_dir_entry *)
-		create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYSCN_ENABLE, 0222, 0);
-	if (dirp == 0) {
-		return(-EINVAL);
-	}
-	dirp->write_proc = (write_proc_t *) nec_keyscn_enable_proc_write;
+	dirp->read_proc = (read_proc_t *)nec_keyhook_state_proc_read;
+	dirp->write_proc = (write_proc_t *)nec_keyhook_state_proc_write;
 
 	dirp = (struct proc_dir_entry *)
-		create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYSCN_HOOK_OUT, 0444, 0);
-	if (dirp == 0) {
-		return(-EINVAL);
-	}
-    dirp->read_proc = (read_proc_t *) nec_keyscn_hook_proc_read; 
-	
+	    create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYSCN_ENABLE, 0222, 0);
+	if (dirp == 0)
+		return (-EINVAL);
+	dirp->write_proc = (write_proc_t *)nec_keyscn_enable_proc_write;
+
+	dirp = (struct proc_dir_entry *)
+	    create_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYSCN_HOOK_OUT, 0444, 0);
+	if (dirp == 0)
+		return (-EINVAL);
+	dirp->read_proc = (read_proc_t *)nec_keyscn_hook_proc_read;
 
 	return 0;
 }
@@ -1510,14 +1469,10 @@ static void nec_proc_exit(void)
 {
 	remove_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYHOOK_ENTRY, NULL);
 	remove_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYHOOK_ENABLE_ENTRY, NULL);
-
 	remove_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYHOOK_STATE_ENTRY, NULL);
-	
 	remove_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYSCN_ENABLE, NULL);
 	remove_proc_entry(NEC_PROC_DIR "/" NEC_PROC_KEYSCN_HOOK_OUT, NULL);
-	
 }
-
 
 #endif	
 #else /* !CONFIG_PROC_FS */

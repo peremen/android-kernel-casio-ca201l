@@ -1114,16 +1114,12 @@ int mipi_dsi_cmds_tx(struct msm_fb_data_type *mfd,
 {
 	struct dsi_cmd_desc *cm;
 	uint32 dsi_ctrl, ctrl;
-	int i, video_mode,board_revision;
+	int i, video_mode, board_revision;
 	unsigned long flag;
 	static int gpio24;
 
- 
-	board_revision = get_m7system_board_revision();	
+	board_revision = get_m7system_board_revision();
 
-	
-	
-	
 	/* turn on cmd mode
 	* for video mode, do not send cmds more than
 	* one pixel line, since it only transmit it
@@ -1157,45 +1153,34 @@ int mipi_dsi_cmds_tx(struct msm_fb_data_type *mfd,
 	cm = cmds;
 	mipi_dsi_buf_init(tp);
 	
-	
- 
-
 #if 0
 	if(0)
 #else
-	if(1)
+	if (1)
 #endif
-
 	{
-		for (i = 0; i < cnt; i++) 
-		{
+		for (i = 0; i < cnt; i++) {
 			mipi_dsi_buf_init(tp);
 			mipi_dsi_cmd_dma_add(tp, cm);
 			mipi_dsi_cmd_dma_tx(tp);
 			if (cm->wait)
-			msleep(cm->wait);
+				msleep(cm->wait);
 			cm++;
 		}
-	}
-	else
- 	{
+	} else {
 		gpio24 = PM8921_GPIO_PM_TO_SYS(24);
 
-		if(gpio_get_value_cansleep(gpio24))
-		{
-			for (i = 0; i < cnt; i++) 
-			{
+		if (gpio_get_value_cansleep(gpio24)) {
+			for (i = 0; i < cnt; i++) {
 				mipi_dsi_buf_init(tp);
 				mipi_dsi_cmd_dma_add(tp, cm);
 				mipi_dsi_cmd_dma_tx(tp);
 				if (cm->wait)
-				msleep(cm->wait);
+					msleep(cm->wait);
 				cm++;
 			}
 		}
 	}
- 
-	
 
 	spin_lock_irqsave(&dsi_mdp_lock, flag);
 	dsi_mdp_busy = FALSE;

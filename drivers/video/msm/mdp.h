@@ -51,9 +51,7 @@ extern struct mdp_csc_cfg mdp_csc_convert[4];
 
 extern struct workqueue_struct *mdp_hist_wq;
 
-
 extern MSM_FB_REQUEST_FLAG mdp4_overlay_argb_enable;    
-
 
 #define MDP4_REVISION_V1		0
 #define MDP4_REVISION_V2		1
@@ -97,7 +95,6 @@ extern struct mdp_ccs mdp_ccs_rgb2yuv ;
 extern unsigned char hdmi_prim_display;
 
 extern MSM_FB_REQUEST_FLAG mdp4_overlay_argb_enable;    
-
 
 /*
  * MDP Image Structure
@@ -841,9 +838,7 @@ static inline void mdp_dsi_cmd_overlay_suspend(void)
 }
 #endif
 
-
 void mdp_mddi_dma_s_stop(int dma_flg);
-
 
 #ifdef CONFIG_FB_MSM_DTV
 void mdp_vid_quant_set(void);

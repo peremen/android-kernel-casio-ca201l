@@ -683,13 +683,13 @@ static void call_console_drivers(unsigned start, unsigned end)
 	static int msg_level = -1;
 
 #ifdef REMOVE_LOG
-	if(1 == remove_log_flag)
-	{
-		if(msg_level == -1) return;
-		if(msg_level != -1) return;
+	if (1 == remove_log_flag) {
+		if (msg_level == -1)
+			return;
+		if (msg_level != -1)
+			return;
 	}
 #endif
-
 	BUG_ON(((int)(start - end)) > 0);
 
 	cur_index = start;
@@ -802,20 +802,19 @@ asmlinkage int printk(const char *fmt, ...)
 {
 	va_list args;
 	int r;
-
 #ifdef REMOVE_LOG
 	int i = 0;
 #endif
-
 #ifdef CONFIG_MSM_RTB
 	void *caller = __builtin_return_address(0);
 #endif
 
 #ifdef REMOVE_LOG
-	if(1 == remove_log_flag)
-	{
-		if(i == 0) return 0;
-		if(i != 0) return 0;
+	if (1 == remove_log_flag) {
+		if (i == 0)
+			return 0;
+		if (i != 0)
+			return 0;
 	}
 #endif
 
@@ -919,10 +918,11 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	char special;
 
 #ifdef REMOVE_LOG
-	if(1 == remove_log_flag)
-	{
-		if(printed_len == 0) return 0;
-		if(printed_len != 0) return 0;
+	if (1 == remove_log_flag) {
+		if (printed_len == 0)
+			return 0;
+		if (printed_len != 0)
+			return 0;
 	}
 #endif
 
@@ -967,7 +967,6 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 
 
 	p = printk_buf;
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 	save_kernel_panic_log(p);
 #endif

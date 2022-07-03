@@ -36,12 +36,10 @@
 #include <mach/subsystem_notif.h>
 #include <mach/subsystem_restart.h>
 
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 #include <mach/restart.h>
 #include <mach/board_gg3.h>
 #endif
-
 
 #include "smd_private.h"
 
@@ -321,11 +319,9 @@ static int subsystem_restart_thread(void *data)
 	int i;
 	int restart_list_count = 0;
 
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 	int subsys_magic_key = m7_get_magic_for_subsystem();
 #endif
-
 	if (r_work->coupled)
 		soc_restart_order = subsys->restart_order;
 
@@ -362,7 +358,6 @@ static int subsystem_restart_thread(void *data)
 	 * sequence for these subsystems. In the latter case, panic and bail
 	 * out, since a subsystem died in its powerup sequence.
 	 */
-
 	if (!mutex_trylock(powerup_lock)) {
 #ifdef CONFIG_FATAL_INFO_HANDLE
 		msm_set_restart_mode(subsys_magic_key|ERR_FAILED_DURING_POWER_UP);
@@ -468,9 +463,8 @@ int subsystem_restart(const char *subsys_name)
 	struct subsys_data *subsys;
 	struct task_struct *tsk;
 	struct restart_thread_data *data = NULL;
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
-	u32 subsys_magic_key;;
+	u32 subsys_magic_key;
 #endif
 
 	if (!subsys_name) {
@@ -531,7 +525,6 @@ int subsystem_restart(const char *subsys_name)
 		 */
 		tsk = kthread_run(subsystem_restart_thread, data,
 				"subsystem_restart_thread");
-
 		if (IS_ERR(tsk)) {
 #ifdef CONFIG_FATAL_INFO_HANDLE
 			msm_set_restart_mode(subsys_magic_key|ERR_UNABLE_RESTART_THREAD);
@@ -543,21 +536,17 @@ int subsystem_restart(const char *subsys_name)
 		break;
 
 	case RESET_SOC:
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 		msm_set_restart_mode(subsys_magic_key|ERR_RESET_SOC);
 #endif
-
 		panic("subsys-restart: Resetting the SoC - %s crashed.",
 			subsys->name);
 		break;
 
 	default:
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 		msm_set_restart_mode(ERR_UNKNOWN);
 #endif
-
 		panic("subsys-restart: Unknown restart level!\n");
 	break;
 

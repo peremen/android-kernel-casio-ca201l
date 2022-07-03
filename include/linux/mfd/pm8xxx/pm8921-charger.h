@@ -129,11 +129,8 @@ struct pm8921_charger_platform_data {
 	unsigned int			(*get_batt_capacity_percent) (void);
 	int64_t				batt_id_min;
 	int64_t				batt_id_max;
-	
 	int64_t				batt_id_min_ext;
 	int64_t				batt_id_max_ext;
-		
-	
 	int				trkl_voltage;
 	int				weak_voltage;
 	int				trkl_current;
@@ -272,11 +269,6 @@ int pm8921_usb_ovp_set_hystersis(enum pm8921_usb_debounce_time ms);
  *
  */
 int pm8921_usb_ovp_disable(int disable);
-
-
-
-
-
 
 int pm8921_is_batfet_closed(void);
 

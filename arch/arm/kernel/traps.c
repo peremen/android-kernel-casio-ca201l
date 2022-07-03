@@ -66,7 +66,6 @@ static void dump_mem(const char *, const char *, unsigned long, unsigned long);
 void dump_backtrace_entry(unsigned long where, unsigned long from, unsigned long frame)
 {
 #ifdef CONFIG_KALLSYMS
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 	if(first_call_chain)
 		set_kernel_panic_log(1);
@@ -75,7 +74,6 @@ void dump_backtrace_entry(unsigned long where, unsigned long from, unsigned long
 #ifdef CONFIG_FATAL_INFO_HANDLE
 	set_kernel_panic_log(0);
 #endif
-
 #else
 	printk("Function entered at [<%08lx>] from [<%08lx>]\n", where, from);
 #endif
@@ -262,7 +260,6 @@ static int __die(const char *str, int err, struct thread_info *thread, struct pt
 #endif
 	printk(KERN_EMERG "Internal error: %s: %x [#%d]" S_PREEMPT S_SMP "\n",
 	       str, err, ++die_counter);
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 	set_kernel_panic_log(0);
 #endif
@@ -273,13 +270,11 @@ static int __die(const char *str, int err, struct thread_info *thread, struct pt
 		return ret;
 
 	print_modules();
-	
 	#ifdef CONFIG_FATAL_INFO_HANDLE
 	__show_regs_fatal(regs);
 	#else
 	__show_regs(regs);
 	#endif
-	
 	printk(KERN_EMERG "Process %.*s (pid: %d, stack limit = 0x%p)\n",
 		TASK_COMM_LEN, tsk->comm, task_pid_nr(tsk), thread + 1);
 
@@ -288,12 +283,9 @@ static int __die(const char *str, int err, struct thread_info *thread, struct pt
 			 THREAD_SIZE + (unsigned long)task_stack_page(tsk));
 		dump_backtrace(regs, tsk);
 		dump_instr(KERN_EMERG, regs);
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
-
 		first_call_chain = 0;
 #endif
-
 	}
 
 	return ret;

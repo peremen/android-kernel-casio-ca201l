@@ -681,31 +681,22 @@ struct input_keymap_entry {
 #define KEY_CAMERA_LEFT		0x219
 #define KEY_CAMERA_RIGHT	0x21a
 
-
-#define KEY_TACTILE			0x21b
-
-
+#define KEY_TACTILE		0x21b
 
 #define KEY_DIAG_HARDKEY 	0x21c
 #define KEY_DIAG_SOFTKEY 	0x21d
 #define KEY_DIAG_NORMAL  	0x21e
 #define KEY_DIAG_GLOVE   	0x21f
 #define KEY_DIAG_KEYLED  	0x220
-#define KEY_DIAG_BACKLIGHT 0x221
+#define KEY_DIAG_BACKLIGHT	 0x221
 #define KEY_DIAG_WHITE   	0x222
 #define KEY_DIAG_RAINBOW 	0x223
 #define KEY_DIAG_FRAME   	0x224
-#define KEY_DIAG_SOFTBL	0x225
+#define KEY_DIAG_SOFTBL		0x225
 #define KEY_DIAG_NORMAL2  	0x226
 #define KEY_DIAG_GLOVE2   	0x227
 
-
-#define KEY_DIAG_NFCMENU		0x228
-
-
-
-
-
+#define KEY_DIAG_NFCMENU	0x228
 
 #define BTN_TRIGGER_HAPPY		0x2c0
 #define BTN_TRIGGER_HAPPY1		0x2c0

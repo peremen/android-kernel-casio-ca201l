@@ -2,7 +2,6 @@
 /* Modified by                                                         */
 /* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 /***********************************************************************/
-
 #ifndef _LINUX_PROC_FS_H
 #define _LINUX_PROC_FS_H
 

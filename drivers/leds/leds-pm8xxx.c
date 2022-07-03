@@ -55,7 +55,6 @@
 #define PM8XXX_FLASH_MODE_PWM		3
 
 #define MAX_LC_LED_BRIGHTNESS		20
-
 #define MAX_LC_LED_BUTTON_BRIGHTNESS		255
 #define MAX_FLASH_BRIGHTNESS		15
 #define MAX_KB_LED_BRIGHTNESS		15
@@ -64,18 +63,15 @@
 
 #define PM8XXX_LED_PWM_FLAGS	(PM_PWM_LUT_LOOP | PM_PWM_LUT_RAMP_UP)
 
-
 #define DVE068_DEBUG 0
 
-enum{
+enum {
 	LED_NOT_CHARGE = 0,
 	LED_WALL_CHARGE,
 	LED_USB_CHARGE,
 	LED_CRADLE_CHARGE,
 	LED_WIRELESS_CHARGE,
 };
-
-
 
 static int leds_button_index_table[256]=
 {
@@ -170,17 +166,6 @@ struct pm8xxx_led_data {
 	struct pm8xxx_pwm_duty_cycles *pwm_duty_cycles;
 };
 
-#if 0
-
-static int led_charge_mode = 0;
-
-extern void mxt_charger_config_write(void);
-extern void mxt_normal_config_write(void);
-extern void mxt_wireless_config_write(void);
-extern int pm_power_get_charger_mode(void);
-
-#endif
-
 static void led_kp_set(struct pm8xxx_led_data *led, enum led_brightness value)
 {
 	int rc;
@@ -222,7 +207,6 @@ static void led_lc_set(struct pm8xxx_led_data *led, enum led_brightness value)
 		dev_err(led->cdev.dev, "can't set (%d) led value rc=%d\n",
 				led->id, rc);
 }
-
 
 static void led_lc_button_set(struct pm8xxx_led_data *led, enum led_brightness value)
 {
@@ -275,24 +259,6 @@ led_flash_set(struct pm8xxx_led_data *led, enum led_brightness value)
 			 led->id, rc);
 }
 
-#if 0
-
-static void pm8xxx_led_touch_config(void)
-{
-	led_charge_mode = pm_power_get_charger_mode();
-
-	if(led_charge_mode==LED_WALL_CHARGE || led_charge_mode==LED_USB_CHARGE)
-		mxt_charger_config_write();
-	else if(led_charge_mode==LED_WIRELESS_CHARGE)
-		mxt_wireless_config_write();
-	else if(led_charge_mode==LED_NOT_CHARGE)
-		mxt_normal_config_write();
-		
-	return;
-}
-
-#endif
-
 static int pm8xxx_led_pwm_work(struct pm8xxx_led_data *led)
 {
 	int duty_us;
@@ -303,21 +269,9 @@ static int pm8xxx_led_pwm_work(struct pm8xxx_led_data *led)
 								LED_FULL;
 		rc = pwm_config(led->pwm_dev, duty_us, led->pwm_period_us);
 		if (led->cdev.brightness)
-		{
 			rc = pwm_enable(led->pwm_dev);
-			
-			
-			
-			
-		}
 		else
-		{
 			pwm_disable(led->pwm_dev);
-			
-			
-			
-			
-		}
 	} else {
 		rc = pm8xxx_pwm_lut_enable(led->pwm_dev, led->cdev.brightness);
 	}
@@ -338,7 +292,6 @@ static void __pm8xxx_led_work(struct pm8xxx_led_data *led,
 	case PM8XXX_ID_LED_1:
 		led_lc_set(led, level);
 	break;
-    
 	case PM8XXX_ID_LED_2:
 		led_lc_button_set(led, level);
 	break;
@@ -398,7 +351,6 @@ static int pm8xxx_set_led_mode_and_max_brightness(struct pm8xxx_led_data *led,
 			led->cdev.max_brightness = MAX_LC_LED_BRIGHTNESS;
 		led->reg = led_mode;
 		break;
-    
 	case PM8XXX_ID_LED_2:
 		led->cdev.max_brightness = max_current /
 						PM8XXX_ID_LED_CURRENT_FACTOR;

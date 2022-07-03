@@ -20,58 +20,44 @@
 static unsigned char g_i2c_error_cause = 0;
 static unsigned char g_i2c_event_id = 0;
 
-static void msm_camera_i2c_alarm_watch(int32_t cause, uint16_t saddr , unsigned char *data, int direction)
+static void msm_camera_i2c_alarm_watch(int32_t cause, uint16_t saddr, unsigned char *data, int direction)
 {
-    unsigned char event_id    = 0x00;   
-    unsigned char error_info  = 0x00;   
-    unsigned char error_cause = 0x00;   
+	unsigned char event_id = 0x00;
+	unsigned char error_info = 0x00;
+	unsigned char error_cause = 0x00;
 
-    
-    if( direction == 1){
-        
-        error_info = 0x09;
-    } else {
-        
-        error_info = 0x0A;
-    }
-
-    
+	if (direction == 1) {
+		error_info = 0x09;
+	} else {
+		error_info = 0x0A;
+	}
 #ifdef CONFIG_IMX111
-    if(saddr == 0x1A){
-        event_id = 0x6F;   
-    }
+	if (saddr == 0x1A) {
+		event_id = 0x6F;
+	}
 #endif
-
 #ifdef CONFIG_IMX111_ACT
-    if(saddr == 0x0C){
-        event_id = 0x6F;   
-    }
+	if (saddr == 0x0C) {
+		event_id = 0x6F;
+	}
 #endif
-
 #ifdef CONFIG_MT9M113
-    if(saddr == 0x3D){
-        event_id = 0x6B;   
-    }
+	if (saddr == 0x3D) {
+		event_id = 0x6B;
+	}
 #endif
-
 #ifdef CONFIG_MT9D115_SUB
-    if(saddr == 0x3C){
-        event_id = 0x6B;   
-    }
+	if (saddr == 0x3C) {
+		event_id = 0x6B;
+	}
 #endif
-
-    
-    error_cause = ( unsigned char )( cause * -1 );
-
-    if ( (g_i2c_error_cause != error_cause) && (g_i2c_event_id != event_id))
-    {        
-        
-        printk( KERN_ERR "[T][ARM]Event:0x%02X Info:0x%02X%02X%02X%02X",
-                          event_id, error_info, error_cause, data[0], data[1] );
-
-        g_i2c_error_cause = error_cause;
-        g_i2c_event_id = event_id;
-    }
+	error_cause = (unsigned char)(cause * -1);
+	if ((g_i2c_error_cause != error_cause) && (g_i2c_event_id != event_id)) {
+		printk(KERN_ERR "[T][ARM]Event:0x%02X Info:0x%02X%02X%02X%02X",
+		       event_id, error_info, error_cause, data[0], data[1]);
+		g_i2c_error_cause = error_cause;
+		g_i2c_event_id = event_id;
+	}
 }
 
 int32_t msm_camera_i2c_rxdata(struct msm_camera_i2c_client *dev_client,
@@ -94,11 +80,10 @@ int32_t msm_camera_i2c_rxdata(struct msm_camera_i2c_client *dev_client,
 		},
 	};
 	rc = i2c_transfer(dev_client->client->adapter, msgs, 2);
-	if (rc < 0)
-    {
+	if (rc < 0) {
 		S_I2C_DBG("msm_camera_i2c_rxdata failed 0x%x\n", saddr);
-        msm_camera_i2c_alarm_watch(rc,saddr,rxdata,2);
-    }
+		msm_camera_i2c_alarm_watch(rc, saddr, rxdata, 2);
+	}
 	return rc;
 }
 
@@ -116,19 +101,13 @@ int32_t msm_camera_i2c_txdata(struct msm_camera_i2c_client *dev_client,
 		 },
 	};
 	rc = i2c_transfer(dev_client->client->adapter, msg, 1);
-	if (rc < 0)
-    {
+	if (rc < 0) {
 		S_I2C_DBG("msm_camera_i2c_txdata faild 0x%x\n", saddr);
-        msm_camera_i2c_alarm_watch(rc,saddr,txdata,1);
-    }
-#if 1 
-    else{
-        rc = 0;
-    }
-    return rc;
-#else 
-	return 0;
-#endif 
+		msm_camera_i2c_alarm_watch(rc, saddr, txdata, 1);
+	} else {
+		rc = 0;
+	}
+	return rc;
 }
 
 int32_t msm_camera_i2c_write(struct msm_camera_i2c_client *client,

@@ -2,7 +2,6 @@
 /* Modified by                                                         */
 /* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 /***********************************************************************/
-
 #ifndef _LINUX_SCHED_H
 #define _LINUX_SCHED_H
 
@@ -294,12 +293,9 @@ static inline void show_state(void)
 }
 
 extern void show_regs(struct pt_regs *);
-
-
 #ifdef CONFIG_FATAL_INFO_HANDLE
 extern void show_regs_fatal(struct pt_regs *);
 #endif
-
 
 /*
  * TASK is a pointer to the task whose backtrace we want to see (or NULL for current
@@ -819,15 +815,9 @@ enum cpu_idle_type {
  * when BITS_PER_LONG <= 32 are pretty high and the returns do not justify the
  * increased costs.
  */
-#if 0 /* BITS_PER_LONG > 32 -- currently broken: it increases power usage under light load  */
-# define SCHED_LOAD_RESOLUTION	10
-# define scale_load(w)		((w) << SCHED_LOAD_RESOLUTION)
-# define scale_load_down(w)	((w) >> SCHED_LOAD_RESOLUTION)
-#else
-# define SCHED_LOAD_RESOLUTION	0
-# define scale_load(w)		(w)
-# define scale_load_down(w)	(w)
-#endif
+#define SCHED_LOAD_RESOLUTION	0
+#define scale_load(w)		(w)
+#define scale_load_down(w)	(w)
 
 #define SCHED_LOAD_SHIFT	(10 + SCHED_LOAD_RESOLUTION)
 #define SCHED_LOAD_SCALE	(1L << SCHED_LOAD_SHIFT)

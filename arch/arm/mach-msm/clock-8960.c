@@ -14,7 +14,6 @@
 /* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 /***********************************************************************/
 
-
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/err.h>
@@ -475,15 +474,8 @@ static int set_vdd_l23(struct clk_vdd_class *vdd_class, int level)
 			rpm_vreg_set_voltage(RPM_VREG_ID_PM8921_L23,
 				RPM_VREG_VOTER3, 1800000, 1800000, 1);
 	} else {
-	    
-	    #if 1
 		rc = rpm_vreg_set_voltage(RPM_VREG_ID_PM8921_S8,
 				RPM_VREG_VOTER3, 2050000, 2050000, 1);
-		#else
-        rc = rpm_vreg_set_voltage(RPM_VREG_ID_PM8921_S8,
-				RPM_VREG_VOTER3, 2200000, 2200000, 1);
-		#endif
-		
 		if (rc)
 			return rc;
 		rc = rpm_vreg_set_voltage(RPM_VREG_ID_PM8921_L23,
@@ -2602,9 +2594,7 @@ static struct clk_freq_tbl clk_tbl_cam[] = {
 	F_CAM( 16000000, pll8, 4, 1,  6),
 	F_CAM( 19200000, pll8, 4, 1,  5),
 	F_CAM( 24000000, pll8, 4, 1,  4),
-
 	F_CAM( 25600000, pll8, 1, 2, 30),
-
 	F_CAM( 32000000, pll8, 4, 1,  3),
 	F_CAM( 48000000, pll8, 4, 1,  2),
 	F_CAM( 64000000, pll8, 3, 1,  2),
@@ -5295,18 +5285,14 @@ static struct clk_lookup msm_clocks_8960_v1[] __initdata = {
 	CLK_LOOKUP("core_clk",		pmic_ssbi2_clk.c,	NULL),
 	CLK_LOOKUP("mem_clk",		rpm_msg_ram_p_clk.c,	NULL),
 	CLK_LOOKUP("core_clk",		amp_clk.c,		NULL),
-
 #ifdef CONFIG_MT9M113
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-003c"),
 #endif 
-
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-001a"),
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-006c"),
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-0048"),
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-0020"),
-
 	CLK_LOOKUP("cam_clk",		cam0_clk.c,	"4-0036"),
-
 	CLK_LOOKUP("csi_src_clk",	csi0_src_clk.c,		"msm_csid.0"),
 	CLK_LOOKUP("csi_src_clk",	csi1_src_clk.c,		"msm_csid.1"),
 	CLK_LOOKUP("csi_src_clk",	csi2_src_clk.c,		"msm_csid.2"),

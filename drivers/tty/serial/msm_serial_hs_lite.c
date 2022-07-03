@@ -13,14 +13,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
-/* Acknowledgements:
- * This file is based on msm_serial.c, originally
- * Written by Robert Love <rlove@google.com>  */
 /***********************************************************************/
 /* Modified by                                                         */
 /* (C) NEC CASIO Mobile Communications, Ltd. 2013                      */
 /***********************************************************************/
+
+/* Acknowledgements:
+ * This file is based on msm_serial.c, originally
+ * Written by Robert Love <rlove@google.com>  */
 
 #if defined(CONFIG_SERIAL_MSM_HSL_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 #define SUPPORT_SYSRQ
@@ -1356,9 +1356,9 @@ static DEVICE_ATTR(console, S_IWUSR | S_IRUGO, show_msm_console,
 						set_msm_console);
 #else
 #define MSM_HSL_CONSOLE	NULL
-#if 1	
+
 static int get_console_state(struct uart_port *port) { return 0; }
-#endif
+
 #endif
 
 static struct uart_driver msm_hsl_uart_driver = {

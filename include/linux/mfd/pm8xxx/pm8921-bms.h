@@ -18,9 +18,7 @@
 #define __PM8XXX_BMS_H
 
 #include <linux/errno.h>
-
 #include <linux/types.h>
-
 
 #define PM8921_BMS_DEV_NAME	"pm8921-bms"
 
@@ -141,12 +139,10 @@ struct pm8921_bms_platform_data {
 	int				ignore_shutdown_soc;
 	int				adjust_soc_low_threshold;
 	int				chg_term_ua;
-
 	int				batt_id_min;
 	int				batt_id_max;
 	int				batt_id_min_ext;
 	int				batt_id_max_ext;
-
 };
 
 #if defined(CONFIG_PM8921_BMS) || defined(CONFIG_PM8921_BMS_MODULE)
@@ -223,27 +219,9 @@ int pm8921_bms_get_simultaneous_battery_voltage_and_current(int *ibat_ua,
  */
 int pm8921_bms_get_rbatt(void);
 
-
-
-
-
-
 void pm8921_bms_invalidate_shutdown_soc(void);
-
-
-
-
-
-
 int64_t pm8921_bms_get_batt_id_mean_mv(void);
-
-
-
-
-
 bool pm8921_bms_is_mean_batt_id_ready(void);
-
-
 #else
 static inline int pm8921_bms_get_vsense_avg(int *result)
 {
@@ -279,6 +257,7 @@ static inline int pm8921_bms_get_rbatt(void)
 {
 	return -EINVAL;
 }
+
 static inline void pm8921_bms_invalidate_shutdown_soc(void)
 {
 }
