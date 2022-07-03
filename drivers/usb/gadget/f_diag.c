@@ -39,13 +39,8 @@ static struct usb_interface_descriptor intf_desc = {
 	.bDescriptorType    =	USB_DT_INTERFACE,
 	.bNumEndpoints      =	2,
 	.bInterfaceClass    =	0xFF,
-
 	.bInterfaceSubClass =	0x00,
 	.bInterfaceProtocol =	0x00,
-
-
-
-
 };
 
 static struct usb_endpoint_descriptor hs_bulk_in_desc = {
@@ -61,11 +56,7 @@ static struct usb_endpoint_descriptor fs_bulk_in_desc = {
 	.bDescriptorType  =	USB_DT_ENDPOINT,
 	.bEndpointAddress =	USB_DIR_IN,
 	.bmAttributes     =	USB_ENDPOINT_XFER_BULK,
-
 	.wMaxPacketSize   = __constant_cpu_to_le16(512),
-
-
-
 	.bInterval        =	0,
 };
 
@@ -83,11 +74,7 @@ static struct usb_endpoint_descriptor fs_bulk_out_desc = {
 	.bDescriptorType  =	USB_DT_ENDPOINT,
 	.bEndpointAddress =	USB_DIR_OUT,
 	.bmAttributes     =	USB_ENDPOINT_XFER_BULK,
-
 	.wMaxPacketSize   = __constant_cpu_to_le16(512),
-
-
-
 	.bInterval        =	0,
 };
 

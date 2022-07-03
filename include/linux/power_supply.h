@@ -127,10 +127,7 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_TIME_TO_FULL_NOW,
 	POWER_SUPPLY_PROP_TIME_TO_FULL_AVG,
 	POWER_SUPPLY_PROP_TYPE, /* use power_supply.type instead */
-
 	POWER_SUPPLY_PROP_SCOPE,
-
-	
 	POWER_SUPPLY_PROP_INVALID,
 	/* Properties of type `const char *' */
 	POWER_SUPPLY_PROP_CRADLE,

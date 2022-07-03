@@ -24,7 +24,6 @@ static struct single_row_lut palladium_1500_fcc_temp = {
 
 static struct single_row_lut fcc_temp_1800 = {
 	.x	= {-30, -20, -10, 0, 10, 25, 40, 60},
-	
 	.y	= {14, 862, 1375, 1744, 1726, 1787, 1824, 1777},
 	.cols	= 8,
 };
@@ -34,37 +33,6 @@ static struct single_row_lut fcc_temp_2920 = {
 	.y	= {1076, 1245, 1753, 2898, 2905, 2919, 2939, 2977},
 	.cols	= 8,
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static struct sf_lut palladium_1500_rbatt_sf = {
 	.rows		= 19,
@@ -137,7 +105,6 @@ static struct pc_temp_ocv_lut palladium_1500_pc_temp_ocv = {
 	},
 };
 
-
 static struct pc_temp_ocv_lut  pc_temp_ocv_C811 = {
 	.rows		= 29,
 	.cols		= 8,
@@ -177,84 +144,12 @@ static struct pc_temp_ocv_lut  pc_temp_ocv_C811 = {
 		{3501, 3503, 3509, 3533, 3558, 3564, 3567, 3561},
 		{3500, 3500, 3500, 3500, 3500, 3500, 3500, 3500},
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 };
 
 struct pm8921_bms_battery_data  c811_1800_data = {
 	.fcc			= 1800,
 	.fcc_temp_lut		= &fcc_temp_1800,
-
-
-
-
-
 	.pc_temp_ocv_lut	= &pc_temp_ocv_C811,
-
-
-
-
-
 	.rbatt_sf_lut		= &palladium_1500_rbatt_sf,
 	.default_rbatt_mohm	= 250,
 	.delta_rbatt_mohm	= 60,
@@ -263,18 +158,8 @@ struct pm8921_bms_battery_data  c811_1800_data = {
 struct pm8921_bms_battery_data  c811_2920_data = {
 	.fcc			= 2920,
 	.fcc_temp_lut		= &fcc_temp_2920,
-
-
-
-
-
 	.pc_temp_ocv_lut	= &pc_temp_ocv_C811,
-
-
-
-
-
-	.rbatt_sf_lut		= &palladium_1500_rbatt_sf,	
+	.rbatt_sf_lut		= &palladium_1500_rbatt_sf,
 	.default_rbatt_mohm	= 250,
 	.delta_rbatt_mohm	= 60,
 };
@@ -283,17 +168,7 @@ struct pm8921_bms_battery_data  c811_2920_data = {
 struct pm8921_bms_battery_data palladium_1500_data = {
 	.fcc			= 1500,
 	.fcc_temp_lut		= &palladium_1500_fcc_temp,
-
-
-
-
-
 	.pc_temp_ocv_lut	= &palladium_1500_pc_temp_ocv,
-
-
-
-
-
 	.rbatt_sf_lut		= &palladium_1500_rbatt_sf,
 	.default_rbatt_mohm	= 254,
 	.delta_rbatt_mohm	= 60,

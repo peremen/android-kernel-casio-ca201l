@@ -930,10 +930,7 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 
 
 	p = printk_buf;
-
-
 	save_kernel_panic_log(p);
-
 
 	/* Read log level and handle special printk prefix */
 	plen = log_prefix(p, &current_log_level, &special);

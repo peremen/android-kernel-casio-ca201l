@@ -293,12 +293,7 @@ static inline void show_state(void)
 }
 
 extern void show_regs(struct pt_regs *);
-
-
-
 extern void show_regs_fatal(struct pt_regs *);
-
-
 
 /*
  * TASK is a pointer to the task whose backtrace we want to see (or NULL for current
@@ -818,15 +813,9 @@ enum cpu_idle_type {
  * when BITS_PER_LONG <= 32 are pretty high and the returns do not justify the
  * increased costs.
  */
-
-
-
-
-
-# define SCHED_LOAD_RESOLUTION	0
-# define scale_load(w)		(w)
-# define scale_load_down(w)	(w)
-
+#define SCHED_LOAD_RESOLUTION	0
+#define scale_load(w)		(w)
+#define scale_load_down(w)	(w)
 
 #define SCHED_LOAD_SHIFT	(10 + SCHED_LOAD_RESOLUTION)
 #define SCHED_LOAD_SCALE	(1L << SCHED_LOAD_SHIFT)

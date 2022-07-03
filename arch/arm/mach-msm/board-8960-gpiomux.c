@@ -22,42 +22,7 @@
 #include "devices.h"
 #include "board-8960.h"
 
-
-
-
 #define ST21NFCA_WAKEUP_GPIO 106
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static struct gpiomux_setting gsbi1 = {
 	.func = GPIOMUX_FUNC_1,
@@ -69,7 +34,6 @@ static struct gpiomux_setting nfc_wake = {
 	.drv = GPIOMUX_DRV_2MA,
 	.pull = GPIOMUX_PULL_NONE,
 };
-
 
 static struct gpiomux_setting gsbi3_suspended_cfg = {
 	.func = GPIOMUX_FUNC_1,
@@ -95,7 +59,6 @@ static struct gpiomux_setting gsbi8 = {
 	.pull = GPIOMUX_PULL_NONE,
 };
 
-
 static struct gpiomux_setting gsbi10 = {
 	.func = GPIOMUX_FUNC_2,
 	.drv = GPIOMUX_DRV_8MA,
@@ -114,29 +77,11 @@ static struct gpiomux_setting cdc_mclk = {
 	.pull = GPIOMUX_PULL_NONE,
 };
 
-
-
 static struct gpiomux_setting es310_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
 	.drv  = GPIOMUX_DRV_2MA,
 	.pull = GPIOMUX_PULL_NONE,
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #if defined(CONFIG_KS8851) || defined(CONFIG_KS8851_MODULE)
 static struct gpiomux_setting gpio_eth_config = {
@@ -163,49 +108,6 @@ static struct gpiomux_setting wcnss_5wire_active_cfg = {
 	.drv  = GPIOMUX_DRV_6MA,
 	.pull = GPIOMUX_PULL_DOWN,
 };
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
-
 
 static struct gpiomux_setting mxt224E_reset_act_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
@@ -218,7 +120,6 @@ static struct gpiomux_setting mxt224E_int_act_cfg = {
 	.drv = GPIOMUX_DRV_8MA,
 	.pull = GPIOMUX_PULL_UP,
 };
-
 
 #ifdef CONFIG_USB_EHCI_MSM_HSIC
 static struct gpiomux_setting hsic_act_cfg = {
@@ -341,51 +242,6 @@ static struct msm_gpiomux_config msm8960_ethernet_configs[] = {
 #endif
 
 static struct msm_gpiomux_config msm8960_gsbi_configs[] __initdata = {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	{
 		.gpio      = 8,		
 		.settings = {
@@ -404,7 +260,6 @@ static struct msm_gpiomux_config msm8960_gsbi_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &nfc_wake,
 		},
 	},	
-
 	{
 		.gpio      = 16,	/* GSBI3 I2C QUP SDA */
 		.settings = {
@@ -443,7 +298,6 @@ static struct msm_gpiomux_config msm8960_gsbi_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &gsbi5,
 		},
 	},
-
 	{
 		.gpio      = 36,		
 		.settings = {
@@ -456,7 +310,6 @@ static struct msm_gpiomux_config msm8960_gsbi_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &gsbi8,
 		},
 	},
-
 	{
 		.gpio      = 44,	/* GSBI12 I2C QUP SDA */
 		.settings = {
@@ -507,8 +360,6 @@ static struct msm_gpiomux_config msm8960_audio_codec_configs[] __initdata = {
 	},
 };
 
-
-
 static struct msm_gpiomux_config msm8960_audio_amp_configs[] __initdata = {
     {
         .gpio = 64, 
@@ -535,38 +386,6 @@ static struct msm_gpiomux_config msm8960_audio_amp_configs[] __initdata = {
         }
     },    
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static struct msm_gpiomux_config wcnss_5wire_interface[] = {
 	{
@@ -606,37 +425,6 @@ static struct msm_gpiomux_config wcnss_5wire_interface[] = {
 	},
 };
 
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
-
-
 static struct msm_gpiomux_config msm8960_mxt224E_configs[] __initdata = {
 	{	
 		.gpio = 50,
@@ -644,7 +432,6 @@ static struct msm_gpiomux_config msm8960_mxt224E_configs[] __initdata = {
 			[GPIOMUX_SUSPENDED] = &mxt224E_reset_act_cfg,
 		},
 	},
-
 	{	
 		.gpio = 11,
 		.settings = {
@@ -652,8 +439,6 @@ static struct msm_gpiomux_config msm8960_mxt224E_configs[] __initdata = {
 		},
 	},
 };
-
-
 
 #ifdef CONFIG_USB_EHCI_MSM_HSIC
 static struct msm_gpiomux_config msm8960_hsic_configs[] = {
@@ -757,7 +542,6 @@ static struct msm_gpiomux_config msm8960_sdcc4_configs[] __initdata = {
 	},
 };
 #endif
-
 
 static struct msm_gpiomux_config hap_lvl_shft_config[] __initdata = {
 	{
@@ -871,25 +655,21 @@ static struct msm_gpiomux_config msm8960_hdmi_configs[] __initdata = {
 };
 #endif
 
-
-
 static struct gpiomux_setting sensor_rst_config = {
-    .func = GPIOMUX_FUNC_GPIO,
-    .drv = GPIOMUX_DRV_8MA,
-    .pull = GPIOMUX_PULL_NONE,
-    .dir = GPIOMUX_OUT_LOW,
+	.func = GPIOMUX_FUNC_GPIO,
+	.drv = GPIOMUX_DRV_8MA,
+	.pull = GPIOMUX_PULL_NONE,
+	.dir = GPIOMUX_OUT_LOW,
 };
 
 static struct msm_gpiomux_config msm8960_sensors_configs[1] = {
-    {
-        .gpio = 53, 
-        .settings =  {
-            [GPIOMUX_SUSPENDED] = &sensor_rst_config,
-        }
-    },
+	{
+		.gpio = 53,
+		.settings = {
+			[GPIOMUX_SUSPENDED] = &sensor_rst_config,
+		}
+	},
 };
-
-
 
 #ifdef CONFIG_MMC_MSM_SDC2_SUPPORT
 static struct gpiomux_setting sdcc2_clk_actv_cfg = {
@@ -984,14 +764,8 @@ int __init msm8960_init_gpiomux(void)
 	msm_gpiomux_install(msm8960_gsbi_configs,
 			ARRAY_SIZE(msm8960_gsbi_configs));
 
-		
-
 	msm_gpiomux_install(msm8960_mxt224E_configs,
 			ARRAY_SIZE(msm8960_mxt224E_configs));
-
-
-
-
 
 	msm_gpiomux_install(msm8960_slimbus_config,
 			ARRAY_SIZE(msm8960_slimbus_config));
@@ -999,23 +773,14 @@ int __init msm8960_init_gpiomux(void)
 	msm_gpiomux_install(msm8960_audio_codec_configs,
 			ARRAY_SIZE(msm8960_audio_codec_configs));
 
-	
-
 	msm_gpiomux_install(msm8960_audio_amp_configs,
 			ARRAY_SIZE(msm8960_audio_amp_configs));
-
-
-
-
 
 	msm_gpiomux_install(wcnss_5wire_interface,
 			ARRAY_SIZE(wcnss_5wire_interface));
 
-
-    msm_gpiomux_install(msm8960_sensors_configs,
-            ARRAY_SIZE(msm8960_sensors_configs));
-
-
+	msm_gpiomux_install(msm8960_sensors_configs,
+			ARRAY_SIZE(msm8960_sensors_configs));
 
 #ifdef CONFIG_MMC_MSM_SDC4_SUPPORT
 	msm_gpiomux_install(msm8960_sdcc4_configs,

@@ -59,9 +59,7 @@
 
 #define UETH__VERSION	"29-May-2008"
 
-
 static struct workqueue_struct	*uether_wq;
-
 
 struct eth_dev {
 	/* lock is held while accessing port_usb
@@ -93,8 +91,6 @@ struct eth_dev {
 	struct work_struct	work;
 
 	struct work_struct	rx_work;
-
-
 	unsigned long		todo;
 #define	WORK_RX_MEMORY		0
 
@@ -290,14 +286,10 @@ enomem:
 
 static void rx_complete(struct usb_ep *ep, struct usb_request *req)
 {
-
 	struct sk_buff	*skb = req->context;
-
 	struct eth_dev	*dev = ep->driver_data;
 	int		status = req->status;
-
 	bool		queue = 0;
-
 
 	switch (status) {
 
@@ -347,24 +339,19 @@ quiesce:
 		/* FALLTHROUGH */
 
 	default:
-
 		queue = 1;
 		dev_kfree_skb_any(skb);
-
 		dev->net->stats.rx_errors++;
 		DBG(dev, "rx status %d\n", status);
 		break;
 	}
 
 clean:
-
 	spin_lock(&dev->req_lock);
 	list_add(&req->list, &dev->rx_reqs);
 	spin_unlock(&dev->req_lock);
-
 	if (queue)
 		queue_work(uether_wq, &dev->rx_work);
-
 }
 
 static int prealloc(struct list_head *list, struct usb_ep *ep, unsigned n)
@@ -432,27 +419,20 @@ static void rx_fill(struct eth_dev *dev, gfp_t gfp_flags)
 
 	int			req_cnt = 0;
 
-
 	/* fill unused rxq slots with some skb */
 	spin_lock_irqsave(&dev->req_lock, flags);
 	while (!list_empty(&dev->rx_reqs)) {
-
-		
 		if (++req_cnt > qlen(dev->gadget))
 			break;
-
-
 		req = container_of(dev->rx_reqs.next,
 				struct usb_request, list);
 		list_del_init(&req->list);
 		spin_unlock_irqrestore(&dev->req_lock, flags);
 
 		if (rx_submit(dev, req, gfp_flags) < 0) {
-
 			spin_lock_irqsave(&dev->req_lock, flags);
 			list_add(&req->list, &dev->rx_reqs);
 			spin_unlock_irqrestore(&dev->req_lock, flags);
-
 			defer_kevent(dev, WORK_RX_MEMORY);
 			return;
 		}
@@ -492,7 +472,6 @@ static void process_rx_w(struct work_struct *work)
 	if (netif_running(dev->net))
 		rx_fill(dev, GFP_KERNEL);
 }
-
 
 static void eth_work(struct work_struct *work)
 {
@@ -972,9 +951,7 @@ int gether_setup_name(struct usb_gadget *g, u8 ethaddr[ETH_ALEN],
 	spin_lock_init(&dev->lock);
 	spin_lock_init(&dev->req_lock);
 	INIT_WORK(&dev->work, eth_work);
-
 	INIT_WORK(&dev->rx_work, process_rx_w);
-
 	INIT_LIST_HEAD(&dev->tx_reqs);
 	INIT_LIST_HEAD(&dev->rx_reqs);
 
@@ -1143,7 +1120,6 @@ void gether_disconnect(struct gether *link)
 
 	struct sk_buff		*skb;
 
-
 	if (!dev)
 		return;
 
@@ -1185,14 +1161,10 @@ void gether_disconnect(struct gether *link)
 		spin_lock(&dev->req_lock);
 	}
 	spin_unlock(&dev->req_lock);
-
-
 	spin_lock(&dev->rx_frames.lock);
 	while ((skb = __skb_dequeue(&dev->rx_frames)))
 		dev_kfree_skb_any(skb);
 	spin_unlock(&dev->rx_frames.lock);
-
-
 	link->out_ep->driver_data = NULL;
 	link->out = NULL;
 
@@ -1206,7 +1178,6 @@ void gether_disconnect(struct gether *link)
 	link->ioport = NULL;
 	spin_unlock(&dev->lock);
 }
-
 
 static int __init gether_init(void)
 {

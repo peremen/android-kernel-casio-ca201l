@@ -299,11 +299,7 @@
 #include <linux/usb/gadget.h>
 #include <linux/usb/composite.h>
 
-
-
 #include <linux/switch.h>
-
-
 #include "gadget_chips.h"
 
 
@@ -319,12 +315,9 @@ static const char fsg_string_interface[] = "Mass Storage";
 #define FSG_NO_OTG               1
 #define FSG_NO_INTR_EP           1
 
-
-
 #define SC_CDROM_MODE_CHANGE                0xf1
 #define SC_CDROM_TIMER_CANCEL               0xf2
 #define SC_CDROM_MODE_CHANGE_BS             0xf3
-
 #include "storage_common.c"
 
 #ifdef CONFIG_USB_CSW_HACK
@@ -335,8 +328,6 @@ static int csw_hack_sent;
 
 struct fsg_dev;
 struct fsg_common;
-
-
 
 static char *cdrom_mode_change[2]     = { "USB_CDROM=MODE_CHANGE", NULL };
 static char *cdrom_timer_cancel[2]    = { "USB_CDROM=TIMER_CANCEL", NULL };
@@ -350,8 +341,6 @@ static struct miscdevice usb_cdrom_device = {
 	.name = "usb_cdrom",
 	.fops = &usb_cdrom_fops,
 };
-
-
 
 /* FSF callback functions */
 struct fsg_operations {
@@ -1345,12 +1334,6 @@ static int do_request_sense(struct fsg_common *common, struct fsg_buffhd *bh)
 	 * FSG normally uses option a); enable this code to use option b).
 	 */
 
-
-
-
-
-
-
 	if (!curlun) {		/* Unsupported LUNs are okay */
 		common->bad_lun_okay = 1;
 		sd = SS_LOGICAL_UNIT_NOT_SUPPORTED;
@@ -1827,14 +1810,6 @@ static int finish_reply(struct fsg_common *common)
 		 * clear the halt -- leading to problems later on.
 		 */
 
-
-
-
-
-
-
-
-
 		/*
 		 * We can't stall.  Read in the excess data and throw it
 		 * all away.
@@ -2283,32 +2258,18 @@ static int do_scsi_command(struct fsg_common *common)
 			reply = do_write(common);
 		break;
 
-
-
-    case SC_CDROM_MODE_CHANGE:
+	case SC_CDROM_MODE_CHANGE:
 	case SC_CDROM_MODE_CHANGE_BS:
-        
-    
-        
-		
-
-
-
-
-
-
-
-		printk("%s SC_CDROM_MODE_CHANGE Called \n",__func__);
+		printk("%s SC_CDROM_MODE_CHANGE Called \n", __func__);
 		kobject_uevent_env(&usb_cdrom_device.this_device->kobj,
-				KOBJ_CHANGE, cdrom_mode_change);				
-        break;
-		
+				   KOBJ_CHANGE, cdrom_mode_change);
+		break;
+
 	case SC_CDROM_TIMER_CANCEL:
-		printk("%s SC_CDROM_TIMER_CANCEL Called \n",__func__);
+		printk("%s SC_CDROM_TIMER_CANCEL Called \n", __func__);
 		kobject_uevent_env(&usb_cdrom_device.this_device->kobj,
-				KOBJ_CHANGE, cdrom_timer_cancel);
-		break;		
-
+				   KOBJ_CHANGE, cdrom_timer_cancel);
+		break;
 
 	/*
 	 * Some mandatory commands that we recognize but don't implement.
@@ -3071,8 +3032,6 @@ buffhds_first_it:
 	}
 	kfree(pathbuf);
 
-
-
 	curlun = common->luns;
 	if (curlun->cdrom) {
 		rc = misc_register(&usb_cdrom_device);
@@ -3081,7 +3040,6 @@ buffhds_first_it:
 			goto error_release;
 		}
 	}
-
 
 	DBG(common, "I/O thread pid: %d\n", task_pid_nr(common->thread_task));
 
@@ -3277,15 +3235,7 @@ static int usb_cdrom_bind_config(struct usb_composite_dev *cdev,
 	csg->function.setup       = fsg_setup;
 	csg->function.set_alt     = fsg_set_alt;
 	csg->function.disable     = fsg_disable;
-
 	csg->common               = common;
-	
-
-
-
-
-
-
 
 	rc = usb_add_function(c, &csg->function);
 	if (unlikely(rc))

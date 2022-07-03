@@ -107,11 +107,7 @@ static inline struct f_gser *port_to_gser(struct gserial *p)
 	return container_of(p, struct f_gser, port);
 }
 #define GS_LOG2_NOTIFY_INTERVAL		5	/* 1 << 5 == 32 msec */
-
 #define GS_NOTIFY_MAXPACKET		0x10
-
-
-
 #endif
 /*-------------------------------------------------------------------------*/
 
@@ -127,13 +123,8 @@ static struct usb_interface_descriptor gser_interface_desc = {
 	.bNumEndpoints =	2,
 #endif
 	.bInterfaceClass =	USB_CLASS_VENDOR_SPEC,
-
-
-
-
 	.bInterfaceSubClass =	0,
 	.bInterfaceProtocol =	0,
-
 	/* .iInterface = DYNAMIC */
 };
 #ifdef CONFIG_MODEM_SUPPORT

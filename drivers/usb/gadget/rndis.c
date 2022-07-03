@@ -53,14 +53,7 @@
  * Windows hosts need an INF file like Documentation/usb/linux.inf
  * and will be happier if you provide the host_addr module parameter.
  */
-
-
-
-
-
-
 #define rndis_debug		0
-
 
 #define RNDIS_MAX_CONFIGS	1
 

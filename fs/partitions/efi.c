@@ -616,7 +616,6 @@ static int proc_emmc_read(char *page, char **start, off_t off, int count, int *e
 	return len;
 }
 
-
 /**
  * efi_partition(struct parsed_partitions *state)
  * @state
@@ -652,17 +651,14 @@ int efi_partition(struct parsed_partitions *state)
 
 	pr_debug("GUID Partition Table is valid!  Yea!\n");
 
-
 	proc_emmc = create_proc_entry("emmc", 0444, NULL);
 	if (proc_emmc == NULL) {
 		pr_debug("/proc/emmc cannot create.\n");
-	}
-	else {
+	} else {
 		proc_emmc->read_proc = proc_emmc_read;
 		proc_emmc->write_proc = NULL;
 		pr_debug("/proc/emmc created.\n");
 	}
-
 
 	for (i = 0; i < le32_to_cpu(gpt->num_partition_entries) && i < state->limit-1; i++) {
 		struct partition_meta_info *info;
@@ -701,7 +697,6 @@ int efi_partition(struct parsed_partitions *state)
 			label_count++;
 		}
 		state->parts[i + 1].has_info = true;
-
 		{
 			char tmp[64];
 			int tmp_count;
@@ -709,12 +704,11 @@ int efi_partition(struct parsed_partitions *state)
 			for (tmp_count = 1; state->pp_buf[tmp_count] != ':'; tmp_count++)
 				dev_name[tmp_count - 1] = state->pp_buf[tmp_count];
 			dev_name[tmp_count - 1] = '\0';
-			sprintf(tmp, "%s%s%d: %llx %x \"%s\"\n", 
-				dev_name, state->name, i + 1, 
+			sprintf(tmp, "%s%s%d: %llx %x \"%s\"\n",
+				dev_name, state->name, i + 1,
 				size * 512, state->bdev->bd_block_size, info->volname);
 			strcat(emmc_partition_info, tmp);
 		}
-
 	}
 	kfree(ptes);
 	kfree(gpt);

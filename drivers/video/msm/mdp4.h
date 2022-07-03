@@ -338,11 +338,8 @@ struct mdp4_overlay_pipe {
 	struct mdp4_hsic_regs hsic_regs;
 	struct completion dmas_comp;
 	struct mdp_overlay req_data;
-
-
 	uint32 ext_flag;
 	struct msm_fb_data_type *mfd;
-
 };
 
 struct mdp4_statistic {

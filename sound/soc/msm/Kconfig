@@ -132,9 +132,7 @@ config SND_SOC_MSM8960
 	select SND_SOC_WCD9310
 	select SND_SOC_MSM_HOSTLESS_PCM
 	select SND_SOC_MSM_QDSP6_HDMI_AUDIO
-	
 	select SND_SOC_DVE072 if DVE072_AUDIO
-	
 	select SND_SOC_ES310 if DVE072_AUDIO
 	default n
 	help

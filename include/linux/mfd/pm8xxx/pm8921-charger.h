@@ -273,16 +273,10 @@ int pm8921_usb_ovp_set_hystersis(enum pm8921_usb_debounce_time ms);
  */
 int pm8921_usb_ovp_disable(int disable);
 
-
-
-
-
-
 int pm8921_is_batfet_closed(void);
 
 int pm_power_get_charger_mode(void);
 int usb_valid_irq_store(void);
-
 
 #else
 static inline void pm8921_charger_vbus_draw(unsigned int mA)
@@ -362,10 +356,8 @@ static inline int pm_power_get_charger_mode(void)
 }
 static inline int usb_valid_irq_store(void)
 {
-		return -ENXIO;
+	return -ENXIO;
 }
-
-
 #endif
 
 #endif

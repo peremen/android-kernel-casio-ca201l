@@ -305,13 +305,7 @@ static enum hrtimer_restart watchdog_timer_fn(struct hrtimer *hrtimer)
 		print_modules();
 		print_irqtrace_events(current);
 		if (regs)
-			
-
 			show_regs_fatal(regs);
-
-
-
-			
 		else
 			dump_stack();
 

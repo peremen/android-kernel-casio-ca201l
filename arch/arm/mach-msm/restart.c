@@ -53,22 +53,16 @@
 
 #define SCM_IO_DISABLE_PMIC_ARBITER	1
 
-
 #define PM8921_GPIO_BASE		NR_GPIO_IRQS
 #define PM8921_GPIO_PM_TO_SYS(pm_gpio)	(pm_gpio - 1 + PM8921_GPIO_BASE)
 
-
-
-
 void *panic_handle_cookie_addr;
-
 
 static int restart_mode;
 void *restart_reason;
 
 int pmic_reset_irq;
 static void __iomem *msm_tmr0_base;
-
 
 static uint32_t otadm_reason=0;
 
@@ -99,13 +93,10 @@ static void set_dload_mode(int on)
 		__raw_writel(on ? 0xE47B337D : 0, dload_mode_addr);
 		__raw_writel(on ? 0xCE14091A : 0,
 		       dload_mode_addr + sizeof(unsigned int));
-
 		__raw_writel(on ? PANIC_MAGIC_NUM : 0,  panic_handle_cookie_addr);
-
 		mb();
 	}
 }
-
 
 static void set_diag_dload_mode(int on)
 {
@@ -113,15 +104,10 @@ static void set_diag_dload_mode(int on)
 		__raw_writel(on ? 0xE47B337D : 0, dload_mode_addr);
 		__raw_writel(on ? 0xCE14091A : 0,
 		       dload_mode_addr + sizeof(unsigned int));
-
 		__raw_writel(0, panic_handle_cookie_addr);
-
 		mb();
 	}
 }
-
-
-
 
 static int dload_set(const char *val, struct kernel_param *kp)
 {
@@ -129,7 +115,6 @@ static int dload_set(const char *val, struct kernel_param *kp)
 	int old_val = download_mode;
 
 	ret = param_set_int(val, kp);
-
 	if (ret)
 		return ret;
 
@@ -138,13 +123,8 @@ static int dload_set(const char *val, struct kernel_param *kp)
 		download_mode = old_val;
 		return -EINVAL;
 	}
-	
 
 	set_diag_dload_mode(download_mode);
-
-
-
-	
 
 	return 0;
 }
@@ -177,16 +157,11 @@ static void __msm_power_off(int lower_pshold)
 static void msm_power_off(void)
 {
 	static int gpio24;
-	
-
 	gpio24 = PM8921_GPIO_PM_TO_SYS(24);
-
 	gpio_tlmm_config(GPIO_CFG(gpio24, 0, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL,
 				GPIO_CFG_2MA), GPIO_CFG_ENABLE);
 	gpio_direction_output(gpio24, 0);
-
 	mdelay(110);
-
 
 	/* MSM initiated power off, lower ps_hold */
 	__msm_power_off(1);
@@ -233,7 +208,6 @@ static irqreturn_t resout_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-
 static int subsys_crash_magic=0;
 #define SUBSYS_NAME_MAX_LENGTH 40
 int m7_get_magic_for_subsystem(void)
@@ -241,15 +215,14 @@ int m7_get_magic_for_subsystem(void)
 	return subsys_crash_magic;
 }
 
-
 void m7_set_magic_for_subsystem(const char* subsys_name)
 {
         const char *crash_subsys[] = {"modem","dsps","lpass","riva"};
 	int i;
 
-	for(i=0;i<ARRAY_SIZE(crash_subsys);i++){
-		if(!strncmp(crash_subsys[i],subsys_name,SUBSYS_NAME_MAX_LENGTH)){
-			subsys_crash_magic = (0x29A90000 |((i+1)<<12));
+	for (i = 0; i < ARRAY_SIZE(crash_subsys); i++) {
+		if (!strncmp(crash_subsys[i], subsys_name, SUBSYS_NAME_MAX_LENGTH)) {
+			subsys_crash_magic = (0x29A90000 | ((i + 1) << 12));
 			break;
 		}
 	}
@@ -257,13 +230,11 @@ void m7_set_magic_for_subsystem(const char* subsys_name)
 
 void set_kernel_panic_magic_num(void)
 {
-
-	if(subsys_crash_magic==0)
+	if (subsys_crash_magic == 0)
 		__raw_writel(0x29A96000, restart_reason);
 	else
 		__raw_writel(restart_mode, restart_reason);
 }
-
 
 void arch_reset(char mode, const char *cmd)
 {
@@ -278,13 +249,7 @@ void arch_reset(char mode, const char *cmd)
 
 	/* Write download mode flags if restart_mode says so */
 	if (restart_mode == RESTART_DLOAD)
-	
-
 		set_diag_dload_mode(1);
-
-
-
-	
 
 	/* Kill download mode if master-kill switch is set */
 	if (!download_mode)
@@ -295,54 +260,38 @@ void arch_reset(char mode, const char *cmd)
 
 	pm8xxx_reset_pwr_off(1);
 
+	if (in_panic == 1) {
+		set_kernel_panic_magic_num();
+	} else {
+		if (cmd != NULL) {
+			if (!strncmp(cmd, "exit_otadm", 9)) {
+				__raw_writel(0x77665507, restart_reason);
+				otadm_reason = 0;
+			} else {
+				otadm_reason = __raw_readl(restart_reason);
 
-
-	if(in_panic==1) {
-	set_kernel_panic_magic_num();
-	}else{
-
-
-	if (cmd != NULL) {
-
-               if(!strncmp(cmd, "exit_otadm",9)) {
-        		__raw_writel(0x77665507, restart_reason);		
-                    otadm_reason=0;
-        	} 
-              else
-            {
-                  otadm_reason = __raw_readl(restart_reason);
-
-                  if( otadm_reason != 0x77665504 )
-                  {
-            		if (!strncmp(cmd, "bootloader", 10)) {
-            			__raw_writel(0x77665500, restart_reason);
-            		
-            		} else if (!strncmp(cmd, "otadm",5)) {
-            			__raw_writel(0x77665504, restart_reason);		
-            		} else if (!strncmp(cmd, "otadm_rollback",14)) {
-            			__raw_writel(0x77665506, restart_reason);		
-            		
-            		} else if (!strncmp(cmd, "not_charge",10)) {
-            			__raw_writel(0x77665505, restart_reason);		
-            		
-            		} else if (!strncmp(cmd, "recovery", 8)) {
-            			__raw_writel(0x77665502, restart_reason);
-            		} else if (!strncmp(cmd, "oem-", 4)) {
-            			unsigned long code;
-            			code = simple_strtoul(cmd + 4, NULL, 16) & 0xff;
-            			__raw_writel(0x6f656d00 | code, restart_reason);
-            		} else {
-            			__raw_writel(0x77665505, restart_reason);
-            		}
-                  }
-
-            }
-        }
-
-
+				if (otadm_reason != 0x77665504) {
+					if (!strncmp(cmd, "bootloader", 10)) {
+						__raw_writel(0x77665500, restart_reason);
+					} else if (!strncmp(cmd, "otadm", 5)) {
+						__raw_writel(0x77665504, restart_reason);
+					} else if (!strncmp(cmd, "otadm_rollback", 14)) {
+						__raw_writel(0x77665506, restart_reason);
+					} else if (!strncmp(cmd, "not_charge", 10)) {
+						__raw_writel(0x77665505, restart_reason);
+					} else if (!strncmp(cmd, "recovery", 8)) {
+						__raw_writel(0x77665502, restart_reason);
+					} else if (!strncmp(cmd, "oem-", 4)) {
+						unsigned long code;
+						code = simple_strtoul(cmd + 4, NULL, 16) & 0xff;
+						__raw_writel(0x6f656d00 | code, restart_reason);
+					} else {
+						__raw_writel(0x77665505, restart_reason);
+					}
+				}
+			}
+		}
 	}
-
-
 
 	__raw_writel(0, msm_tmr0_base + WDT0_EN);
 	if (!(machine_is_msm8x60_fusion() || machine_is_msm8x60_fusn_ffa())) {
@@ -368,11 +317,7 @@ static int __init msm_restart_init(void)
 #ifdef CONFIG_MSM_DLOAD_MODE
 	atomic_notifier_chain_register(&panic_notifier_list, &panic_blk);
 	dload_mode_addr = MSM_IMEM_BASE + DLOAD_MODE_ADDR;
-
-
-
 	panic_handle_cookie_addr = MSM_IMEM_BASE + PANIC_MAGIC_ADDR;
-
 
 	/* Reset detection is switched on below.*/
 	set_dload_mode(1);
@@ -391,13 +336,7 @@ static int __init msm_restart_init(void)
 		pr_warn("no pmic restart interrupt specified\n");
 	}
 
-
-
-
 	__raw_writel(0x29A9AA00, restart_reason);
-
-
-
 	return 0;
 }
 

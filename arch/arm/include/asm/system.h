@@ -102,10 +102,7 @@ extern asmlinkage void c_backtrace(unsigned long fp, int pmode);
 struct mm_struct;
 extern void show_pte(struct mm_struct *mm, unsigned long addr);
 extern void __show_regs(struct pt_regs *);
-
-
 extern void __show_regs_fatal(struct pt_regs * regs);
-
 
 extern int cpu_architecture(void);
 extern void cpu_init(void);
@@ -127,8 +124,8 @@ extern unsigned int user_debug;
 #define vectors_high()	(0)
 #endif
 
-#if __LINUX_ARM_ARCH__ >= 7 ||			(__LINUX_ARM_ARCH__ == 6 && defined(CONFIG_CPU_32v6K))
-
+#if __LINUX_ARM_ARCH__ >= 7 ||		\
+	(__LINUX_ARM_ARCH__ == 6 && defined(CONFIG_CPU_32v6K))
 #define sev()	__asm__ __volatile__ ("sev" : : : "memory")
 #define wfe()	__asm__ __volatile__ ("wfe" : : : "memory")
 #define wfi()	__asm__ __volatile__ ("wfi" : : : "memory")

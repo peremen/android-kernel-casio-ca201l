@@ -70,13 +70,7 @@
 #include "f_ccid.c"
 #include "f_mtp.c"
 #include "f_accessory.c"
-
 #include "f_ncm.c"
-
-
-
-
-
 #include "u_ether.c"
 
 MODULE_AUTHOR("Mike Lockwood");
@@ -785,191 +779,6 @@ static struct android_usb_function ncm_function = {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 struct mass_storage_function_config {
 	struct fsg_config fsg;
 	struct fsg_common *common;
@@ -987,21 +796,9 @@ static int mass_storage_function_init(struct android_usb_function *f,
 	if (!config)
 		return -ENOMEM;
 
-
 	config->fsg.nluns = 2;
 	config->fsg.luns[0].removable = 1;
 	config->fsg.luns[1].removable = 1;
-
-
-
-
-
-
-
-
-
-
-
 
 	common = fsg_common_init(NULL, cdev, &config->fsg);
 	if (IS_ERR(common)) {
@@ -1018,7 +815,6 @@ static int mass_storage_function_init(struct android_usb_function *f,
 		return err;
 	}
 
-
 	err = sysfs_create_link(&f->dev->kobj,
 				&common->luns[1].dev.kobj,
 				"lun1");
@@ -1028,22 +824,9 @@ static int mass_storage_function_init(struct android_usb_function *f,
 		return err;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 	config->common = common;
 	f->config = config;
-	pr_err("'%s' [END] \n", __func__);	
+	pr_err("'%s' [END] \n", __func__);
 	return 0;
 }
 
@@ -1096,7 +879,6 @@ static struct android_usb_function mass_storage_function = {
 	.bind_config	= mass_storage_function_bind_config,
 	.attributes	= mass_storage_function_attributes,
 };
-
 
 struct usb_cdrom_function_config {
 	struct fsg_config fsg;
@@ -1194,8 +976,6 @@ static struct android_usb_function usb_cdrom_function = {
 	.attributes	= usb_cdrom_function_attributes,
 };
 
-
-
 static int accessory_function_init(struct android_usb_function *f,
 					struct usb_composite_dev *cdev)
 {
@@ -1241,15 +1021,9 @@ static struct android_usb_function *supported_functions[] = {
 	&acm_function,
 	&mtp_function,
 	&ptp_function,
-
 	&ncm_function,
-
-
-
 	&mass_storage_function,
-
 	&usb_cdrom_function,
-
 	&accessory_function,
 	NULL
 };

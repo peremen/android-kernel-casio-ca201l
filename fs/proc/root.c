@@ -128,9 +128,7 @@ void __init proc_root_init(void)
 	proc_device_tree_init();
 #endif
 	proc_mkdir("bus", NULL);
-
-		proc_mkdir(DVE031_PROC_DIR, NULL);
-
+	proc_mkdir(DVE031_PROC_DIR, NULL);
 	proc_sys_init();
 }
 

@@ -249,18 +249,6 @@ static void hci_init_req(struct hci_dev *hdev, unsigned long opt)
 	/* Read Data Block Size (ACL mtu, max pkt, etc.) */
 	hci_send_cmd(hdev, HCI_OP_READ_DATA_BLOCK_SIZE, 0, NULL);
 
-
-
-
-
-
-
-
-
-
-
-
-
 	if (hdev->dev_type == HCI_BREDR) {
 		/* BR-EDR initialization */
 
@@ -309,14 +297,8 @@ static void hci_le_init_req(struct hci_dev *hdev, unsigned long opt)
 
 	/* Read LE buffer size */
 	hci_send_cmd(hdev, HCI_OP_LE_READ_BUFFER_SIZE, 0, NULL);
-
-
-	
 	hci_send_cmd(hdev, HCI_OP_LE_CLEAR_WHITE_LIST, 0, NULL);
-
-	
 	hci_send_cmd(hdev, HCI_OP_LE_READ_WHITE_LIST_SIZE, 0, NULL);
-
 }
 
 static void hci_scan_req(struct hci_dev *hdev, unsigned long opt)

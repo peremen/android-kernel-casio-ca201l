@@ -36,12 +36,8 @@
 #include <mach/subsystem_notif.h>
 #include <mach/subsystem_restart.h>
 
-
-
 #include <mach/restart.h>
 #include <mach/board_DVE073.h>
-
-
 
 #include "smd_private.h"
 
@@ -321,11 +317,7 @@ static int subsystem_restart_thread(void *data)
 	int i;
 	int restart_list_count = 0;
 
-
-
 	int subsys_magic_key = m7_get_magic_for_subsystem();
-
-
 	if (r_work->coupled)
 		soc_restart_order = subsys->restart_order;
 
@@ -362,11 +354,8 @@ static int subsystem_restart_thread(void *data)
 	 * sequence for these subsystems. In the latter case, panic and bail
 	 * out, since a subsystem died in its powerup sequence.
 	 */
-
 	if (!mutex_trylock(powerup_lock)) {
-
 		msm_set_restart_mode(subsys_magic_key|ERR_FAILED_DURING_POWER_UP);
-
 		panic("%s[%p]: Subsystem died during powerup!",
 						__func__, current);
 	}
@@ -395,9 +384,7 @@ static int subsystem_restart_thread(void *data)
 			restart_list[i]->name);
 
 		if (restart_list[i]->shutdown(subsys) < 0) {
-
 			msm_set_restart_mode(subsys_magic_key|ERR_FAILED_DURING_POWER_DOWN);
-
 			panic("subsys-restart: %s[%p]: Failed to shutdown %s!",
 				__func__, current, restart_list[i]->name);
 		}
@@ -438,9 +425,7 @@ static int subsystem_restart_thread(void *data)
 					restart_list[i]->name);
 
 		if (restart_list[i]->powerup(subsys) < 0) {
-
 			msm_set_restart_mode(subsys_magic_key|ERR_FAILED_DURING_POWER_UP);
-
 			panic("%s[%p]: Failed to powerup %s!", __func__,
 				current, restart_list[i]->name);
 		}
@@ -468,10 +453,7 @@ int subsystem_restart(const char *subsys_name)
 	struct subsys_data *subsys;
 	struct task_struct *tsk;
 	struct restart_thread_data *data = NULL;
-
-
-	u32 subsys_magic_key;;
-
+	u32 subsys_magic_key;
 
 	if (!subsys_name) {
 		pr_err("Invalid subsystem name.\n");
@@ -491,9 +473,7 @@ int subsystem_restart(const char *subsys_name)
 		return -EINVAL;
 	}
 
-
 	m7_set_magic_for_subsystem(subsys_name);
-
 
 	if (restart_level != RESET_SOC) {
 		data = kzalloc(sizeof(struct restart_thread_data), GFP_KERNEL);
@@ -511,9 +491,7 @@ int subsystem_restart(const char *subsys_name)
 		}
 	}
 
-
 	subsys_magic_key = m7_get_magic_for_subsystem();
-
 
 	switch (restart_level) {
 
@@ -531,11 +509,8 @@ int subsystem_restart(const char *subsys_name)
 		 */
 		tsk = kthread_run(subsystem_restart_thread, data,
 				"subsystem_restart_thread");
-
 		if (IS_ERR(tsk)) {
-
 			msm_set_restart_mode(subsys_magic_key|ERR_UNABLE_RESTART_THREAD);
-
 			panic("%s: Unable to create thread to restart %s",
 				__func__, subsys->name);
 		}
@@ -543,21 +518,13 @@ int subsystem_restart(const char *subsys_name)
 		break;
 
 	case RESET_SOC:
-
-
 		msm_set_restart_mode(subsys_magic_key|ERR_RESET_SOC);
-
-
 		panic("subsys-restart: Resetting the SoC - %s crashed.",
 			subsys->name);
 		break;
 
 	default:
-
-
 		msm_set_restart_mode(ERR_UNKNOWN);
-
-
 		panic("subsys-restart: Unknown restart level!\n");
 	break;
 

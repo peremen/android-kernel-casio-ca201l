@@ -77,11 +77,7 @@ static struct usb_device_descriptor device_desc = {
 
 	.bcdUSB =		cpu_to_le16 (0x0200),
 
-
 	.bDeviceClass = 	0,
-
-
-
 	.bDeviceSubClass =	0,
 	.bDeviceProtocol =	0,
 	/* .bMaxPacketSize0 = f(hardware) */
@@ -90,13 +86,8 @@ static struct usb_device_descriptor device_desc = {
 	 * we support.  (As does bNumConfigurations.)  These values can
 	 * also be overridden by module parameters.
 	 */
-
 	.idVendor = 	cpu_to_le16 (0x0409),
 	.idProduct =		cpu_to_le16 (0x0328),
-
-
-
-
 	/* .bcdDevice = f(hardware) */
 	/* .iManufacturer = DYNAMIC */
 	/* .iProduct = DYNAMIC */

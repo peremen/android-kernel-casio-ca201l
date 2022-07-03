@@ -26,11 +26,8 @@
 
 #define REG_DELAY(x) if((x) > 20) mdelay((x)); else usleep_range((x)*1000,((x)+1)*1000);
 
-
 DEFINE_MUTEX(mt9e013_mut);
 static struct msm_sensor_ctrl_t mt9e013_s_ctrl;
-
-
 
 #define MT9E013_GPIO_CAM2_RST_N       76       
 #define MT9E013_GPIO_CAM2_PD_N        77       
@@ -54,7 +51,6 @@ static struct regulator *cam_vana;
 static struct regulator *cam_vio;
 static struct regulator *cam_vdig;
 
-
 static struct msm_camera_i2c_reg_conf mt9e013_groupon_settings[] = {
 	{0x0104, 0x01},
 };
@@ -62,232 +58,6 @@ static struct msm_camera_i2c_reg_conf mt9e013_groupon_settings[] = {
 static struct msm_camera_i2c_reg_conf mt9e013_groupoff_settings[] = {
 	{0x0104, 0x00},
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 static struct v4l2_subdev_info mt9e013_subdev_info[] = {
 	{
@@ -299,31 +69,7 @@ static struct v4l2_subdev_info mt9e013_subdev_info[] = {
 	/* more can be supported, to be added later */
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 static struct msm_sensor_output_info_t mt9e013_dimensions[] = {
-
 	{
 		.x_output = 0xCD0,
 		.y_output = 0x9A0,
@@ -369,7 +115,6 @@ static struct msm_sensor_output_info_t mt9e013_dimensions[] = {
 		.op_pixel_clk = 185600000,
 		.binning_factor = 1,
 	},
-
 	{
 		.x_output = 0x330,
 		.y_output = 0x264,
@@ -379,55 +124,6 @@ static struct msm_sensor_output_info_t mt9e013_dimensions[] = {
 		.op_pixel_clk = 185600000,
 		.binning_factor = 1,
 	},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 };
 
 static struct msm_camera_csid_vc_cfg mt9e013_cid_cfg[] = {
@@ -456,9 +152,7 @@ static struct msm_camera_csi2_params *mt9e013_csi_params_array[] = {
 	&mt9e013_csi_params,
 	&mt9e013_csi_params,
 	&mt9e013_csi_params,
-
 	&mt9e013_csi_params,
-
 };
 
 static struct msm_sensor_output_reg_addr_t mt9e013_reg_addr = {
@@ -479,10 +173,9 @@ static struct msm_sensor_exp_gain_info_t mt9e013_exp_gain_info = {
 	.vert_offset = 0,
 };
 
-
 struct reg_access_param_t{
-    uint16_t  reg_addr;
-    uint16_t* reg_data;
+	uint16_t  reg_addr;
+	uint16_t* reg_data;
 };
 
 static int32_t mt9e013_get_exposure_info(struct msm_sensor_ctrl_t *s_ctrl, uint16_t *fine_integration_time)
@@ -491,25 +184,22 @@ static int32_t mt9e013_get_exposure_info(struct msm_sensor_ctrl_t *s_ctrl, uint1
 	int cnt = 0;
 	uint16_t val = 0xFFFF;
 
-	struct reg_access_param_t reg_access_params[]={
+	struct reg_access_param_t reg_access_params[] = {
 		{0x3014, fine_integration_time},
 	};
 
 	CDBG("%s: START", __func__);
 
-	for(cnt=0; cnt < ARRAY_SIZE(reg_access_params); cnt++)
-	{
+	for (cnt = 0; cnt < ARRAY_SIZE(reg_access_params); cnt++) {
 		rc = msm_camera_i2c_read(s_ctrl->sensor_i2c_client,
-								 reg_access_params[cnt].reg_addr, &val, MSM_CAMERA_I2C_WORD_DATA);
+					 reg_access_params[cnt].reg_addr, &val, MSM_CAMERA_I2C_WORD_DATA);
 		if (rc < 0) {
 			pr_err("%s: msm_camera_i2c_read failed rc=%d\n", __func__, rc);
 			return rc;
 		}
 		*reg_access_params[cnt].reg_data = val;
 	}
-
 	CDBG("%s: fine_integration_time = 0x%04X", __func__, *fine_integration_time);
-
 	CDBG("%s: END(%d)", __func__, rc);
 	return rc;
 }
@@ -519,8 +209,6 @@ static int32_t mt9e013_get_exif_param(struct msm_sensor_ctrl_t *s_ctrl,
 {
 	return 0;
 }
-
-
 
 static int32_t mt9e013_get_device_id(struct msm_sensor_ctrl_t *s_ctrl, uint16_t *device_id)
 {
@@ -540,24 +228,6 @@ static int32_t mt9e013_get_device_id(struct msm_sensor_ctrl_t *s_ctrl, uint16_t 
 	return rc;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #define MODIFY_WRITE(x,y,z) (((~(y)) & (x)) | (z))
 static uint16_t msm_camera_cal_bitfield(struct msm_camera_i2c_client *client, uint16_t bit_addr, uint16_t bit_mask, uint8_t bit_data)
 {
@@ -573,16 +243,16 @@ static uint16_t msm_camera_cal_bitfield(struct msm_camera_i2c_client *client, ui
 			bit_addr,
 			&read_val,
 			MSM_CAMERA_I2C_WORD_DATA );
-	if(rc < 0){
+	if (rc < 0) {
 		pr_err("msm_camera_i2c_read failed rc = %d\n", rc);
 		return set_val;
 	}
 
-	for(i = 0; i < 16; i++){
+	for (i = 0; i < 16; i++) {
 		bit_num = (bit_mask >> i) & 1;
-		if(bit_num){
-			bit_val = (bit_mask>>i) & bit_data;
-			bit_val = (bit_val<<i);
+		if (bit_num) {
+			bit_val = (bit_mask >> i) & bit_data;
+			bit_val = (bit_val << i);
 			break;
 		}
 	}
@@ -592,22 +262,6 @@ static uint16_t msm_camera_cal_bitfield(struct msm_camera_i2c_client *client, ui
 	set_val = MODIFY_WRITE(read_val, bit_mask, bit_val);
 	return set_val;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void msm_camera_set_bitfield(struct msm_camera_i2c_client *client, uint16_t bit_addr, uint16_t bit_mask, uint8_t bit_data)
 {
@@ -635,7 +289,6 @@ static void mt9e013_prev_settings(struct msm_sensor_ctrl_t *s_ctrl)
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x030A, 0x1,    MSM_CAMERA_I2C_WORD_DATA);
 	REG_DELAY(1);
 
-	
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x0344, 0x0,    MSM_CAMERA_I2C_WORD_DATA);
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x0348, 0xCD1,  MSM_CAMERA_I2C_WORD_DATA);
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x0346, 0x0,    MSM_CAMERA_I2C_WORD_DATA);
@@ -829,7 +482,6 @@ static void mt9e013_video_FHD_settings(struct msm_sensor_ctrl_t *s_ctrl)
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x3010, 0x78  , MSM_CAMERA_I2C_WORD_DATA);
 }
 
-
 static void mt9e013_video_60fps_settings(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	pr_info("mt9e013_video_60fps_settings\n");
@@ -842,7 +494,6 @@ static void mt9e013_video_60fps_settings(struct msm_sensor_ctrl_t *s_ctrl)
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x030A, 0x1,    MSM_CAMERA_I2C_WORD_DATA);
 	REG_DELAY(1);
 
-	
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x0344, 0x8,    MSM_CAMERA_I2C_WORD_DATA);
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x0348, 0xCC1,  MSM_CAMERA_I2C_WORD_DATA);
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x0346, 0x8,    MSM_CAMERA_I2C_WORD_DATA);
@@ -872,7 +523,6 @@ static void mt9e013_video_60fps_settings(struct msm_sensor_ctrl_t *s_ctrl)
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x3010, 0x130 , MSM_CAMERA_I2C_WORD_DATA);
 }
 
-
 static void mt9e013_recommend_settings(struct msm_sensor_ctrl_t *s_ctrl)
 {
 	pr_info("mt9e013_recommend_settings\n");
@@ -887,12 +537,10 @@ static void mt9e013_recommend_settings(struct msm_sensor_ctrl_t *s_ctrl)
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x31BA, 0x0710, MSM_CAMERA_I2C_WORD_DATA); 
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x31BC, 0x2A0D, MSM_CAMERA_I2C_WORD_DATA); 
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x31BE, 0x2003, MSM_CAMERA_I2C_WORD_DATA); 
+
 	REG_DELAY(5);
 
-	
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x0112, 0x0A0A, MSM_CAMERA_I2C_WORD_DATA);  
-
-	
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x30F0, 0x800D, MSM_CAMERA_I2C_WORD_DATA);  
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x3044, 0x0590, MSM_CAMERA_I2C_WORD_DATA);
 	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x306E, 0xFC80, MSM_CAMERA_I2C_WORD_DATA);
@@ -1013,7 +661,6 @@ static int32_t mt9e013_write_exp_snapshot_gain(struct msm_sensor_ctrl_t *s_ctrl,
 	return 0;
 }
 
-
 static int32_t mt9e013_sensor_write_res_settings(struct msm_sensor_ctrl_t *s_ctrl,
 	int res)
 {
@@ -1022,7 +669,7 @@ static int32_t mt9e013_sensor_write_res_settings(struct msm_sensor_ctrl_t *s_ctr
 	pr_info("mt9e013_sensor_write_res_settings res = %d\n",res);
 	mt9e013_recommend_settings(s_ctrl);
 
-	switch(res){
+	switch (res) {
 	case MSM_SENSOR_RES_QTR:
 		mt9e013_prev_settings(s_ctrl);
 		break;
@@ -1050,45 +697,20 @@ static int32_t mt9e013_sensor_write_res_settings(struct msm_sensor_ctrl_t *s_ctr
 	return rc;
 }
 
-
 static void mt9e013_start_stream(struct msm_sensor_ctrl_t *s_ctrl)
 {
-
-
 	msm_camera_set_bitfield(s_ctrl->sensor_i2c_client, 0x301A, 0x200, 1);	
 	msm_camera_set_bitfield(s_ctrl->sensor_i2c_client, 0x301A, 0x400, 1);	
-	msm_camera_set_bitfield(s_ctrl->sensor_i2c_client, 0x301A, 0x8, 1);	
-	msm_camera_i2c_write(s_ctrl->sensor_i2c_client,0x0104,0x00,MSM_CAMERA_I2C_WORD_DATA);	
+	msm_camera_set_bitfield(s_ctrl->sensor_i2c_client, 0x301A, 0x8, 1);
+	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x0104, 0x00, MSM_CAMERA_I2C_WORD_DATA);
 	msm_camera_set_bitfield(s_ctrl->sensor_i2c_client, 0x301A, 0x4, 1);	
-
-
-
-
-
-
-
-
-
-
-
 }
 
 static void mt9e013_stop_stream(struct msm_sensor_ctrl_t *s_ctrl)
 {
-
-
 	msm_camera_set_bitfield(s_ctrl->sensor_i2c_client, 0x301A, 0x4, 0);		
-	msm_camera_set_bitfield(s_ctrl->sensor_i2c_client, 0x301A, 0x8, 0);		
-	msm_camera_i2c_write(s_ctrl->sensor_i2c_client,0x0104,0x01,MSM_CAMERA_I2C_WORD_DATA);
-
-
-
-
-
-
-
-
-
+	msm_camera_set_bitfield(s_ctrl->sensor_i2c_client, 0x301A, 0x8, 0);
+	msm_camera_i2c_write(s_ctrl->sensor_i2c_client, 0x0104, 0x01, MSM_CAMERA_I2C_WORD_DATA);
 }
 
 static const struct i2c_device_id mt9e013_i2c_id[] = {
@@ -1188,334 +810,284 @@ static struct msm_cam_clk_info mt9e013_cam_clk_info[] = {
 
 static int32_t mt9e013_sensor_power_up(struct msm_sensor_ctrl_t *s_ctrl)
 {
-    int32_t rc = 0;
-    struct msm_camera_sensor_info *data = s_ctrl->sensordata;
+	int32_t rc = 0;
+	struct msm_camera_sensor_info *data = s_ctrl->sensordata;
 
-    CDBG("%s START\n", __func__);
-    s_ctrl->reg_ptr = kzalloc(sizeof(struct regulator *)
-                    * data->sensor_platform_info->num_vreg, GFP_KERNEL);
-    if (!s_ctrl->reg_ptr) {
-        pr_err("%s: could not allocate mem for regulators\n",
-            __func__);
-        return -ENOMEM;
-    }
+	CDBG("%s START\n", __func__);
+	s_ctrl->reg_ptr = kzalloc(sizeof(struct regulator *) * data->sensor_platform_info->num_vreg, GFP_KERNEL);
+	if (!s_ctrl->reg_ptr) {
+		pr_err("%s: could not allocate mem for regulators\n",
+		       __func__);
+		return -ENOMEM;
+	}
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM1_RST_N, GPIOF_OUT_INIT_HIGH);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
-    CDBG("CAM1_RST_N(%d) High\n", MT9E013_GPIO_CAM1_RST_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM1_RST_N, GPIOF_OUT_INIT_HIGH);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
+	CDBG("CAM1_RST_N(%d) High\n", MT9E013_GPIO_CAM1_RST_N);
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM2_RST_N, GPIOF_OUT_INIT_HIGH);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
-    CDBG("CAM2_RST_N(%d) High\n", MT9E013_GPIO_CAM2_RST_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM2_RST_N, GPIOF_OUT_INIT_HIGH);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
+	CDBG("CAM2_RST_N(%d) High\n", MT9E013_GPIO_CAM2_RST_N);
 
-    
-    mdelay(2);
-    CDBG("WAIT %d[ms]\n",2);
+	mdelay(2);
+	CDBG("WAIT %d[ms]\n", 2);
 
-    
-    if (cam_vio == NULL) {
-        cam_vio = regulator_get(&s_ctrl->sensor_i2c_client->client->dev, "cam_vio");
-        if (IS_ERR(cam_vio)) {
-            pr_err("%s: VREG CAM VIO get failed\n", __func__);
-            cam_vio = NULL;
-            goto cam_vio_get_failed;
-        }
-        if (regulator_enable(cam_vio)) {
-            pr_err("%s: VREG CAM VIO enable failed\n", __func__);
-            goto cam_vio_enable_failed;
-        }
-        CDBG("LVS5_1P8(cam_vio) ON\n");
-    }
+	if (cam_vio == NULL) {
+		cam_vio = regulator_get(&s_ctrl->sensor_i2c_client->client->dev, "cam_vio");
+		if (IS_ERR(cam_vio)) {
+			pr_err("%s: VREG CAM VIO get failed\n", __func__);
+			cam_vio = NULL;
+			goto cam_vio_get_failed;
+		}
+		if (regulator_enable(cam_vio)) {
+			pr_err("%s: VREG CAM VIO enable failed\n", __func__);
+			goto cam_vio_enable_failed;
+		}
+		CDBG("LVS5_1P8(cam_vio) ON\n");
+	}
 
-    
-    mdelay(2);
-    CDBG("WAIT %d[ms]\n",2);
+	mdelay(2);
+	CDBG("WAIT %d[ms]\n", 2);
 
-    
-    if (cam_vana == NULL) {
-        cam_vana = regulator_get(&s_ctrl->sensor_i2c_client->client->dev, "cam_vana");
-        if (IS_ERR(cam_vana)) {
-            pr_err("%s: VREG CAM VANA get failed\n", __func__);
-            cam_vana = NULL;
-            goto cam_vana_get_failed;
-        }
-        if (regulator_set_voltage(cam_vana, CAM_VANA_MINUV, CAM_VANA_MAXUV)) {
-            pr_err("%s: VREG CAM VANA set voltage failed\n", __func__);
-            goto cam_vana_set_voltage_failed;
-        }
-        if (regulator_set_optimum_mode(cam_vana, CAM_VANA_LOAD_UA) < 0) {
-            pr_err("%s: VREG CAM VANA set optimum mode failed\n", __func__);
-            goto cam_vana_set_optimum_mode_failed;
-        }
-        if (regulator_enable(cam_vana)) {
-            pr_err("%s: VREG CAM VANA enable failed\n", __func__);
-            goto cam_vana_enable_failed;
-        }
-        CDBG("LV11_2P8(cam_vana) ON\n");
-    }
+	if (cam_vana == NULL) {
+		cam_vana = regulator_get(&s_ctrl->sensor_i2c_client->client->dev, "cam_vana");
+		if (IS_ERR(cam_vana)) {
+			pr_err("%s: VREG CAM VANA get failed\n", __func__);
+			cam_vana = NULL;
+			goto cam_vana_get_failed;
+		}
+		if (regulator_set_voltage(cam_vana, CAM_VANA_MINUV, CAM_VANA_MAXUV)) {
+			pr_err("%s: VREG CAM VANA set voltage failed\n", __func__);
+			goto cam_vana_set_voltage_failed;
+		}
+		if (regulator_set_optimum_mode(cam_vana, CAM_VANA_LOAD_UA) < 0) {
+			pr_err("%s: VREG CAM VANA set optimum mode failed\n", __func__);
+			goto cam_vana_set_optimum_mode_failed;
+		}
+		if (regulator_enable(cam_vana)) {
+			pr_err("%s: VREG CAM VANA enable failed\n", __func__);
+			goto cam_vana_enable_failed;
+		}
+		CDBG("LV11_2P8(cam_vana) ON\n");
+	}
 
-    
-    mdelay(2);
-    CDBG("WAIT %d[ms]\n",2);
+	mdelay(2);
+	CDBG("WAIT %d[ms]\n", 2);
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM2_RST_N, GPIOF_OUT_INIT_LOW);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
-    CDBG("CAM2_RST_N(%d) Low\n", MT9E013_GPIO_CAM2_RST_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM2_RST_N, GPIOF_OUT_INIT_LOW);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
+	CDBG("CAM2_RST_N(%d) Low\n", MT9E013_GPIO_CAM2_RST_N);
 
-    
-    mdelay(1);
-    CDBG("WAIT %d[ms]\n",1);
+	mdelay(1);
+	CDBG("WAIT %d[ms]\n", 1);
 
-    
-    rc = msm_camera_request_gpio_table(data, 1);
-    if (rc < 0) {
-        pr_err("%s: request gpio failed\n", __func__);
-        goto request_gpio_failed;
-    }
-    CDBG("I2C3_CLK/DATA_CAM ENABLE %d\n",rc);
+	rc = msm_camera_request_gpio_table(data, 1);
+	if (rc < 0) {
+		pr_err("%s: request gpio failed\n", __func__);
+		goto request_gpio_failed;
+	}
+	CDBG("I2C3_CLK/DATA_CAM ENABLE %d\n", rc);
 
-    
-    mdelay(1);
-    CDBG("WAIT %d[ms]\n",1);
+	mdelay(1);
+	CDBG("WAIT %d[ms]\n", 1);
 
-    
-    if (s_ctrl->clk_rate != 0)
-        mt9e013_cam_clk_info->clk_rate = s_ctrl->clk_rate;
+	if (s_ctrl->clk_rate != 0)
+		mt9e013_cam_clk_info->clk_rate = s_ctrl->clk_rate;
 
-    rc = msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
-                            mt9e013_cam_clk_info,
-                            &s_ctrl->cam_clk,
-                            ARRAY_SIZE(mt9e013_cam_clk_info), 1);
-    if (rc < 0) {
-        pr_err("%s: clk enable failed\n", __func__);
-        goto enable_clk_failed;
-    }
-    CDBG("MCLK ENABLE %d\n",rc);
+	rc = msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
+				mt9e013_cam_clk_info,
+				&s_ctrl->cam_clk,
+				ARRAY_SIZE(mt9e013_cam_clk_info), 1);
+	if (rc < 0) {
+		pr_err("%s: clk enable failed\n", __func__);
+		goto enable_clk_failed;
+	}
+	CDBG("MCLK ENABLE %d\n", rc);
 
-    
-    mdelay(1);
-    CDBG("WAIT %d[ms]\n",1);
+	mdelay(1);
+	CDBG("WAIT %d[ms]\n", 1);
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM1_RST_N, GPIOF_OUT_INIT_LOW);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
-    CDBG("CAM1_RST_N(%d) Low\n", MT9E013_GPIO_CAM1_RST_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM1_RST_N, GPIOF_OUT_INIT_LOW);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
+	CDBG("CAM1_RST_N(%d) Low\n", MT9E013_GPIO_CAM1_RST_N);
 
-    
-    mdelay(1);
-    CDBG("WAIT %d[ms]\n",1);
+	mdelay(1);
+	CDBG("WAIT %d[ms]\n", 1);
 
-    
-    if (cam_vdig == NULL) {
-        cam_vdig = regulator_get(&s_ctrl->sensor_i2c_client->client->dev, "cam_vdig");
-        if (IS_ERR(cam_vdig)) {
-            pr_err("%s: VREG CAM VDIG get failed\n", __func__);
-            cam_vdig = NULL;
-            goto cam_vdig_get_failed;
-        }
-        if (regulator_set_voltage(cam_vdig, CAM_VDIG_MINUV, CAM_VDIG_MAXUV)) {
-            pr_err("%s: VREG CAM VDIG set voltage failed\n", __func__);
-            goto cam_vdig_set_voltage_failed;
-        }
-        if (regulator_set_optimum_mode(cam_vdig, CAM_VDIG_LOAD_UA) < 0) {
-            pr_err("%s: VREG CAM VDIG set optimum mode failed\n", __func__);
-            goto cam_vdig_set_optimum_mode_failed;
-        }
-        if (regulator_enable(cam_vdig)) {
-            pr_err("%s: VREG CAM VDIG enable failed\n", __func__);
-            goto cam_vdig_enable_failed;
-        }
-        CDBG("LV17_2P8(cam_vdig) ON\n");
-    }
+	if (cam_vdig == NULL) {
+		cam_vdig = regulator_get(&s_ctrl->sensor_i2c_client->client->dev, "cam_vdig");
+		if (IS_ERR(cam_vdig)) {
+			pr_err("%s: VREG CAM VDIG get failed\n", __func__);
+			cam_vdig = NULL;
+			goto cam_vdig_get_failed;
+		}
+		if (regulator_set_voltage(cam_vdig, CAM_VDIG_MINUV, CAM_VDIG_MAXUV)) {
+			pr_err("%s: VREG CAM VDIG set voltage failed\n", __func__);
+			goto cam_vdig_set_voltage_failed;
+		}
+		if (regulator_set_optimum_mode(cam_vdig, CAM_VDIG_LOAD_UA) < 0) {
+			pr_err("%s: VREG CAM VDIG set optimum mode failed\n", __func__);
+			goto cam_vdig_set_optimum_mode_failed;
+		}
+		if (regulator_enable(cam_vdig)) {
+			pr_err("%s: VREG CAM VDIG enable failed\n", __func__);
+			goto cam_vdig_enable_failed;
+		}
+		CDBG("LV17_2P8(cam_vdig) ON\n");
+	}
 
-    
-    mdelay(50);
-    CDBG("WAIT %d[ms]\n",50);
+	mdelay(50);
+	CDBG("WAIT %d[ms]\n", 50);
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM2_RST_N, GPIOF_OUT_INIT_HIGH);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
-    CDBG("CAM2_RST_N(%d) High\n", MT9E013_GPIO_CAM2_RST_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM2_RST_N, GPIOF_OUT_INIT_HIGH);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
+	CDBG("CAM2_RST_N(%d) High\n", MT9E013_GPIO_CAM2_RST_N);
 
-    
-    mdelay(1);
-    CDBG("WAIT %d[ms]\n",1);
+	mdelay(1);
+	CDBG("WAIT %d[ms]\n", 1);
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM2_PD_N, GPIOF_OUT_INIT_HIGH);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
-    CDBG("CAM2_PD_N(%d) High\n", MT9E013_GPIO_CAM2_PD_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM2_PD_N, GPIOF_OUT_INIT_HIGH);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
+	CDBG("CAM2_PD_N(%d) High\n", MT9E013_GPIO_CAM2_PD_N);
 
-    
-    mdelay(1);
-    CDBG("WAIT %d[ms]\n",1);
+	mdelay(1);
+	CDBG("WAIT %d[ms]\n", 1);
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM1_RST_N, GPIOF_OUT_INIT_HIGH);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
-    CDBG("CAM1_RST_N(%d) High\n", MT9E013_GPIO_CAM1_RST_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM1_RST_N, GPIOF_OUT_INIT_HIGH);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_HIGH_DELAY, MT9E013_GPIOF_OUT_INIT_HIGH_DELAY + 1000);
+	CDBG("CAM1_RST_N(%d) High\n", MT9E013_GPIO_CAM1_RST_N);
 
-    
-    usleep(100);
-    CDBG("WAIT %d[us]\n",100);
+	usleep(100);
+	CDBG("WAIT %d[us]\n", 100);
 
-    
-    CDBG("GPIO[%d]:%d\n", MT9E013_GPIO_CAM2_RST_N, gpio_get_value(MT9E013_GPIO_CAM2_RST_N));
-    CDBG("GPIO[%d]:%d\n", MT9E013_GPIO_CAM2_PD_N,  gpio_get_value(MT9E013_GPIO_CAM2_PD_N) );
-    CDBG("GPIO[%d]:%d\n", MT9E013_GPIO_CAM1_RST_N, gpio_get_value(MT9E013_GPIO_CAM1_RST_N));
+	CDBG("GPIO[%d]:%d\n", MT9E013_GPIO_CAM2_RST_N, gpio_get_value(MT9E013_GPIO_CAM2_RST_N));
+	CDBG("GPIO[%d]:%d\n", MT9E013_GPIO_CAM2_PD_N, gpio_get_value(MT9E013_GPIO_CAM2_PD_N));
+	CDBG("GPIO[%d]:%d\n", MT9E013_GPIO_CAM1_RST_N, gpio_get_value(MT9E013_GPIO_CAM1_RST_N));
 
-    CDBG("%s END(%d)", __func__, rc);
-    return rc;
+	CDBG("%s END(%d)", __func__, rc);
+	return rc;
 
 cam_vdig_enable_failed:
-    
-    regulator_set_optimum_mode(cam_vdig, 0);
+	regulator_set_optimum_mode(cam_vdig, 0);
 
 cam_vdig_set_optimum_mode_failed:
-    
-    regulator_set_voltage(cam_vdig, 0, CAM_VDIG_MAXUV);
+	regulator_set_voltage(cam_vdig, 0, CAM_VDIG_MAXUV);
 
 cam_vdig_set_voltage_failed:
-    
-    regulator_put(cam_vdig);
-    cam_vdig = NULL;
+	regulator_put(cam_vdig);
+	cam_vdig = NULL;
 
 cam_vdig_get_failed:
-    
-    msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
-                       mt9e013_cam_clk_info,
-                       &s_ctrl->cam_clk,
-                       ARRAY_SIZE(mt9e013_cam_clk_info), 0);
+	msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
+			   mt9e013_cam_clk_info,
+			   &s_ctrl->cam_clk,
+			   ARRAY_SIZE(mt9e013_cam_clk_info), 0);
 
 enable_clk_failed:
-    
-    msm_camera_request_gpio_table(data, 0);
+	msm_camera_request_gpio_table(data, 0);
 
 request_gpio_failed:
-    
-    regulator_disable(cam_vana);
+	regulator_disable(cam_vana);
 
 cam_vana_enable_failed:
-    
-    regulator_set_optimum_mode(cam_vana, 0);
+	regulator_set_optimum_mode(cam_vana, 0);
 
 cam_vana_set_optimum_mode_failed:
-    
-    regulator_set_voltage(cam_vana, 0, CAM_VANA_MAXUV);
+	regulator_set_voltage(cam_vana, 0, CAM_VANA_MAXUV);
 
 cam_vana_set_voltage_failed:
-    
-    regulator_put(cam_vana);
-    cam_vana = NULL;
+	regulator_put(cam_vana);
+	cam_vana = NULL;
 
 cam_vana_get_failed:
-    
-    regulator_disable(cam_vio);
+	regulator_disable(cam_vio);
 
 cam_vio_enable_failed:
-    
-    regulator_put(cam_vio);
-    cam_vio = NULL;
+	regulator_put(cam_vio);
+	cam_vio = NULL;
 
 cam_vio_get_failed:
-    kfree(s_ctrl->reg_ptr);
+	kfree(s_ctrl->reg_ptr);
 
-    pr_err("%s: END(%d) failed\n", __func__, rc);
-    return rc;
+	pr_err("%s: END(%d) failed\n", __func__, rc);
+	return rc;
 }
 
 static int mt9e013_sensor_power_down(struct msm_sensor_ctrl_t *s_ctrl)
 {
-    struct msm_camera_sensor_info *data = s_ctrl->sensordata;
+	struct msm_camera_sensor_info *data = s_ctrl->sensordata;
 
-    CDBG("%s START\n", __func__);
+	CDBG("%s START\n", __func__);
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM1_RST_N, GPIOF_OUT_INIT_LOW);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
-    CDBG("CAM1_RST_N(%d) Low\n", MT9E013_GPIO_CAM1_RST_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM1_RST_N, GPIOF_OUT_INIT_LOW);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
+	CDBG("CAM1_RST_N(%d) Low\n", MT9E013_GPIO_CAM1_RST_N);
 
-    
-    mdelay(1);
-    CDBG("WAIT %d[ms]\n",1);
+	mdelay(1);
+	CDBG("WAIT %d[ms]\n", 1);
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM2_PD_N, GPIOF_OUT_INIT_LOW);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
-    CDBG("CAM2_PD_N(%d) Low\n", MT9E013_GPIO_CAM2_PD_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM2_PD_N, GPIOF_OUT_INIT_LOW);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
+	CDBG("CAM2_PD_N(%d) Low\n", MT9E013_GPIO_CAM2_PD_N);
 
-    
-    mdelay(1);
-    CDBG("WAIT %d[ms]\n",1);
+	mdelay(1);
+	CDBG("WAIT %d[ms]\n", 1);
 
-    
-    gpio_set_value_cansleep(MT9E013_GPIO_CAM2_RST_N, GPIOF_OUT_INIT_LOW);
-    usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
-    CDBG("CAM2_RST_N(%d) Low\n", MT9E013_GPIO_CAM2_RST_N);
+	gpio_set_value_cansleep(MT9E013_GPIO_CAM2_RST_N, GPIOF_OUT_INIT_LOW);
+	usleep_range(MT9E013_GPIOF_OUT_INIT_LOW_DELAY, MT9E013_GPIOF_OUT_INIT_LOW_DELAY + 1000);
+	CDBG("CAM2_RST_N(%d) Low\n", MT9E013_GPIO_CAM2_RST_N);
 
-    mdelay(5);
-    CDBG("WAIT %d[ms]\n",5);
+	mdelay(5);
+	CDBG("WAIT %d[ms]\n", 5);
 
-    
-    msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
-                       mt9e013_cam_clk_info,
-                       &s_ctrl->cam_clk,
-                       ARRAY_SIZE(mt9e013_cam_clk_info), 0);
-    CDBG("MCLK DISABLE\n");
+	msm_cam_clk_enable(&s_ctrl->sensor_i2c_client->client->dev,
+			   mt9e013_cam_clk_info,
+			   &s_ctrl->cam_clk,
+			   ARRAY_SIZE(mt9e013_cam_clk_info), 0);
+	CDBG("MCLK DISABLE\n");
 
-    
-    mdelay(10);
-    CDBG("WAIT %d[ms]\n",10);
+	mdelay(10);
+	CDBG("WAIT %d[ms]\n", 10);
 
-    
-    msm_camera_request_gpio_table(data, 0);
-    CDBG("I2C3_CLK/DATA_CAM DISABLE\n");
+	msm_camera_request_gpio_table(data, 0);
+	CDBG("I2C3_CLK/DATA_CAM DISABLE\n");
 
-    
-    if (cam_vdig) {
-        regulator_set_voltage(cam_vdig, 0, CAM_VDIG_MAXUV);
-        regulator_set_optimum_mode(cam_vdig, 0);
-        regulator_disable(cam_vdig);
-        regulator_put(cam_vdig);
-        cam_vdig = NULL;
-        CDBG("LV17_2P8(cam_vdig) OFF\n");
-    }
+	if (cam_vdig) {
+		regulator_set_voltage(cam_vdig, 0, CAM_VDIG_MAXUV);
+		regulator_set_optimum_mode(cam_vdig, 0);
+		regulator_disable(cam_vdig);
+		regulator_put(cam_vdig);
+		cam_vdig = NULL;
+		CDBG("LV17_2P8(cam_vdig) OFF\n");
+	}
 
-    
-    mdelay(10);
-    CDBG("WAIT %d[ms]\n",10);
+	mdelay(10);
+	CDBG("WAIT %d[ms]\n", 10);
 
-    
-    if (cam_vana) {
-        regulator_set_voltage(cam_vana, 0, CAM_VANA_MAXUV);
-        regulator_set_optimum_mode(cam_vana, 0);
-        regulator_disable(cam_vana);
-        regulator_put(cam_vana);
-        cam_vana = NULL;
-        CDBG("LV11_2P8(cam_vana) OFF\n");
-    }
+	if (cam_vana) {
+		regulator_set_voltage(cam_vana, 0, CAM_VANA_MAXUV);
+		regulator_set_optimum_mode(cam_vana, 0);
+		regulator_disable(cam_vana);
+		regulator_put(cam_vana);
+		cam_vana = NULL;
+		CDBG("LV11_2P8(cam_vana) OFF\n");
+	}
 
-    
-    mdelay(10);
-    CDBG("WAIT %d[ms]\n",10);
+	mdelay(10);
+	CDBG("WAIT %d[ms]\n", 10);
 
-    
-    if (cam_vio) {
-        regulator_disable(cam_vio);
-        regulator_put(cam_vio);
-        cam_vio = NULL;
-        CDBG("LVS5_1P8(cam_vio) OFF\n");
-    }
+	if (cam_vio) {
+		regulator_disable(cam_vio);
+		regulator_put(cam_vio);
+		cam_vio = NULL;
+		CDBG("LVS5_1P8(cam_vio) OFF\n");
+	}
 
-    kfree(s_ctrl->reg_ptr);
-    CDBG("%s END(0)", __func__);
+	kfree(s_ctrl->reg_ptr);
+	CDBG("%s END(0)", __func__);
 
-    return 0;
+	return 0;
 }
-
 
 static int __init msm_sensor_init_module(void)
 {
@@ -1545,34 +1117,19 @@ static struct msm_sensor_fn_t mt9e013_func_tbl = {
 	.sensor_write_exp_gain = mt9e013_write_exp_gain,
 	.sensor_write_snapshot_exp_gain = mt9e013_write_exp_snapshot_gain,
 	.sensor_setting = msm_sensor_setting,
-
 	.sensor_write_res_settings = mt9e013_sensor_write_res_settings,
-
 	.sensor_set_sensor_mode = msm_sensor_set_sensor_mode,
 	.sensor_mode_init = msm_sensor_mode_init,
 	.sensor_get_output_info = msm_sensor_get_output_info,
 	.sensor_config = msm_sensor_config,
-
-    .sensor_power_up = mt9e013_sensor_power_up,
-    .sensor_power_down = mt9e013_sensor_power_down,
-
-
-
-
-
+	.sensor_power_up = mt9e013_sensor_power_up,
+	.sensor_power_down = mt9e013_sensor_power_down,
 	.sensor_get_exif_param = mt9e013_get_exif_param,
-
-
 	.sensor_get_device_id = mt9e013_get_device_id,
-
-
-    .sensor_get_exposure_info = mt9e013_get_exposure_info,
-
+	.sensor_get_exposure_info = mt9e013_get_exposure_info,
 };
 
 static struct msm_sensor_reg_t mt9e013_regs = {
-
-
 	.default_data_type = MSM_CAMERA_I2C_WORD_DATA,
 	.group_hold_on_conf = mt9e013_groupon_settings,
 	.group_hold_on_conf_size = ARRAY_SIZE(mt9e013_groupon_settings),
@@ -1581,20 +1138,6 @@ static struct msm_sensor_reg_t mt9e013_regs = {
 		ARRAY_SIZE(mt9e013_groupoff_settings),
 	.output_settings = &mt9e013_dimensions[0],
 	.num_conf = ARRAY_SIZE(mt9e013_dimensions),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 };
 
 static struct msm_sensor_ctrl_t mt9e013_s_ctrl = {
@@ -1613,13 +1156,7 @@ static struct msm_sensor_ctrl_t mt9e013_s_ctrl = {
 	.sensor_v4l2_subdev_info_size = ARRAY_SIZE(mt9e013_subdev_info),
 	.sensor_v4l2_subdev_ops = &mt9e013_subdev_ops,
 	.func_tbl = &mt9e013_func_tbl,
-
-
 	.clk_rate = MSM_SENSOR_MCLK_25HZ,
-
-
-
-
 };
 
 module_init(msm_sensor_init_module);

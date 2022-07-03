@@ -87,14 +87,10 @@ NORET_TYPE void panic(const char * fmt, ...)
 	vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 
-
 	set_kernel_panic_log(1);
 	set_kernel_panic_magic_num();
-
 	printk(KERN_EMERG "Kernel panic - not syncing: %s\n",buf);
-
 	set_kernel_panic_log(0);
-
 
 #ifdef CONFIG_DEBUG_BUGVERBOSE
 	dump_stack();

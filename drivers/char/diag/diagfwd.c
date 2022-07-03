@@ -46,10 +46,7 @@
 #define ALL_SSID		-1
 #define MAX_SSID_PER_RANGE	100
 
-
-
 extern int msm8960_diag_check_sdcard(unsigned int *exist);
-
 
 int diag_debug_buf_idx;
 unsigned char diag_debug_buf[1024];
@@ -1079,70 +1076,56 @@ static int diag_process_apps_pkt(unsigned char *buf, int len)
 			}
 		}
 	}
-    
 
 	if ((*(buf) == 0x4b) && (*(buf + 1) == 0xfa) &&
-             (*(buf + 2) == 0x00) && (*(buf + 3) == 0x11)) {
-        uint16_t data_size = *(uint16_t *)(buf + 4);
-        uint16_t is_read = *(uint16_t *)(buf + 6);
-        uint32_t gpio_addr = *(uint32_t *)(buf + 8);
-        unsigned int exist_sdcard;
-        int ret;
+	    (*(buf + 2) == 0x00) && (*(buf + 3) == 0x11)) {
+		uint16_t data_size = *(uint16_t *)(buf + 4);
+		uint16_t is_read = *(uint16_t *)(buf + 6);
+		uint32_t gpio_addr = *(uint32_t *)(buf + 8);
+		unsigned int exist_sdcard;
+		int ret;
 
-        printk(KERN_DEBUG "apps diag command data_size:%d, is_read:%d,"
-               " gpio_addr:%d\n", data_size, is_read, gpio_addr);
+		printk(KERN_DEBUG "apps diag command data_size:%d, is_read:%d,"
+				  " gpio_addr:%d\n",
+		       data_size, is_read, gpio_addr);
 
-        if (data_size == 0x6 && is_read == 1 && gpio_addr == 0x91) {
-            ret = msm8960_diag_check_sdcard(&exist_sdcard);
-            memcpy(driver->apps_rsp_buf, buf, 6);
-            *(driver->apps_rsp_buf + 6) = 0x0;
-            *(driver->apps_rsp_buf + 7) = 0x91;
+		if (data_size == 0x6 && is_read == 1 && gpio_addr == 0x91) {
+			ret = msm8960_diag_check_sdcard(&exist_sdcard);
+			memcpy(driver->apps_rsp_buf, buf, 6);
+			*(driver->apps_rsp_buf + 6) = 0x0;
+			*(driver->apps_rsp_buf + 7) = 0x91;
 
-            if (ret) {
-                *(uint32_t *)(driver->apps_rsp_buf + 8) = (uint32_t)0x0;
-            } else {
-                *(uint32_t *)(driver->apps_rsp_buf + 8) = exist_sdcard ? (uint32_t)0 : (uint32_t)1;
-            }
-            ENCODE_RSP_AND_SEND(12 - 1);
-            return 0;
-        }
-    }
+			if (ret) {
+				*(uint32_t *)(driver->apps_rsp_buf + 8) = (uint32_t)0x0;
+			} else {
+				*(uint32_t *)(driver->apps_rsp_buf + 8) = exist_sdcard ? (uint32_t)0 : (uint32_t)1;
+			}
+			ENCODE_RSP_AND_SEND(12 - 1);
+			return 0;
+		}
+	}
 
-
-  if ((*(buf) == 0x4B) && (*(buf + 1) == 0xFA) &&
-      (*(buf + 2) == 0x03) && (*(buf + 3) == 0x00)) 
-  {
-     msleep(3000);
-     printk(KERN_DEBUG "power_off - kernel_power_off\n");
-     kernel_power_off(); 
-     return 0;
-  }
-
-
-  if ((*(buf) == 0x4B) && (*(buf + 1) == 0xFA) &&
-     (*(buf + 2) == 0xF0) && (*(buf + 3) == 0x31) && 
-     (*(buf + 4) == 0x01)) 
-  {
+	if ((*(buf) == 0x4B) && (*(buf + 1) == 0xFA) && (*(buf + 2) == 0x03) && (*(buf + 3) == 0x00)) {
 		msleep(3000);
-    printk(KERN_DEBUG "reboot, not_charge - kernel_restart\n");
-    kernel_restart("not_charge"); 
-    return 0;
-  }
-  
+		printk(KERN_DEBUG "power_off - kernel_power_off\n");
+		kernel_power_off();
+		return 0;
+	}
 
-  if ((*(buf) == 0x4B) && (*(buf + 1) == 0xFA) &&
-     (*(buf + 2) == 0x54) && (*(buf + 3) == 0x01) && 
-     (*(buf + 4) == 0x02) && (*(buf + 5) == 0x55) &&
-     (*(buf + 6) == 0x54) && (*(buf + 7) == 0x53)) 
- {
-    msleep(8000);
-    printk(KERN_DEBUG "reboot, recovery - kernel_restart\n");
-    kernel_restart("recovery"); 
-    return 0;
-  }  
+	if ((*(buf) == 0x4B) && (*(buf + 1) == 0xFA) && (*(buf + 2) == 0xF0) && (*(buf + 3) == 0x31) && (*(buf + 4) == 0x01)) {
+		msleep(3000);
+		printk(KERN_DEBUG "reboot, not_charge - kernel_restart\n");
+		kernel_restart("not_charge");
+		return 0;
+	}
 
+	if ((*(buf) == 0x4B) && (*(buf + 1) == 0xFA) && (*(buf + 2) == 0x54) && (*(buf + 3) == 0x01) && (*(buf + 4) == 0x02) && (*(buf + 5) == 0x55) && (*(buf + 6) == 0x54) && (*(buf + 7) == 0x53)) {
+		msleep(8000);
+		printk(KERN_DEBUG "reboot, recovery - kernel_restart\n");
+		kernel_restart("recovery");
+		return 0;
+	}
 
-    
 #if defined(CONFIG_DIAG_OVER_USB)
 	/* Check for Apps Only & get event mask request */
 	else if (!(driver->ch) && chk_apps_only() && *buf == 0x81) {
@@ -1157,7 +1140,7 @@ static int diag_process_apps_pkt(unsigned char *buf, int len)
 	}
 	/* Get log ID range & Check for Apps Only */
 	else if (!(driver->ch) && chk_apps_only()
-			  && (*buf == 0x73) && *(int *)(buf+4) == 1) {
+		 && (*buf == 0x73) && *(int *)(buf + 4) == 1) {
 		driver->apps_rsp_buf[0] = 0x73;
 		*(int *)(driver->apps_rsp_buf + 4) = 0x1; /* operation ID */
 		*(int *)(driver->apps_rsp_buf + 8) = 0x0; /* success code */
@@ -1182,7 +1165,7 @@ static int diag_process_apps_pkt(unsigned char *buf, int len)
 	}
 	/* Respond to Get SSID Range request message */
 	else if (!(driver->ch) && chk_apps_only()
-			 && (*buf == 0x7d) && (*(buf+1) == 0x1)) {
+		 && (*buf == 0x7d) && (*(buf + 1) == 0x1)) {
 		driver->apps_rsp_buf[0] = 0x7d;
 		driver->apps_rsp_buf[1] = 0x1;
 		driver->apps_rsp_buf[2] = 0x1;
@@ -1239,7 +1222,7 @@ static int diag_process_apps_pkt(unsigned char *buf, int len)
 	}
 	/* Check for Apps Only Respond to Get Subsys Build mask */
 	else if (!(driver->ch) && chk_apps_only()
-			 && (*buf == 0x7d) && (*(buf+1) == 0x2)) {
+		 && (*buf == 0x7d) && (*(buf + 1) == 0x2)) {
 		ssid_first = *(uint16_t *)(buf + 2);
 		ssid_last = *(uint16_t *)(buf + 4);
 		ssid_range = 4 * (ssid_last - ssid_first + 1);
@@ -1358,13 +1341,11 @@ static int diag_process_apps_pkt(unsigned char *buf, int len)
 		/* call download API */
 		msm_set_restart_mode(RESTART_DLOAD);
 		printk(KERN_CRIT "diag: download mode set, Rebooting SoC..\n");
-    
-		
 		kernel_restart("not_charge"); 
 		/* Not required, represents that command isnt sent to modem */
 		return 0;
 	}
-	 /* Check for ID for NO MODEM present */
+	/* Check for ID for NO MODEM present */
 	else if (!(driver->ch)) {
 		/* Respond to polling for Apps only DIAG */
 		if ((*buf == 0x4b) && (*(buf+1) == 0x32) &&

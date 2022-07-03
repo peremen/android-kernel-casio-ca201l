@@ -45,11 +45,8 @@
 
 #include "timer.h"
 
-
 #include <mach/restart.h>
 #include <mach/board_DVE073.h>
-
-
 
 #define DRV_NAME	"msm_dsps"
 #define DRV_VERSION	"3.03"
@@ -676,11 +673,8 @@ static void dsps_fatal_handler(struct work_struct *work)
 		pr_err("%s: DSPS fatal error detected. Resetting\n",
 		       __func__);
 
-
 		m7_set_magic_for_subsystem("dsps");
 		msm_set_restart_mode(0x29A92003);
-
-
 
 		panic("DSPS fatal error detected.");
 	} else {
@@ -715,11 +709,8 @@ static void dsps_smsm_state_cb(void *data, uint32_t old_state,
 		    ("%s: SMSM_RESET state detected. restarting the DSPS\n",
 		     __func__);
 
-
 		m7_set_magic_for_subsystem("dsps");
 		msm_set_restart_mode(0x29A92003);
-
-
 
 		panic("SMSM_RESET state detected.");
 	}

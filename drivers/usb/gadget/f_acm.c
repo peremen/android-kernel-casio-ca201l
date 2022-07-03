@@ -193,11 +193,7 @@ static int acm_port_disconnect(struct f_acm *acm)
 /* notification endpoint uses smallish and infrequent fixed-size messages */
 
 #define GS_LOG2_NOTIFY_INTERVAL		5	/* 1 << 5 == 32 msec */
-
 #define GS_NOTIFY_MAXPACKET		0x10
-
-
-
 
 /* interface and class descriptors: */
 
@@ -249,11 +245,7 @@ acm_call_mgmt_descriptor = {
 	.bLength =		sizeof(acm_call_mgmt_descriptor),
 	.bDescriptorType =	USB_DT_CS_INTERFACE,
 	.bDescriptorSubType =	USB_CDC_CALL_MANAGEMENT_TYPE,
-
 	.bmCapabilities =	0x3,
-
-
-
 	/* .bDataInterface = DYNAMIC */
 };
 
@@ -261,11 +253,7 @@ static struct usb_cdc_acm_descriptor acm_descriptor = {
 	.bLength =		sizeof(acm_descriptor),
 	.bDescriptorType =	USB_DT_CS_INTERFACE,
 	.bDescriptorSubType =	USB_CDC_ACM_TYPE,
-
 	.bmCapabilities =	0xF,
-
-
-
 };
 
 static struct usb_cdc_union_desc acm_union_desc = {
@@ -281,18 +269,10 @@ static struct usb_cdc_union_desc acm_union_desc = {
 static struct usb_endpoint_descriptor acm_fs_notify_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
-
-
-
 	.bEndpointAddress =	USB_DIR_IN,
-
 	.bmAttributes =		USB_ENDPOINT_XFER_INT,
 	.wMaxPacketSize =	cpu_to_le16(GS_NOTIFY_MAXPACKET),
-
 	.bInterval =		0x9,
-
-
-
 };
 
 static struct usb_endpoint_descriptor acm_fs_in_desc = {
@@ -310,10 +290,6 @@ static struct usb_endpoint_descriptor acm_fs_out_desc = {
 };
 
 static struct usb_descriptor_header *acm_fs_function[] = {
-
-
-
-
 	(struct usb_descriptor_header *) &acm_control_interface_desc,
 	(struct usb_descriptor_header *) &acm_header_desc,
 	(struct usb_descriptor_header *) &acm_call_mgmt_descriptor,
@@ -331,11 +307,7 @@ static struct usb_descriptor_header *acm_fs_function[] = {
 static struct usb_endpoint_descriptor acm_hs_notify_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
-
-
-
 	.bEndpointAddress =	USB_DIR_IN,
-
 	.bmAttributes =		USB_ENDPOINT_XFER_INT,
 	.wMaxPacketSize =	cpu_to_le16(GS_NOTIFY_MAXPACKET),
 	.bInterval =		GS_LOG2_NOTIFY_INTERVAL+4,
@@ -356,10 +328,6 @@ static struct usb_endpoint_descriptor acm_hs_out_desc = {
 };
 
 static struct usb_descriptor_header *acm_hs_function[] = {
-
-
-
-
 	(struct usb_descriptor_header *) &acm_control_interface_desc,
 	(struct usb_descriptor_header *) &acm_header_desc,
 	(struct usb_descriptor_header *) &acm_call_mgmt_descriptor,
@@ -704,7 +672,6 @@ unsigned int acm_send_carrier_detect(struct gserial *port, unsigned int yes)
 
 	acm->serial_state = state;
 	return acm_notify_serial_state(acm);
-
 }
 
 unsigned int acm_send_ring_indicator(struct gserial *port, unsigned int yes)
@@ -719,9 +686,7 @@ unsigned int acm_send_ring_indicator(struct gserial *port, unsigned int yes)
 
 	acm->serial_state = state;
 	return acm_notify_serial_state(acm);
-
 }
-
 
 static void acm_disconnect(struct gserial *port)
 {

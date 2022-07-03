@@ -712,10 +712,6 @@ static u8 smp_cmd_security_req(struct l2cap_conn *conn, struct sk_buff *skb)
 invalid_key:
 	hcon->sec_req = FALSE;
 
-	
-	
-	
-
 	skb_pull(skb, sizeof(*rp));
 
 	memset(&cp, 0, sizeof(cp));
@@ -762,10 +758,7 @@ int smp_conn_security(struct l2cap_conn *conn, __u8 sec_level)
 	hcon->smp_conn = conn;
 	hcon->pending_sec_level = sec_level;
 
-
-
 	if (hcon->link_mode & HCI_LM_MASTER) {
-
 		struct link_key *key;
 
 		key = hci_find_link_key_type(hcon->hdev, conn->dst,

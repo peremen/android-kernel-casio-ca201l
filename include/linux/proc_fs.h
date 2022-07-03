@@ -18,9 +18,7 @@ struct mm_struct;
 /*
  * The proc filesystem constants/structures
  */
-
 #define DVE031_PROC_DIR "nec"
-
 
 /*
  * Offset of the first process in the /proc root directory..

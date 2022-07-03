@@ -536,11 +536,7 @@ int msm_mctl_pp_mctl_divert_done(struct msm_cam_media_controller *p_mctl,
 					void __user *arg);
 void msm_release_ion_client(struct kref *ref);
 
-
-
 extern int i2c_error_flag;
-
-
 #endif /* __KERNEL__ */
 
 #endif /* _MSM_H */
