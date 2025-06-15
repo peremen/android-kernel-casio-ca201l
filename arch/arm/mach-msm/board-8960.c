@@ -1061,7 +1061,7 @@ static struct slim_boardinfo msm_slim_devices[] = {
 };
 
 #define MSM_WCNSS_PHYS	0x03000000
-#define MSM_WCNSS_SIZE	0x280000
+#define MSM_WCNSS_SIZE	0x00280000
 
 static struct resource resources_wcnss_wlan[] = {
 	{

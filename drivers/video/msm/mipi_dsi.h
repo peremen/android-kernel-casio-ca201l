@@ -14,6 +14,7 @@
 #ifndef MIPI_DSI_H
 #define MIPI_DSI_H
 
+#include "msm_fb.h"
 #include <mach/scm-io.h>
 #include <linux/list.h>
 

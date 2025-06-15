@@ -17,8 +17,10 @@
 #if !defined(MIPI_LG4573B_H)
 #define MIPI_LG4573B_H
 
+#include <linux/msm_mdp.h>
+#include "msm_fb_panel.h"
 
-int mipi_lg4573b_user_request_ctrl( struct msmfb_request_parame *data );
+int mipi_lg4573b_user_request_ctrl(struct msmfb_request_parame *data);
 
 int mipi_lg4573b_device_register(struct msm_panel_info *pinfo,
 					u32 channel, u32 panel);

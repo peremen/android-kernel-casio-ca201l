@@ -33,7 +33,7 @@
 #include "msm-pcm-routing.h"
 #include "../codecs/wcd9310.h"
 #include "../codecs/es310.h"
-#include <../codecs/yda160.h>
+#include "../codecs/yda160.h"
 #include <mach/board_DVE073.h>
 
 /* 8960 machine driver */
