@@ -212,7 +212,7 @@ static void mipi_lg4573b_displayon_delayed_work(struct work_struct *work)
 		mipi_dsi_cmds_tx(mipi_lg4573b_mfd, &lg4573b_tx_buf, lg4573b_lcdm_display_on_cmds,
 				 ARRAY_SIZE(lg4573b_lcdm_display_on_cmds));
 		mutex_unlock(&mipi_lg4573b_mfd->dma->ov_mutex);
-		pr_info("mipi_lg4573b_displayon_delayed_work execute Display On!!\n");
+		pr_debug("mipi_lg4573b_displayon_delayed_work execute Display On!!\n");
 		lcd_status = 2;
 	}
 	mutex_unlock(&g_lcd_mutex);
@@ -225,8 +225,7 @@ static int mipi_lg4573b_lcd_on(struct platform_device *pdev)
 	int ret;
 	static int gpio43;
 
-	if (DVE072_LCD_DEBUG)
-		pr_info("[DVE072_LCD]%s LG4573B LCD on Enter\n", __func__);
+	pr_debug("[DVE072_LCD]%s LG4573B LCD on Enter\n", __func__);
 	mfd = platform_get_drvdata(pdev);
 
 	if (!mfd)
@@ -237,12 +236,12 @@ static int mipi_lg4573b_lcd_on(struct platform_device *pdev)
 	if ((board_revision == M7SYSTEM_REV_V3A) || (board_revision >= M7SYSTEM_REV_V8A)) {
 		if (lcd_first_init) {
 			int gpio24;
-			pr_info("[DVE072_LCD]%s LG4573B LCD first init 1 [%d] \n", __func__, lcd_first_init);
+			pr_debug("[DVE072_LCD]%s LG4573B LCD first init 1 [%d] \n", __func__, lcd_first_init);
 
 			gpio24 = PM8921_GPIO_PM_TO_SYS(24);
 
 			if (!gpio_get_value_cansleep(gpio24)) {
-				pr_info("[DVE072_LCD]%s LG4573B LCD first init 2 \n", __func__);
+				pr_debug("[DVE072_LCD]%s LG4573B LCD first init 2 \n", __func__);
 				gpio_set_value_cansleep(gpio24, 1);
 				mdelay(10);
 			}
@@ -272,7 +271,7 @@ static int mipi_lg4573b_lcd_on(struct platform_device *pdev)
 			ret = mipi_dsi_cmds_tx(mfd, &lg4573b_tx_buf, lg4573b_display_bl_control_cmds,
 					       ARRAY_SIZE(lg4573b_display_bl_control_cmds));
 		} else if (lcd_first_init) {
-			pr_info("[DVE072_LCD]%s LG4573B LCD first init 3 =========[%d] \n", __func__, lcd_first_init);
+			pr_debug("[DVE072_LCD]%s LG4573B LCD first init 3 =========[%d] \n", __func__, lcd_first_init);
 
 			if (0)
 				ret = mipi_dsi_cmds_tx(mfd, &lg4573b_tx_buf, lg4573b_display_bl_control_cmds, ARRAY_SIZE(lg4573b_display_bl_control_cmds));
@@ -311,16 +310,14 @@ static int mipi_lg4573b_lcd_on(struct platform_device *pdev)
 		mutex_unlock(&g_lcd_mutex);
 	}
 
-	if (DVE072_LCD_DEBUG)
-		pr_info("[DVE072_LCD]%s LG4573B LCD on Exit \n", __func__);
+	pr_debug("[DVE072_LCD]%s LG4573B LCD on Exit \n", __func__);
 	return 0;
 }
 
 static int mipi_lg4573b_lcd_off(struct platform_device *pdev)
 {
 	struct msm_fb_data_type *mfd;
-	if (DVE072_LCD_DEBUG)
-		pr_info("[DVE072_LCD]%s LG4573B LCD off Enter\n", __func__);
+	pr_debug("[DVE072_LCD]%s LG4573B LCD off Enter\n", __func__);
 	mfd = platform_get_drvdata(pdev);
 
 	if (!mfd)
@@ -334,7 +331,7 @@ static int mipi_lg4573b_lcd_off(struct platform_device *pdev)
 	mutex_unlock(&g_lcd_mutex);
 
 	if ((board_revision == M7SYSTEM_REV_V3A) || (board_revision >= M7SYSTEM_REV_V8A)) {
-		pr_info("[DVE072_LCD]%s LG4573B LCD off Enter2 [%p][%d]\n", __func__, mfd, mfd->key);
+		pr_debug("[DVE072_LCD]%s LG4573B LCD off Enter2 [%p][%d]\n", __func__, mfd, mfd->key);
 		if (0)
 			mipi_dsi_cmds_tx(mfd, &lg4573b_tx_buf, lg4573b_power_off_cmds, ARRAY_SIZE(lg4573b_power_off_cmds));
 		lm3530_lcd_backlight_disable(0x00);
@@ -342,8 +339,7 @@ static int mipi_lg4573b_lcd_off(struct platform_device *pdev)
 
 	lcd_status = 0;
 
-	if (DVE072_LCD_DEBUG)
-		pr_info("[DVE072_LCD]%s LG4573B LCD off Exit\n", __func__);
+	pr_debug("[DVE072_LCD]%s LG4573B LCD off Exit\n", __func__);
 	return 0;
 }
 
@@ -370,7 +366,7 @@ static void mipi_lg4573b_set_backlight(struct msm_fb_data_type *mfd)
 					mipi_dsi_cmds_tx(mipi_lg4573b_mfd, &lg4573b_tx_buf, lg4573b_lcdm_display_on_cmds,
 							 ARRAY_SIZE(lg4573b_lcdm_display_on_cmds));
 					mutex_unlock(&mipi_lg4573b_mfd->dma->ov_mutex);
-					pr_info("mipi_lg4573b_displayon_delayed_work execute Display On leesh !!\n");
+					pr_debug("mipi_lg4573b_displayon_delayed_work execute Display On leesh !!\n");
 				}
 				mutex_unlock(&g_lcd_mutex);
 			}
@@ -402,8 +398,7 @@ static void mipi_lg4573b_set_backlight(struct msm_fb_data_type *mfd)
 	mdp4_dsi_blt_dmap_busy_wait(mfd);
 	mipi_dsi_mdp_busy_wait(mfd);
 
-	if (DVE072_LCD_DEBUG)
-		pr_info("[DVE072_LCD]%s get_m7system_board_revision = %x\n", __func__, board_revision);
+	pr_debug("[DVE072_LCD]%s get_m7system_board_revision = %x\n", __func__, board_revision);
 
 	if ((board_revision == M7SYSTEM_REV_V3A) || (board_revision >= M7SYSTEM_REV_V8A)) {
 
@@ -462,9 +457,8 @@ static void mipi_lg4573b_set_backlight(struct msm_fb_data_type *mfd)
 		}
 	}
 
-	if (DVE072_LCD_DEBUG)
-		pr_info("[DVE072_LCD]%s: bl_level_table[mfd->bl_level(=%d)]=%d, config_write_display_brightness[1]= %d\n",
-			__func__, mfd->bl_level, bl_level_table[num_revision][mfd->bl_level], config_write_display_brightness[1]);
+	pr_debug("[DVE072_LCD]%s: bl_level_table[mfd->bl_level(=%d)]=%d, config_write_display_brightness[1]= %d\n",
+		__func__, mfd->bl_level, bl_level_table[num_revision][mfd->bl_level], config_write_display_brightness[1]);
 
 	bl_level_old = mfd->bl_level;
 
@@ -474,7 +468,7 @@ static void mipi_lg4573b_set_backlight(struct msm_fb_data_type *mfd)
 		gpio_set_value_cansleep(gpio24, 0);
 	}
 
-	pr_info("[DVE072_LCD]%s exit\n", __func__);
+	pr_debug("[DVE072_LCD]%s exit\n", __func__);
 	return;
 }
 
@@ -524,8 +518,7 @@ static int __devinit mipi_lg4573b_lcd_probe(struct platform_device *pdev)
 		return 0;
 	}
 
-	if (DVE072_LCD_DEBUG)
-		pr_info("[DVE072_LCD]%s LG4573B LCD probe\n", __func__);
+	pr_debug("[DVE072_LCD]%s LG4573B LCD probe\n", __func__);
 	msm_fb_add_device(pdev);
 
 	rc = device_create_file(&pdev->dev, &dev_attr_lcd_onoff);
@@ -570,8 +563,7 @@ int mipi_lg4573b_device_register(struct msm_panel_info *pinfo,
 	struct platform_device *pdev = NULL;
 	int ret;
 
-	if (DVE072_LCD_DEBUG)
-		pr_info("[DVE072_LCD]%s LG4573B LCD device register\n", __func__);
+	pr_debug("[DVE072_LCD]%s LG4573B LCD device register\n", __func__);
 	if ((channel >= 3) || ch_used[channel])
 		return -ENODEV;
 
@@ -609,8 +601,7 @@ err_device_put:
 
 static int __init mipi_lg4573b_lcd_init(void)
 {
-	if (DVE072_LCD_DEBUG)
-		pr_info("[DVE072_LCD]%s LG4573B LCD init\n", __func__);
+	pr_debug("[DVE072_LCD]%s LG4573B LCD init\n", __func__);
 	mipi_dsi_buf_alloc(&lg4573b_tx_buf, DSI_BUF_SIZE);
 	mipi_dsi_buf_alloc(&lg4573b_rx_buf, DSI_BUF_SIZE);
 
@@ -629,7 +620,7 @@ int mipi_lg4573b_user_request_ctrl(struct msmfb_request_parame *data)
 		break;
 
 	default:
-		pr_info("[DVE072_LCD]%s mddi_ta8851_user_request_ctrl\n", __func__);
+		pr_debug("[DVE072_LCD]%s mddi_ta8851_user_request_ctrl\n", __func__);
 		break;
 	}
 

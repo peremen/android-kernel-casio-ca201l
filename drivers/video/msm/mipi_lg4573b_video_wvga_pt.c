@@ -35,7 +35,7 @@ static int __init mipi_video_lg4573b_wvga_pt_init(void)
 {
 	int ret;
 
-	pr_info("[DVE072_LCD]%s mipi-dsi lg4573b_wvga (800x480) driver ver 0.5.\n", __func__);
+	pr_debug("[DVE072_LCD]%s mipi-dsi lg4573b_wvga (800x480) driver ver 0.5.\n", __func__);
 
 	pinfo.xres = 480;
 	pinfo.yres = 800;

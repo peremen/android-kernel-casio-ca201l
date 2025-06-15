@@ -2131,7 +2131,7 @@ static void write_temp_config(struct mxt_data *mxt, u8 type, u8 offset, u8 val)
 		ret |= mxt_read_byte(mxt->client, addr + (u16)offset, &temp_val);
 		count++;
 		if (ret && (count == 3))
-			printk("%s failed\n", __FUNCTION__);
+			pr_debug("%s failed\n", __FUNCTION__);
 	} while (val != temp_val && count < 3);
 
 	return;
@@ -2488,7 +2488,7 @@ static void mxt_ta_worker(struct work_struct *work)
 	int error;
 
 	if (debug >= DEBUG_INFO)
-		pr_info("[TSP] %s\n", __func__);
+		pr_debug("[TSP] %s\n", __func__);
 	disable_irq(mxt->client->irq);
 
 	if (mxt->set_mode_for_ta) {
@@ -2513,9 +2513,9 @@ static void mxt_ta_worker(struct work_struct *work)
 	else {
 		if (debug >= DEBUG_INFO) {
 			if (mxt->set_mode_for_ta) {
-				pr_info("[TSP] mxt TA/USB mxt_noise_suppression_config Success!!\n");
+				pr_debug("[TSP] mxt TA/USB mxt_noise_suppression_config Success!!\n");
 			} else {
-				pr_info("[TSP] mxt BATTERY mxt_noise_suppression_config Success!!\n");
+				pr_debug("[TSP] mxt BATTERY mxt_noise_suppression_config Success!!\n");
 			}
 		}
 	}
@@ -2529,7 +2529,7 @@ static void mxt_metal_suppression_off(struct work_struct *work)
 	mxt = container_of(work, struct mxt_data, timer_dwork.work);
 
 	metal_suppression_chk_flag = false;
-	printk("[TSP]%s, metal_suppression_chk_flag = %d \n", __func__, metal_suppression_chk_flag);
+	pr_debug("[TSP]%s, metal_suppression_chk_flag = %d \n", __func__, metal_suppression_chk_flag);
 	disable_irq(mxt->client->irq);
 	mxt_write_byte(mxt->client, MXT_BASE_ADDR(MXT_TOUCH_MULTITOUCHSCREEN_T9) + MXT_ADR_T9_AMPHYST, 30);
 	enable_irq(mxt->client->irq);
@@ -2599,10 +2599,10 @@ static void ts_100ms_tmr_work(struct work_struct *work)
 {
 	struct mxt_data *mxt = container_of(work, struct mxt_data, tmr_work);
 	timer_ticks++;
-	printk("[TSP] 100ms T %d\n", timer_ticks);
+	pr_debug("[TSP] 100ms T %d\n", timer_ticks);
 	disable_irq(mxt->client->irq);
 	if (facesup_message_flag) {
-		printk("[TSP] facesup_message_flag = %d\n", facesup_message_flag);
+		pr_debug("[TSP] facesup_message_flag = %d\n", facesup_message_flag);
 		mxt_check_wakeup_work(mxt);
 		if (facesup_message_flag != 4) {
 			mxt_release_all_keys(mxt);
@@ -2622,7 +2622,7 @@ static void ts_100ms_tmr_work(struct work_struct *work)
 		palm_check_timer_flag = false;
 	} else {
 		if (palm_check_timer_flag && ((facesup_message_flag == 1) || (facesup_message_flag == 2)) && (palm_release_flag == false)) {
-			printk("[TSP] calibrate_chip\n");
+			pr_debug("[TSP] calibrate_chip\n");
 			calibrate_chip(mxt);
 			palm_check_timer_flag = false;
 		}
@@ -2635,9 +2635,9 @@ static void ts_100ms_tmr_work(struct work_struct *work)
 
 static void calibrate_timer_stop(struct mxt_data *mxt)
 {
-	printk("[TSP] %s call\n", __func__);
+	pr_debug("[TSP] %s call\n", __func__);
 	if (calibrate_timer_flag) {
-		printk("[TSP] %s\n", __func__);
+		pr_debug("[TSP] %s\n", __func__);
 		cancel_delayed_work(&mxt->calibrate_timer_dwork);
 	}
 	calibrate_timer_flag = false;
@@ -2645,9 +2645,9 @@ static void calibrate_timer_stop(struct mxt_data *mxt)
 
 static void calibrate_timer_start(struct mxt_data *mxt)
 {
-	printk("[TSP] %s call\n", __func__);
+	pr_debug("[TSP] %s call\n", __func__);
 	if (!calibrate_timer_flag) {
-		printk("[TSP] %s\n", __func__);
+		pr_debug("[TSP] %s\n", __func__);
 		schedule_delayed_work(&mxt->calibrate_timer_dwork, msecs_to_jiffies(500));
 	}
 	calibrate_timer_flag = true;
@@ -2657,7 +2657,7 @@ static void calibrate_timer_delayed_work(struct work_struct *work)
 {
 	struct mxt_data *mxt;
 	mxt = container_of(work, struct mxt_data, calibrate_timer_dwork.work);
-	printk("[TSP] %s\n", __func__);
+	pr_debug("[TSP] %s\n", __func__);
 	cal_maybe_good(mxt);
 	cal_check_flag = 0;
 	calibrate_timer_flag = false;
@@ -2666,7 +2666,7 @@ static void calibrate_timer_delayed_work(struct work_struct *work)
 static void suppress_timer_delayed_work(struct work_struct *work)
 {
 	struct mxt_data *mxt;
-	printk("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	mxt = container_of(work, struct mxt_data, suppress_timer_dwork.work);
 	calibrate_chip(mxt);
 }
@@ -2674,11 +2674,11 @@ static void suppress_timer_delayed_work(struct work_struct *work)
 static void cal_maybe_good(struct mxt_data *mxt)
 {
 	int ret;
-	printk("[TSP] %s\n", __func__);
+	pr_debug("[TSP] %s\n", __func__);
 
 	if (mxt_time_point != 0) {
 		if ((jiffies_to_msecs(jiffies) - mxt_time_point) >= 300) {
-			pr_info("[TSP] time from calibration start = %d\n", (jiffies_to_msecs(jiffies) - mxt_time_point));
+			pr_debug("[TSP] time from calibration start = %d\n", (jiffies_to_msecs(jiffies) - mxt_time_point));
 			mxt_time_point = 0;
 			cal_check_flag = 0;
 			timer_flag = DISABLE;
@@ -2692,7 +2692,7 @@ static void cal_maybe_good(struct mxt_data *mxt)
 			write_temp_config(mxt, 8, 8, ATCHFRCCALTHR_NOMAL);
 			write_temp_config(mxt, 8, 9, ATCHFRCCALRATIO_NORMAL);
 			mutex_unlock(&mxt->touch_mutex);
-			printk("[TSP] Calibration success!! \n");
+			pr_debug("[TSP] Calibration success!! \n");
 
 			if (metal_suppression_chk_flag == true) {
 				cancel_delayed_work(&mxt->timer_dwork);
@@ -2710,9 +2710,9 @@ static int calibrate_chip(struct mxt_data *mxt)
 {
 	u8 data = 1u;
 	int ret;
-	printk("[TSP] %s\n", __func__);
+	pr_debug("[TSP] %s\n", __func__);
 	if (debug >= DEBUG_INFO)
-		pr_info("[TSP] %s\n", __func__);
+		pr_debug("[TSP] %s\n", __func__);
 	mxt_time_point = jiffies_to_msecs(jiffies);
 	facesup_message_flag = 0;
 	not_yet_count = 0;
@@ -2720,7 +2720,7 @@ static int calibrate_chip(struct mxt_data *mxt)
 		ret = mxt_write_byte(mxt->client, MXT_BASE_ADDR(MXT_TOUCH_MULTITOUCHSCREEN_T9) + MXT_ADR_T9_TCHTHR, T9_TCHTHR);
 	ret = mxt_write_byte(mxt->client, MXT_BASE_ADDR(MXT_GEN_COMMANDPROCESSOR_T6) + MXT_ADR_T6_CALIBRATE, data);
 	if (ret < 0) {
-		printk("[TSP][ERROR] line : %d\n", __LINE__);
+		pr_err("[TSP][ERROR] line : %d\n", __LINE__);
 		return -1;
 	} else {
 		cal_check_flag = 1u;
@@ -2735,7 +2735,7 @@ static void mxt_palm_recovery(struct work_struct *work)
 	int error;
 	mxt = container_of(work, struct mxt_data, config_dwork.work);
 
-	printk("[TSP] %s \n", __func__);
+	pr_debug("[TSP] %s \n", __func__);
 
 	if (mxt->check_auto_cal == 1) {
 		mxt->check_auto_cal = 2;
@@ -2821,7 +2821,7 @@ static void mxt_check_wakeup_work(struct mxt_data *mxt)
 	uint8_t check_mask;
 	int finger_cnt = 0;
 
-	printk("%s <<<< start mxt_check_wakeup_work >>>>\n", __FUNCTION__);
+	pr_debug("%s <<<< start mxt_check_wakeup_work >>>>\n", __FUNCTION__);
 
 	memset(data_buffer, 0xFF, sizeof(data_buffer));
 	diag_address = MXT_BASE_ADDR(MXT_DEBUG_DIAGNOSTICS_T37);
@@ -2829,7 +2829,7 @@ static void mxt_check_wakeup_work(struct mxt_data *mxt)
 	for (loop_cnt = 0; loop_cnt < 3; loop_cnt++) {
 		while (!((data_buffer[0] == 0xf3) && (data_buffer[1] == loop_cnt))) {
 			if (try_ctr > 20) {
-				printk("[TSP] Diagnostic Data did not update !!--------\n");
+				pr_debug("[TSP] Diagnostic Data did not update !!--------\n");
 				break;
 			}
 			msleep(2);
@@ -2869,7 +2869,7 @@ static void mxt_check_wakeup_work(struct mxt_data *mxt)
 		finger_cnt++;
 	}
 
-	printk("<<<< node_cnt tch_ch[%d] atch_ch[%d] finger_cnt[%d]>>>> \n", tch_ch, atch_ch, finger_cnt);
+	pr_debug("<<<< node_cnt tch_ch[%d] atch_ch[%d] finger_cnt[%d]>>>> \n", tch_ch, atch_ch, finger_cnt);
 
 	if ((tch_ch > 0) && (atch_ch > 0)) {
 		facesup_message_flag = 1;
@@ -2899,14 +2899,14 @@ static void check_chip_palm(struct mxt_data *mxt)
 	struct i2c_client *client;
 
 	client = mxt->client;
-	printk("[TSP] %s\n", __func__);
+	pr_debug("[TSP] %s\n", __func__);
 	mxt_write_byte(mxt->client, MXT_BASE_ADDR(MXT_GEN_COMMANDPROCESSOR_T6) + MXT_ADR_T6_DIAGNOSTICS, 0xf3);
 	diag_address = MXT_BASE_ADDR(MXT_DEBUG_DIAGNOSTICS_T37);
 	msleep(5);
 	memset(data_buffer, 0xFF, sizeof(data_buffer));
 	while (!((data_buffer[0] == 0xF3) && (data_buffer[1] == 0x00))) {
 		if (try_ctr > 50) {
-			printk("[TSP] Diagnostic Data did not update!!\n");
+			pr_err("[TSP] Diagnostic Data did not update!!\n");
 			break;
 		}
 		msleep(2);
@@ -2915,7 +2915,7 @@ static void check_chip_palm(struct mxt_data *mxt)
 	}
 
 	if (try_ctr > 50) {
-		printk("[TSP] %s, Diagnostic Data did not update over 50, force reset!! %d\n", __func__, try_ctr);
+		pr_err("[TSP] %s, Diagnostic Data did not update over 50, force reset!! %d\n", __func__, try_ctr);
 		mxt_sw_reset(mxt);
 		msleep(150);
 		return;
@@ -2945,7 +2945,7 @@ static void check_chip_palm(struct mxt_data *mxt)
 				}
 			}
 		}
-		printk("[TSP] Flags Counted channels: t:%d a:%d \n", tch_ch, atch_ch);
+		pr_debug("[TSP] Flags Counted channels: t:%d a:%d \n", tch_ch, atch_ch);
 		data_byte = 0x01;
 		mxt_write_byte(mxt->client, MXT_BASE_ADDR(MXT_GEN_COMMANDPROCESSOR_T6) + MXT_ADR_T6_DIAGNOSTICS, data_byte);
 		mxt_read_byte(mxt->client, MXT_BASE_ADDR(MXT_USER_INFO_T38) + MXT_ADR_T38_USER1, &max_touch_ch);
@@ -2960,7 +2960,7 @@ static void check_chip_palm(struct mxt_data *mxt)
 		}
 		if ((tch_ch < 70) || ((tch_ch >= 70) && ((tch_ch - atch_ch) > 25)))
 			palm_check_timer_flag = true;
-		printk("[TSP] Touch suppression State: %d \n", facesup_message_flag);
+		pr_debug("[TSP] Touch suppression State: %d \n", facesup_message_flag);
 	}
 }
 
@@ -2981,7 +2981,7 @@ static void check_chip_calibration(struct mxt_data *mxt)
 	client = mxt->client;
 
 	if (cal_check_flag != 1) {
-		printk("[TSP] check_chip_calibration just return!! finger_cnt = %d\n", finger_cnt);
+		pr_debug("[TSP] check_chip_calibration just return!! finger_cnt = %d\n", finger_cnt);
 		return;
 	}
 
@@ -3039,10 +3039,10 @@ static void check_chip_calibration(struct mxt_data *mxt)
 				continue;
 			finger_cnt++;
 		}
-		printk("[TSP] check_chip_calibration - tch_ch = %d atch_ch = %d finger_cnt = %d\n", tch_ch, atch_ch, finger_cnt);
+		pr_debug("[TSP] check_chip_calibration - tch_ch = %d atch_ch = %d finger_cnt = %d\n", tch_ch, atch_ch, finger_cnt);
 
 		if (cal_check_flag != 1) {
-			printk("[TSP] check_chip_calibration just return!! finger_cnt = %d\n", finger_cnt);
+			pr_debug("[TSP] check_chip_calibration just return!! finger_cnt = %d\n", finger_cnt);
 			return;
 		}
 
@@ -3058,7 +3058,7 @@ static void check_chip_calibration(struct mxt_data *mxt)
 			} else {
 				not_yet_count = 0;
 				calibrate_timer_wait = true;
-				printk("[TSP] calibrate_timer_wait\n");
+				pr_debug("[TSP] calibrate_timer_wait\n");
 			}
 			calibration_complete_count = 1;
 		} else if (atch_ch > ((finger_cnt * 13) + 2)) {
@@ -3439,7 +3439,7 @@ void process_T9_message(u8 *message, struct mxt_data *mxt)
 		if (facesup_message_flag_T9 == 1) {
 			facesup_message_flag_T9 = 0;
 			if (debug >= DEBUG_MESSAGES)
-				pr_info("[TSP] Palm(T92) Suppressed !!! \n");
+				pr_debug("[TSP] Palm(T92) Suppressed !!! \n");
 		}
 	}
 	mxt->fingers[touch_id].z = message[MXT_MSG_T9_TCHAREA];
@@ -3484,7 +3484,7 @@ void process_T42_message(u8 *message, struct mxt_data *mxt)
 	if (message[MXT_MSG_T42_STATUS] == MXT_MSGB_T42_TCHSUP) {
 		palm_release_flag = false;
 
-		printk("[TSP] Palm(T42) Suppressed !!! \n");
+		pr_debug("[TSP] Palm(T42) Suppressed !!! \n");
 
 		if (facesup_message_flag && timer_flag)
 			return;
@@ -3495,10 +3495,10 @@ void process_T42_message(u8 *message, struct mxt_data *mxt)
 			timer_flag = ENABLE;
 			timer_ticks = 0;
 			ts_100ms_timer_start(mxt);
-			printk("[TSP] Palm(T42) Timer start !!! \n");
+			pr_debug("[TSP] Palm(T42) Timer start !!! \n");
 		}
 	} else {
-		printk("[TSP] Palm(T42) Released !!! \n");
+		pr_debug("[TSP] Palm(T42) Released !!! \n");
 
 		palm_release_flag = true;
 		facesup_message_flag = 0;
@@ -3525,22 +3525,22 @@ int process_message(u8 *message, u8 object, struct mxt_data *mxt)
 	length = mxt->message_size;
 	report_id = message[0];
 
-	printk("process_message 0: (0x%x) 1:(0x%x) object:(%d)", message[0], message[1], object);
+	pr_debug("process_message 0: (0x%x) 1:(0x%x) object:(%d)", message[0], message[1], object);
 
 	switch (object) {
 	case MXT_PROCG_NOISESUPPRESSION_T48:
 		state = message[4];
 		if (state == 0x05) {
-			printk("[TSP] NOISESUPPRESSION_T48 error\n");
+			pr_err("[TSP] NOISESUPPRESSION_T48 error\n");
 		}
 		break;
 	case MXT_GEN_COMMANDPROCESSOR_T6:
 		status = message[1];
 		if (status & MXT_MSGB_T6_COMSERR) {
-			printk("[TSP] maXTouch checksum error\n");
+			pr_err("[TSP] maXTouch checksum error\n");
 		}
 		if (status & MXT_MSGB_T6_CFGERR) {
-			printk("[TSP] maXTouch configuration error\n");
+			pr_err("[TSP] maXTouch configuration error\n");
 			mxt_sw_reset(mxt);
 			msleep(250);
 		}
@@ -3678,7 +3678,7 @@ static void mxt_reset_delayed_work(struct work_struct *work)
 {
 
 	struct mxt_data *mxt;
-	printk("%s %d, [%d][tsp]\n", __func__, __LINE__, touch_reset_flag);
+	pr_debug("%s %d, [%d][tsp]\n", __func__, __LINE__, touch_reset_flag);
 
 	mxt = container_of(work, struct mxt_data, mxt_reset_dwork.work);
 
@@ -3717,7 +3717,7 @@ static irqreturn_t mxt224E_irq_thread(int irq, void *ptr)
 
 		if (msg[0] == SUPPRESS_MSG) {
 			if (msg[1] == SUPPRESS_MSG_PRESS) {
-				printk("%s suppress\n", __func__);
+				pr_debug("%s suppress\n", __func__);
 				schedule_delayed_work(&data->suppress_timer_dwork, msecs_to_jiffies(2000));
 			}
 			if (cal_check_flag == 1) {
@@ -3804,7 +3804,7 @@ static irqreturn_t mxt224E_irq_thread(int irq, void *ptr)
 				else if (msg[1] & MOVE_MSG_MASK)
 					mask = 0;
 				else
-					printk("%s %d, --------- error [tsp]\n", __func__, __LINE__);
+					pr_err("%s %d, --------- error [tsp]\n", __func__, __LINE__);
 
 				equalize_coordinate2(mask, report_id, &data->fingers[report_id].x, &data->fingers[report_id].y);
 			}
@@ -3858,7 +3858,7 @@ error:
 			}
 		}
 
-		printk("[TSP] *** %s report_bfr_num = %d -> report_num = %d calibrate_timer_wait = %d\n",
+		pr_debug("[TSP] *** %s report_bfr_num = %d -> report_num = %d calibrate_timer_wait = %d\n",
 		       __func__, report_bfr_num, report_num, calibrate_timer_wait);
 
 		if (report_bfr_num && report_num == 0 && calibrate_timer_wait) {
@@ -3869,7 +3869,7 @@ error:
 			calibrate_timer_wait = false;
 			facesup_message_flag = 0;
 		} else if (calibrate_timer_wait && (report_num > 1)) {
-			printk("[TSP] %s finger detect calibrate_timer_wait cancel calibrate_timer_wait = %d  facesup_message_flag = %d\n",
+			pr_debug("[TSP] %s finger detect calibrate_timer_wait cancel calibrate_timer_wait = %d  facesup_message_flag = %d\n",
 			       __func__, calibrate_timer_wait, facesup_message_flag);
 			calibrate_timer_wait = false;
 			facesup_message_flag = 0;
@@ -3880,7 +3880,7 @@ error:
 	}
 
 	if (0) {
-		printk("[TOUCH] mxt_reset.\n");
+		pr_debug("[TOUCH] mxt_reset.\n");
 		mxt_reset_flag = 1;
 		mxt_need_reset = 0;
 
@@ -3951,7 +3951,7 @@ int write_wireless_config(struct mxt_data *mxt)
 
 	return 0;
 err_config:
-	printk("TOUCH write config error\n");
+	pr_err("TOUCH write config error\n");
 	return -1;
 }
 
@@ -4027,7 +4027,7 @@ static ssize_t show_cradle_status(struct device *dev,
 	mxt = dev_get_drvdata(dev);
 	cradle_chg_int = usb_valid_irq_store();
 	count = sprintf(buf, "%d", !cradle_chg_int);
-	printk(KERN_INFO "##### cradle_chg_int = %d\n", buf[0]);
+	pr_debug(KERN_INFO "##### cradle_chg_int = %d\n", buf[0]);
 	return (ssize_t)count;
 }
 
@@ -4045,7 +4045,7 @@ static ssize_t set_ap(struct device *dev,
 	mxt = i2c_get_clientdata(client);
 
 	if (count < 3) {
-		printk(KERN_INFO "set_ap needs to arguments: address pointer "
+		pr_err(KERN_INFO "set_ap needs to arguments: address pointer "
 				 "and data size");
 		return -EIO;
 	}
@@ -4059,7 +4059,7 @@ static ssize_t ts_version_show(struct device *dev, struct device_attribute *attr
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 
 	buf[0] = mxt->device_info.major;
@@ -4070,7 +4070,7 @@ static ssize_t diag_normal_show(struct device *dev, struct device_attribute *att
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_NORMAL, 1);
 	input_sync(mxt->input_dev);
@@ -4084,7 +4084,7 @@ static ssize_t diag_glove_show(struct device *dev, struct device_attribute *attr
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_GLOVE, 1);
 	input_sync(mxt->input_dev);
@@ -4098,7 +4098,7 @@ static ssize_t diag_hardkey_show(struct device *dev, struct device_attribute *at
 
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_HARDKEY, 1);
 	input_sync(mxt->input_dev);
@@ -4112,7 +4112,7 @@ static ssize_t diag_softkey_show(struct device *dev, struct device_attribute *at
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_SOFTKEY, 1);
 	input_sync(mxt->input_dev);
@@ -4126,7 +4126,7 @@ static ssize_t diag_keyled_show(struct device *dev, struct device_attribute *att
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_KEYLED, 1);
 	input_sync(mxt->input_dev);
@@ -4140,7 +4140,7 @@ static ssize_t diag_backlight_show(struct device *dev, struct device_attribute *
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_POWER, 1);
 	input_sync(mxt->input_dev);
@@ -4154,7 +4154,7 @@ static ssize_t diag_white_show(struct device *dev, struct device_attribute *attr
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_WHITE, 1);
 	input_sync(mxt->input_dev);
@@ -4168,7 +4168,7 @@ static ssize_t diag_rainbow_show(struct device *dev, struct device_attribute *at
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_RAINBOW, 1);
 	input_sync(mxt->input_dev);
@@ -4182,7 +4182,7 @@ static ssize_t diag_frame_show(struct device *dev, struct device_attribute *attr
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_FRAME, 1);
 	input_sync(mxt->input_dev);
@@ -4196,7 +4196,7 @@ static ssize_t diag_softbl_show(struct device *dev, struct device_attribute *att
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_SOFTBL, 1);
 	input_sync(mxt->input_dev);
@@ -4210,7 +4210,7 @@ static ssize_t diag_normal2_show(struct device *dev, struct device_attribute *at
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_NORMAL2, 1);
 	input_sync(mxt->input_dev);
@@ -4224,7 +4224,7 @@ static ssize_t diag_glove2_show(struct device *dev, struct device_attribute *att
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_GLOVE2, 1);
 	input_sync(mxt->input_dev);
@@ -4238,7 +4238,7 @@ static ssize_t diag_nfcmenu_show(struct device *dev, struct device_attribute *at
 {
 	struct mxt_data *mxt;
 	int count = 0;
-	printk("[DIAG] %s\n", __func__);
+	pr_debug("[DIAG] %s\n", __func__);
 	mxt = dev_get_drvdata(dev);
 	input_report_key(mxt->input_dev, KEY_DIAG_NFCMENU, 1);
 	input_sync(mxt->input_dev);
@@ -4254,12 +4254,12 @@ static ssize_t diag_key_emulation(struct device *dev,
 	struct mxt_data *mxt;
 	u8 press;
 	u16 emul_key;
-	printk("\n[DIAG/KeyEmulation] %s\n", __func__);
+	pr_debug("\n[DIAG/KeyEmulation] %s\n", __func__);
 
 	press = (u8) * ((u8 *)(buf));
 	emul_key = (u16) * ((u16 *)(buf + 1));
 	if (debug >= DEBUG_INFO)
-		printk("[DIAG/KeyEmulation] %d, emul_key: %d, 0x%X\n", press, emul_key, emul_key);
+		pr_debug("[DIAG/KeyEmulation] %d, emul_key: %d, 0x%X\n", press, emul_key, emul_key);
 
 	mxt = dev_get_drvdata(dev);
 
@@ -4279,7 +4279,7 @@ void mxt_normal_config_write(void)
 	int ret, i = 0;
 
 	if (ts_store_obj_status || !ts_lcd_flag || mxt_suspend_status || facesup_message_flag) {
-		printk("\n[TOUCH MODE] ####### mxt_normal_config_write [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
+		pr_debug("\n[TOUCH MODE] ####### mxt_normal_config_write [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
 		if (facesup_message_flag) {
 			timer_flag = DISABLE;
 			timer_ticks = 10;
@@ -4294,9 +4294,9 @@ void mxt_normal_config_write(void)
 
 	touch_mode = TOUCH_NORMAL;
 	if (mxt_suspend_status == 0) {
-		printk("\n[TOUCH MODE] ####### NORMAL TOUCH1 ######\n");
-		printk("\n[TOUCH MODE] ####### NORMAL TOUCH ######\n");
-		printk("\n[TOUCH MODE] ####### NORMAL TOUCH ######\n");
+		pr_debug("\n[TOUCH MODE] ####### NORMAL TOUCH1 ######\n");
+		pr_debug("\n[TOUCH MODE] ####### NORMAL TOUCH ######\n");
+		pr_debug("\n[TOUCH MODE] ####### NORMAL TOUCH ######\n");
 		last_apply_mode = TOUCH_NORMAL;
 		mutex_lock(&mxt224E_data->touch_mutex);
 		ts_store_obj_status = 1;
@@ -4307,7 +4307,7 @@ void mxt_normal_config_write(void)
 			mxt_call_recovery(mxt224E_data);
 		ret = mxt224E_backup(mxt224E_data);
 		if (ret) {
-			printk("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
+			pr_err("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
 		}
 		ts_store_obj_status = 0;
 		mxt_writecfg_status = 1;
@@ -4323,7 +4323,7 @@ void mxt_glove_config_write(void)
 	int ret, i = 0;
 
 	if (ts_store_obj_status || !ts_lcd_flag || mxt_suspend_status || facesup_message_flag) {
-		printk("\n[TOUCH MODE] ####### mxt_glove_config_write [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
+		pr_debug("\n[TOUCH MODE] ####### mxt_glove_config_write [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
 		if (facesup_message_flag) {
 			timer_flag = DISABLE;
 			timer_ticks = 10;
@@ -4336,9 +4336,9 @@ void mxt_glove_config_write(void)
 	}
 	touch_mode = TOUCH_GLOVE;
 	if (mxt_suspend_status == 0) {
-		printk("\n[TOUCH MODE] ####### GLOVE TOUCH1 ######\n");
-		printk("\n[TOUCH MODE] ####### GLOVE TOUCH ######\n");
-		printk("\n[TOUCH MODE] ####### GLOVE TOUCH ######\n");
+		pr_debug("\n[TOUCH MODE] ####### GLOVE TOUCH1 ######\n");
+		pr_debug("\n[TOUCH MODE] ####### GLOVE TOUCH ######\n");
+		pr_debug("\n[TOUCH MODE] ####### GLOVE TOUCH ######\n");
 		last_apply_mode = TOUCH_GLOVE;
 
 		mutex_lock(&mxt224E_data->touch_mutex);
@@ -4350,7 +4350,7 @@ void mxt_glove_config_write(void)
 			mxt_call_recovery(mxt224E_data);
 		ret = mxt224E_backup(mxt224E_data);
 		if (ret) {
-			printk("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
+			pr_err("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
 		}
 		ts_store_obj_status = 0;
 		mxt_writecfg_status = 1;
@@ -4366,7 +4366,7 @@ void mxt_charger_config_write(void)
 	int ret, i = 0;
 
 	if (ts_store_obj_status || !ts_lcd_flag || mxt_suspend_status || facesup_message_flag) {
-		printk("\n[TOUCH MODE] ####### mxt_charger_config_write [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
+		pr_debug("\n[TOUCH MODE] ####### mxt_charger_config_write [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
 		if (facesup_message_flag) {
 			timer_flag = DISABLE;
 			timer_ticks = 10;
@@ -4380,9 +4380,9 @@ void mxt_charger_config_write(void)
 	}
 
 	if (mxt_suspend_status == 0) {
-		printk("\n[TOUCH MODE] ####### CHARGER TOUCH1 ######\n");
-		printk("\n[TOUCH MODE] ####### CHARGER TOUCH ######\n");
-		printk("\n[TOUCH MODE] ####### CHARGER TOUCH ######\n");
+		pr_debug("\n[TOUCH MODE] ####### CHARGER TOUCH1 ######\n");
+		pr_debug("\n[TOUCH MODE] ####### CHARGER TOUCH ######\n");
+		pr_debug("\n[TOUCH MODE] ####### CHARGER TOUCH ######\n");
 		last_apply_mode = TOUCH_CHARGE;
 		mutex_lock(&mxt224E_data->touch_mutex);
 		ts_store_obj_status = 1;
@@ -4393,7 +4393,7 @@ void mxt_charger_config_write(void)
 			mxt_call_recovery(mxt224E_data);
 		ret = mxt224E_backup(mxt224E_data);
 		if (ret) {
-			printk("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
+			pr_err("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
 		}
 
 		ts_store_obj_status = 0;
@@ -4412,7 +4412,7 @@ void mxt_wireless_config_write(void)
 	int ret, i = 0;
 
 	if (ts_store_obj_status || !ts_lcd_flag || mxt_suspend_status || facesup_message_flag) {
-		printk("\n[TOUCH MODE] ####### mxt_wireless_config_write [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
+		pr_debug("\n[TOUCH MODE] ####### mxt_wireless_config_write [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
 		if (facesup_message_flag) {
 			timer_flag = DISABLE;
 			timer_ticks = 10;
@@ -4426,9 +4426,9 @@ void mxt_wireless_config_write(void)
 	}
 
 	if (mxt_suspend_status == 0) {
-		printk("\n[TOUCH MODE] ####### WIRELESS TOUCH1 ######\n");
-		printk("\n[TOUCH MODE] ####### WIRELESS TOUCH ######\n");
-		printk("\n[TOUCH MODE] ####### WIRELESS TOUCH ######\n");
+		pr_debug("\n[TOUCH MODE] ####### WIRELESS TOUCH1 ######\n");
+		pr_debug("\n[TOUCH MODE] ####### WIRELESS TOUCH ######\n");
+		pr_debug("\n[TOUCH MODE] ####### WIRELESS TOUCH ######\n");
 		last_apply_mode = TOUCH_WIRELESS;
 		mutex_lock(&mxt224E_data->touch_mutex);
 		ts_store_obj_status = 1;
@@ -4440,7 +4440,7 @@ void mxt_wireless_config_write(void)
 
 		ret = mxt224E_backup(mxt224E_data);
 		if (ret) {
-			printk("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
+			pr_err("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
 		}
 		ts_store_obj_status = 0;
 		mxt_writecfg_status = 1;
@@ -4471,7 +4471,7 @@ static void mxt_normal_config_delayed_work(struct work_struct *work)
 	if (last_apply_mode == TOUCH_NORMAL)
 		return;
 	if (ts_store_obj_status || !ts_lcd_flag || mxt_suspend_status || facesup_message_flag) {
-		printk("\n[TOUCH MODE] ####### mxt_normal_config_delayed_work return[%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
+		pr_debug("\n[TOUCH MODE] ####### mxt_normal_config_delayed_work return[%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
 		if (facesup_message_flag) {
 			timer_flag = DISABLE;
 			timer_ticks = 10;
@@ -4484,7 +4484,7 @@ static void mxt_normal_config_delayed_work(struct work_struct *work)
 	}
 
 	touch_mode = TOUCH_NORMAL;
-	printk("\n[TOUCH MODE] ####### NORMAL TOUCH2 ######\n\n");
+	pr_debug("\n[TOUCH MODE] ####### NORMAL TOUCH2 ######\n\n");
 	cal_check_flag = 1;
 
 	last_apply_mode = TOUCH_NORMAL;
@@ -4499,7 +4499,7 @@ static void mxt_normal_config_delayed_work(struct work_struct *work)
 
 	ret = mxt224E_backup(mxt);
 	if (ret) {
-		printk("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
+		pr_err("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
 	}
 
 	ts_store_obj_status = 0;
@@ -4529,7 +4529,7 @@ static void mxt_charger_config_delayed_work(struct work_struct *work)
 	if (last_apply_mode == TOUCH_CHARGE)
 		return;
 	if (ts_store_obj_status || !ts_lcd_flag || mxt_suspend_status || facesup_message_flag) {
-		printk("\n[TOUCH MODE] ####### mxt_charger_config_delayed_work return[%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
+		pr_debug("\n[TOUCH MODE] ####### mxt_charger_config_delayed_work return[%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
 		if (facesup_message_flag) {
 			timer_flag = DISABLE;
 			timer_ticks = 10;
@@ -4541,7 +4541,7 @@ static void mxt_charger_config_delayed_work(struct work_struct *work)
 		return;
 	}
 
-	printk("\n[TOUCH MODE] ####### CHARGER TOUCH2 ######\n\n");
+	pr_debug("\n[TOUCH MODE] ####### CHARGER TOUCH2 ######\n\n");
 
 	cal_check_flag = 1;
 
@@ -4557,7 +4557,7 @@ static void mxt_charger_config_delayed_work(struct work_struct *work)
 
 	ret = mxt224E_backup(mxt);
 	if (ret) {
-		printk("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
+		pr_err("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
 	}
 
 	ts_store_obj_status = 0;
@@ -4587,7 +4587,7 @@ static void mxt_wireless_config_delayed_work(struct work_struct *work)
 	if (last_apply_mode == TOUCH_WIRELESS)
 		return;
 	if (ts_store_obj_status || !ts_lcd_flag || mxt_suspend_status || facesup_message_flag) {
-		printk("\n[TOUCH MODE] ####### mxt_wireless_config_delayed_work [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
+		pr_debug("\n[TOUCH MODE] ####### mxt_wireless_config_delayed_work [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
 		if (facesup_message_flag) {
 			timer_flag = DISABLE;
 			timer_ticks = 10;
@@ -4600,7 +4600,7 @@ static void mxt_wireless_config_delayed_work(struct work_struct *work)
 		return;
 	}
 
-	printk("\n[TOUCH MODE] ####### WIRELESS TOUCH2 ######\n\n");
+	pr_debug("\n[TOUCH MODE] ####### WIRELESS TOUCH2 ######\n\n");
 
 	cal_check_flag = 1;
 
@@ -4616,7 +4616,7 @@ static void mxt_wireless_config_delayed_work(struct work_struct *work)
 
 	ret = mxt224E_backup(mxt);
 	if (ret) {
-		printk("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
+		pr_err("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
 	}
 
 	ts_store_obj_status = 0;
@@ -4646,7 +4646,7 @@ static void mxt_glove_config_delayed_work(struct work_struct *work)
 	if (last_apply_mode == TOUCH_GLOVE)
 		return;
 	if (ts_store_obj_status || !ts_lcd_flag || mxt_suspend_status || facesup_message_flag) {
-		printk("\n[TOUCH MODE] ####### mxt_glove_config_delayed_work [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
+		pr_debug("\n[TOUCH MODE] ####### mxt_glove_config_delayed_work [%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
 		if (facesup_message_flag) {
 			timer_flag = DISABLE;
 			timer_ticks = 10;
@@ -4659,7 +4659,7 @@ static void mxt_glove_config_delayed_work(struct work_struct *work)
 		return;
 	}
 	touch_mode = TOUCH_GLOVE;
-	printk("\n[TOUCH MODE] ####### GLOVE TOUCH2 ######\n\n");
+	pr_debug("\n[TOUCH MODE] ####### GLOVE TOUCH2 ######\n\n");
 	cal_check_flag = 1;
 
 	last_apply_mode = TOUCH_GLOVE;
@@ -4674,7 +4674,7 @@ static void mxt_glove_config_delayed_work(struct work_struct *work)
 
 	ret = mxt224E_backup(mxt);
 	if (ret) {
-		printk("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
+		pr_err("[TOUCH] %s -> config RAM save fail !!!\n", __func__);
 	}
 
 	ts_store_obj_status = 0;
@@ -4699,7 +4699,7 @@ static void mxt_resume_delayed_work(struct work_struct *work)
 
 	if (!ts_lcd_flag) {
 		mutex_unlock(&mxt->touch_mutex);
-		printk("do not write i2c cuz LDC29 is off line[%d]\n", __LINE__);
+		pr_debug("do not write i2c cuz LDC29 is off line[%d]\n", __LINE__);
 		return;
 	}
 
@@ -4735,7 +4735,7 @@ static void mxt_call_recovery_delayed_work(struct work_struct *work)
 
 	mxt = container_of(work, struct mxt_data, call_recovery_dwork.work);
 	if (ts_store_obj_status || !ts_lcd_flag || mxt_suspend_status || facesup_message_flag) {
-		printk("\n[TOUCH MODE] ####### mxt_call_recovery_delayed_work return[%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
+		pr_debug("\n[TOUCH MODE] ####### mxt_call_recovery_delayed_work return[%d][%d][%d]######\n", ts_store_obj_status, mxt_suspend_status, facesup_message_flag);
 		if (facesup_message_flag) {
 			timer_flag = DISABLE;
 			timer_ticks = 10;
@@ -4759,7 +4759,7 @@ static void mxt_call_recovery_delayed_work(struct work_struct *work)
 	write_temp_config(mxt, 8, 7, 1);
 
 	mxt224E_backup(mxt);
-	printk("[tsp]call_recovery_delayed__\n");
+	pr_debug("[tsp]call_recovery_delayed__\n");
 	return;
 }
 
@@ -4777,13 +4777,13 @@ static void mxt_charging_delayed_work(struct work_struct *work)
 	charge_mode = pm_power_get_charger_mode();
 
 	if (!ts_lcd_flag) {
-		printk("do not write i2c cuz LDC29 is off line return [%d]\n", __LINE__);
+		pr_debug("do not write i2c cuz LDC29 is off line return [%d]\n", __LINE__);
 
 		return;
 	}
 
 	if (last_charge_mode != charge_mode || last_touch_mode != touch_mode) {
-		printk("%s charge_mode = %d \n", __FUNCTION__, charge_mode);
+		pr_debug("%s charge_mode = %d \n", __FUNCTION__, charge_mode);
 
 		if (charge_mode == TOUCH_WALL_CHARGE || charge_mode == TOUCH_USB_CHARGE || charge_mode == TOUCH_CRADLE_CHARGE) {
 			schedule_delayed_work(&mxt->charger_dwork, msecs_to_jiffies(50));
@@ -4853,7 +4853,7 @@ static ssize_t store_object(struct device *dev, struct device_attribute *attr, c
 	mxt = dev_get_drvdata(dev);
 
 	if ((sscanf(buf, "%u %u %u %u", &cfg_type, &type, &offset, &val) != 4) || (type >= MXT_MAX_OBJECT_TYPES)) {
-		printk("Invalid values \n");
+		pr_err("Invalid values \n");
 		return -EINVAL;
 	}
 
@@ -4913,7 +4913,7 @@ static ssize_t store_object(struct device *dev, struct device_attribute *attr, c
 			else
 				touch_mode = TOUCH_CHARGE;
 		}
-		printk("\n ###%s : touch_mode = %d charge_mode = %d \n\n", __FUNCTION__, touch_mode, charge_mode);
+		pr_debug("\n ###%s : touch_mode = %d charge_mode = %d \n\n", __FUNCTION__, touch_mode, charge_mode);
 		switch (touch_mode) {
 		case TOUCH_NORMAL:
 			mxt_normal_config_write();
@@ -5045,16 +5045,16 @@ static int mxt_load_fw(struct mxt_data *data, const char *fn, size_t count)
 				if ((boot_status & MXT_WAITING_BOOTLOAD_CMD) == MXT_WAITING_BOOTLOAD_CMD) {
 					if (mxt_unlock_bootloader(client) == 0) {
 						mdelay(10);
-						printk(KERN_INFO "Unlock OK\n");
+						pr_debug(KERN_INFO "Unlock OK\n");
 					} else {
-						printk(KERN_INFO "Unlock fail\n");
+						pr_debug(KERN_INFO "Unlock fail\n");
 					}
 				} else if ((boot_status & MXT_WAITING_BOOTLOAD_CMD) == MXT_WAITING_FRAME_DATA) {
 					frame_size = ((*(firmware_data + pos) << 8) | *(firmware_data + pos + 1));
 					frame_size += 2;
 
 					if (0 == frame_size) {
-						printk(KERN_INFO "0 == frame_size\n");
+						pr_debug(KERN_INFO "0 == frame_size\n");
 						ret = 0;
 						goto out;
 					}
@@ -5063,18 +5063,18 @@ static int mxt_load_fw(struct mxt_data *data, const char *fn, size_t count)
 					mxt_fw_write(client, firmware_data + pos, frame_size);
 					mdelay(10);
 				} else if (boot_status == MXT_FRAME_CRC_CHECK) {
-					printk(KERN_INFO "CRC Check\n");
+					pr_debug(KERN_INFO "CRC Check\n");
 				} else if (boot_status == MXT_FRAME_CRC_PASS) {
 					if (next_frame == 1) {
-						printk(KERN_INFO "CRC Ok\n");
+						pr_debug(KERN_INFO "CRC Ok\n");
 						pos += frame_size;
 						next_frame = 0;
-						printk(KERN_INFO "Updated %d bytes / %lu bytes\n", pos, fw_size);
+						pr_debug(KERN_INFO "Updated %d bytes / %lu bytes\n", pos, fw_size);
 					} else {
-						printk(KERN_INFO "next_frame != 1\n");
+						pr_debug(KERN_INFO "next_frame != 1\n");
 					}
 				} else if (boot_status == MXT_FRAME_CRC_FAIL) {
-					printk(KERN_INFO "CRC Fail\n");
+					pr_debug(KERN_INFO "CRC Fail\n");
 					crc_error_count++;
 				}
 				if (crc_error_count > 10) {
@@ -5087,7 +5087,7 @@ static int mxt_load_fw(struct mxt_data *data, const char *fn, size_t count)
 			}
 		}
 	} else {
-		printk(KERN_INFO "[TSP] read_boot_state() or (boot_status & 0xC0) == 0xC0) is fail!!!\n");
+		pr_err(KERN_INFO "[TSP] read_boot_state() or (boot_status & 0xC0) == 0xC0) is fail!!!\n");
 		ret = 1;
 	}
 out:
@@ -5130,7 +5130,7 @@ static ssize_t show_touch_mode(struct device *dev, struct device_attribute *attr
 	struct mxt_data *mxt;
 
 	mxt = dev_get_drvdata(dev);
-	printk("%s\n", __FUNCTION__);
+	pr_debug("%s\n", __FUNCTION__);
 	sprintf(buf, "%d", touch_mode);
 
 	return (ssize_t)sizeof(touch_mode);
@@ -5147,16 +5147,16 @@ static ssize_t store_touch_mode(struct device *dev, struct device_attribute *att
 	touch_mode = temp_touch_mode;
 	if (!ts_lcd_flag) {
 		wake_unlock(&touch_wake_lock);
-		printk("do not write i2c cuz LDC29 is off line[%d]\n", __LINE__);
+		pr_debug("do not write i2c cuz LDC29 is off line[%d]\n", __LINE__);
 		return 0;
 	}
 
 	if (last_apply_mode == -1) {
 		wake_unlock(&touch_wake_lock);
-		printk("[TSP] INIT NOT YET[%d]\n", __LINE__);
+		pr_debug("[TSP] INIT NOT YET[%d]\n", __LINE__);
 		return 0;
 	}
-	printk("\n ###%s : touch_mode = %d charge_mode = %d \n\n", __FUNCTION__, touch_mode, charge_mode);
+	pr_debug("\n ###%s : touch_mode = %d charge_mode = %d \n\n", __FUNCTION__, touch_mode, charge_mode);
 
 	if (charge_mode == TOUCH_NOT_CHARGE) {
 		switch (touch_mode) {
@@ -5193,7 +5193,7 @@ static int finger_recovery(struct mxt_data *data)
 
 static int mxt_call_recovery(struct mxt_data *data)
 {
-	printk("[tsp]call_recovery [%d]\n", touch_mode);
+	pr_debug("[tsp]call_recovery [%d]\n", touch_mode);
 
 	if (touch_mode == TOUCH_GLOVE) {
 		write_temp_config(data, 46, 2, 28);
@@ -5212,15 +5212,15 @@ static ssize_t show_proximity_status(struct device *dev, struct device_attribute
 {
 	int count = 0;
 
-	printk("show_proximity_status start\n");
+	pr_debug("show_proximity_status start\n");
 
 	wake_lock(&touch_wake_lock);
 	count = sprintf(buf, "%d", proximity_status);
-	printk(KERN_INFO "##### proximity_status = %d\n", buf[0]);
-	printk("proximity_status:%d\n", proximity_status);
+	pr_debug(KERN_INFO "##### proximity_status = %d\n", buf[0]);
+	pr_debug("proximity_status:%d\n", proximity_status);
 	wake_unlock(&touch_wake_lock);
 
-	printk("show_proximity_status end\n");
+	pr_debug("show_proximity_status end\n");
 	return (ssize_t)count;
 }
 
@@ -5231,12 +5231,12 @@ static ssize_t store_proximity_status(struct device *dev, struct device_attribut
 	struct mxt_data *mxt;
 	mxt = dev_get_drvdata(dev);
 
-	printk("store_proximity_status start\n");
+	pr_debug("store_proximity_status start\n");
 
 	wake_lock(&touch_wake_lock);
 	sscanf(buf, "%d", &work_proximity_status);
 
-	printk("Old proximity_status:%d New proximity_status:%d\n", proximity_status, work_proximity_status);
+	pr_debug("Old proximity_status:%d New proximity_status:%d\n", proximity_status, work_proximity_status);
 
 	proximity_status = work_proximity_status;
 
@@ -5251,7 +5251,7 @@ static ssize_t store_proximity_status(struct device *dev, struct device_attribut
 
 	wake_unlock(&touch_wake_lock);
 
-	printk("store_proximity_status end\n");
+	pr_debug("store_proximity_status end\n");
 	return (ssize_t)count;
 }
 
@@ -5333,7 +5333,7 @@ static int mxt224E_internal_suspend(struct mxt_data *data)
 
 	last_charge_mode = pm_power_get_charger_mode();
 
-	printk("[TOUCH] touch mode=%d, last touch mode=%d, last charge mode = %d\n", touch_mode, last_touch_mode, last_charge_mode);
+	pr_debug("[TOUCH] touch mode=%d, last touch mode=%d, last charge mode = %d\n", touch_mode, last_touch_mode, last_charge_mode);
 
 	cancel_delayed_work(&data->checkchip_dwork);
 	cancel_delayed_work(&data->charger_dwork);
@@ -5370,7 +5370,7 @@ static int mxt224E_internal_suspend(struct mxt_data *data)
 static int mxt224E_internal_resume(struct mxt_data *data)
 {
 	int ret = 0;
-	printk("[touch] %s start\n", __func__);
+	pr_debug("[touch] %s start\n", __func__);
 	enable_irq(data->client->irq);
 	calibrate_chip(data);
 
@@ -5590,7 +5590,7 @@ static int __devinit mxt224E_probe(struct i2c_client *client,
 
 	ret = sysfs_create_group(&client->dev.kobj, &maxtouch_attr_group);
 	if (ret) {
-		printk("sysfs_create_group error\n");
+		pr_err("sysfs_create_group error\n");
 		goto err_irq;
 	}
 
@@ -5629,7 +5629,7 @@ static int __devinit mxt224E_probe(struct i2c_client *client,
 
 	ts_100s_tmr_workqueue = create_singlethread_workqueue("ts_100_tmr_workqueue");
 	if (!ts_100s_tmr_workqueue) {
-		printk(KERN_ERR "unabled to create touch tmr work queue \r\n");
+		pr_err(KERN_ERR "unabled to create touch tmr work queue \r\n");
 		error = -1;
 		goto err_alloc_dev;
 	}
